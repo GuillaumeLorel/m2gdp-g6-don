@@ -2,9 +2,13 @@ name = "m2gdp-g6-don"
 main = "src/index.js"
 compatibility_date = "2026-01-01"
 
-# CORS : restreindre l'accès au worker au domaine du front (voir agents.md)
+# CORS : restreindre l'accès au worker au domaine du front (voir agents.md).
+# Le code autorise en plus localhost, sinon le dev en local est impossible.
 [vars]
 ALLOWED_ORIGIN = "https://projet-bon-debarras-app.web.app"
+# Identifiant du projet Firebase : sert à valider l'audience des jetons.
+# Public, contrairement à la clé de service qui reste dans les secrets.
+FIREBASE_PROJECT_ID = "projet-bon-debarras"
 
 # Base D1 (sessions, SQL) — créée le 09/09/2026, région WEUR
 [[d1_databases]]
