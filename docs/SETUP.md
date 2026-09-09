@@ -17,11 +17,12 @@ Projet : **`projet-bon-debarras`** (numéro `134185101825`).
 
 | Élément | État | Détail |
 |---------|------|--------|
-| Authentication (email) | ✅ | Vérifier que *Email link (passwordless)* est bien coché |
+| Authentication (email) | ✅ | *Email link (passwordless)* actif |
 | Firestore | ✅ | région `eur3` |
 | Realtime Database | ✅ | `europe-west1` |
-| Hosting — landing | ✅ | https://projet-bon-debarras.web.app |
-| Hosting — app | ✅ | https://projet-bon-debarras-app.web.app |
+| Hosting — landing | ✅ déployé | https://projet-bon-debarras.web.app |
+| Hosting — app | ✅ déployé | https://projet-bon-debarras-app.web.app |
+| Lien magique (passwordless) | ✅ | vérifié par envoi réel le 09/09/2026 |
 | App web enregistrée | ✅ | `m2gdp-g6-don` |
 | Service account key | ✅ | JSON à la racine, **git-ignoré** — à déplacer hors du dépôt |
 
@@ -74,12 +75,50 @@ Notes :
 - **Front / vitrine** : `firebase deploy --only hosting`
 - **Worker backend** : `cd workers && wrangler deploy`
 
-## 5. GitHub
+Le déploiement Firebase fonctionne **sans `firebase login`** en pointant la clé de
+service, ce qui est pratique en CI ou depuis un poste non authentifié :
 
-- Ajouter `@quangfr` comme collaborateur (Settings → Collaborators).
-- Organiser les spécifications dans des tickets (EPIC / User Story / tâche).
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="$PWD/projet-bon-debarras-firebase-adminsdk-*.json"
+firebase deploy --only hosting --project projet-bon-debarras --non-interactive
+```
 
-## Vérification rapide
+## 5. Agentic Coding — Skills et MCP ✅
+
+Tout est versionné : un coéquipier qui clone le dépôt récupère la même
+configuration, sans réglage manuel.
+
+### Serveurs MCP — `.mcp.json`
+
+| Serveur | Rôle | Vérifié |
+|---------|------|---------|
+| `playwright` | pilotage d'un vrai navigateur : tests E2E, captures, débogage | ✅ 24 outils |
+| `shadcn` | recherche et installation de composants UI depuis le registre | ✅ 7 outils |
+
+Les versions sont **épinglées** (`@playwright/mcp@0.0.80`, `shadcn@4.21.0`) pour
+que l'équipe travaille sur la même base. Au premier lancement, le client IA
+demande d'approuver les serveurs déclarés par le projet : c'est normal.
+
+Playwright couvre l'exigence « Tests automatisés conformes et valides » du
+barème ; shadcn alimente la partie Ergonomie (composants cohérents, mobile-first).
+
+### Skills projet — `.claude/skills/`
+
+| Skill | Quand elle sert |
+|-------|-----------------|
+| `deployer` | mettre en ligne le front, la vitrine ou le worker |
+| `verif-infra` | vérifier que toute la stack répond, avant une démo |
+
+Elles capturent les pièges déjà rencontrés (le `--remote` de wrangler, les
+booléens absents de l'API Auth, les domaines autorisés) pour ne pas les
+redécouvrir en J4.
+
+## 6. GitHub
+
+- ✅ `@quangfr` ajouté comme collaborateur.
+- ⏳ Organiser les spécifications dans des tickets (EPIC / User Story / tâche).
+
+## 7. Vérification rapide
 
 Healthcheck du worker :
 ```bash
