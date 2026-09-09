@@ -1,20 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DON — Application</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 0; padding: 2rem 1.5rem;
-           color: #1a1a1a; }
-    main { max-width: 28rem; margin: 0 auto; }
-  </style>
-</head>
-<body>
-  <main>
-    <h1>DON</h1>
-    <p>Application enchères caritatives — Groupe 6.</p>
-    <p><em>Point d'entrée PWA — en construction.</em></p>
-  </main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>DON — Enchères caritatives</title>
+    <meta
+      name="description"
+      content="Donnez une seconde vie à vos objets : les enchères vont à une cause caritative."
+    />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icone.svg" />
+    <link rel="apple-touch-icon" href="/icone-192.png" />
+    <meta name="theme-color" content="#1a7f6b" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

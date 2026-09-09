@@ -26,7 +26,7 @@ Projet : **`projet-bon-debarras`** (numéro `134185101825`).
 | App web enregistrée | ✅ | `m2gdp-g6-don` |
 | Service account key | ✅ | JSON à la racine, **git-ignoré** — à déplacer hors du dépôt |
 
-Config client (publique) : [`public/firebase-config.js`](../public/firebase-config.js).
+Config client (publique) : [`public/src/lib/firebase.js`](../public/src/lib/firebase.js).
 Targets Hosting : déjà dans [`.firebaserc`](../.firebaserc). Si un poste neuf ne
 les connaît pas :
 ```bash
@@ -70,9 +70,40 @@ Notes :
 - `ALLOWED_ORIGIN` est défini dans `wrangler.toml` mais **pas encore lu par le
   code** : `src/index.js` renvoie toujours `Access-Control-Allow-Origin: *`.
 
-## 4. Déploiement
+## 4. Application PWA — `public/`
 
-- **Front / vitrine** : `firebase deploy --only hosting`
+Vite + React 19 + Tailwind 4 + shadcn/ui, en **JavaScript** (pas TypeScript :
+TS 7 est une réécriture majeure et l'outillage n'a pas fini de suivre).
+
+```bash
+cd public
+npm install
+npm run dev      # serveur de dev, rechargement à chaud
+npm run build    # produit public/dist
+```
+
+Particularités liées au fait que l'app vit dans `public/`, pour respecter la
+convention du cours (`/public` = App Frontend) :
+
+- `publicDir` est renommé en **`static/`** — sinon Vite chercherait `public/public`.
+  Tout ce qui doit être servi tel quel (manifest, service worker, icônes) va là.
+- Le build sort dans **`public/dist`**, qui est la cible Hosting `app`.
+  `dist/` est git-ignoré : on ne versionne pas le build.
+
+Côté PWA : `manifest.webmanifest`, icônes 192 et 512 px, et un service worker
+maison sans dépendance. Sa stratégie est **réseau d'abord** sur la navigation,
+et il ne met **jamais** `/api/` en cache — une enchère périmée de quelques
+secondes serait fausse.
+
+La charte graphique n'est pas encore posée : les jetons de couleur sont neutres
+dans `src/index.css`. Quand les maquettes UX arriveront, il suffira de remplacer
+ces variables, sans toucher aux composants.
+
+## 5. Déploiement
+
+- **Vitrine** : `firebase deploy --only hosting:landing`
+- **App** : `cd public && npm run build` **puis**
+  `firebase deploy --only hosting:app` — sans build, on republie l'ancien `dist/`
 - **Worker backend** : `cd workers && wrangler deploy`
 
 Le déploiement Firebase fonctionne **sans `firebase login`** en pointant la clé de
@@ -83,7 +114,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="$PWD/projet-bon-debarras-firebase-adminsd
 firebase deploy --only hosting --project projet-bon-debarras --non-interactive
 ```
 
-## 5. Agentic Coding — Skills et MCP ✅
+## 6. Agentic Coding — Skills et MCP ✅
 
 Tout est versionné : un coéquipier qui clone le dépôt récupère la même
 configuration, sans réglage manuel.
@@ -113,12 +144,12 @@ Elles capturent les pièges déjà rencontrés (le `--remote` de wrangler, les
 booléens absents de l'API Auth, les domaines autorisés) pour ne pas les
 redécouvrir en J4.
 
-## 6. GitHub
+## 7. GitHub
 
 - ✅ `@quangfr` ajouté comme collaborateur.
 - ⏳ Organiser les spécifications dans des tickets (EPIC / User Story / tâche).
 
-## 7. Vérification rapide
+## 8. Vérification rapide
 
 Healthcheck du worker :
 ```bash

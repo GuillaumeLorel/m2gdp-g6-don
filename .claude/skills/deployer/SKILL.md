@@ -9,9 +9,12 @@ Deux cibles indépendantes. Ne déployer que celle qui a changé.
 
 ## Front et vitrine (Firebase Hosting)
 
-Depuis la racine du dépôt :
+**L'app doit être buildée avant d'être déployée.** Firebase publie
+`public/dist`, pas les sources : sauter le build republie silencieusement la
+version précédente.
 
 ```bash
+cd public && npm run build && cd ..
 export GOOGLE_APPLICATION_CREDENTIALS="$PWD/projet-bon-debarras-firebase-adminsdk-fbsvc-75eab3a19c.json"
 firebase deploy --only hosting --project projet-bon-debarras --non-interactive
 ```
@@ -19,10 +22,10 @@ firebase deploy --only hosting --project projet-bon-debarras --non-interactive
 La clé de service évite le `firebase login` interactif — utile en CI et depuis un
 poste non authentifié. Deux cibles sont définies dans `.firebaserc` :
 
-| Cible | Dossier | URL |
-|-------|---------|-----|
-| `landing` | `landing/` | https://projet-bon-debarras.web.app |
-| `app` | `public/` | https://projet-bon-debarras-app.web.app |
+| Cible | Dossier publié | Build requis | URL |
+|-------|----------------|--------------|-----|
+| `landing` | `landing/` | non, HTML statique | https://projet-bon-debarras.web.app |
+| `app` | `public/dist` | **oui** (`npm run build`) | https://projet-bon-debarras-app.web.app |
 
 Pour n'en déployer qu'une : `--only hosting:landing` ou `--only hosting:app`.
 
