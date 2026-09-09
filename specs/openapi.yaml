@@ -1,0 +1,120 @@
+openapi: "3.0.3"
+info:
+  title: "DON — Enchères caritatives API"
+  version: "0.1.0"
+  description: >
+    API de la marketplace d'enchères caritatives (groupe 6).
+    Squelette de départ — à enrichir US par US.
+
+paths:
+  /api/health:
+    get:
+      summary: "Healthcheck"
+      responses:
+        "200":
+          description: "Service en ligne"
+
+  /api/annonces:
+    get:
+      summary: "🔍 Rechercher des annonces d'enchères"
+      parameters:
+        - name: q
+          in: query
+          description: "Recherche texte 🔤"
+          schema: { type: string }
+        - name: codePostal
+          in: query
+          description: "Filtre par code postal 📍"
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Liste d'annonces"
+    post:
+      summary: "➕ Créer une annonce d'enchère"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Annonce"
+      responses:
+        "201":
+          description: "Annonce créée"
+
+  /api/annonces/{id}/offres:
+    post:
+      summary: "💰 Faire une offre (enchère) sur une annonce"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Offre"
+      responses:
+        "201":
+          description: "Offre enregistrée"
+
+components:
+  schemas:
+    Annonce:
+      type: object
+      required: [title, description, category, startingBid, endsAt, causeId, sellerId]
+      properties:
+        title:
+          type: string
+          maxLength: 80
+          description: "Titre de l'objet 🏷 (ex : 'Table en chêne vintage')"
+        description:
+          type: string
+          maxLength: 1000
+          description: "Description détaillée de l'objet 📝"
+        category:
+          type: string
+          enum: [mobilier, electromenager, electronique, decoration, autre]
+          description: "Catégorie de l'objet 📦"
+        startingBid:
+          type: number
+          minimum: 0
+          description: "Mise de départ en euros 💶"
+        currentBid:
+          type: number
+          description: "Meilleure offre actuelle 📈 (calculé)"
+        endsAt:
+          type: string
+          format: date-time
+          description: "Date et heure de fin de l'enchère ⏰"
+        causeId:
+          type: string
+          description: "Cause caritative bénéficiaire ❤️"
+        sellerId:
+          type: string
+          description: "Identifiant du vendeur 👤"
+        postalCode:
+          type: string
+          description: "Code postal pour le retrait de l'objet 📍"
+        photos:
+          type: array
+          items: { type: string, format: uri }
+          description: "URLs des photos (stockées sur R2) 📸"
+        status:
+          type: string
+          enum: [active, terminee, annulee]
+          default: active
+          description: "Statut de l'enchère 🟡"
+
+    Offre:
+      type: object
+      required: [amount, bidderId]
+      properties:
+        amount:
+          type: number
+          minimum: 0
+          description: "Montant de l'offre en euros 💰 (doit dépasser currentBid)"
+        bidderId:
+          type: string
+          description: "Identifiant de l'enchérisseur 👤"
