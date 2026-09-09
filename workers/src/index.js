@@ -105,6 +105,27 @@ function validerProfil(corps) {
   if (texte(corps.adressePostale).length > 200) {
     erreurs.push("L'adresse postale est trop longue (200 max).");
   }
+
+  if (!/^\d{5}$/.test(texte(corps.codePostal))) {
+    erreurs.push('Le code postal doit comporter 5 chiffres.');
+  }
+
+  // Pas de condition d'age : la plateforme est ouverte aux mineurs. On verifie
+  // seulement que la date existe et reste plausible.
+  const naissance = texte(corps.dateNaissance);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(naissance)) {
+    erreurs.push('La date de naissance est obligatoire (AAAA-MM-JJ).');
+  } else {
+    const date = new Date(`${naissance}T00:00:00Z`);
+    if (Number.isNaN(date.getTime()) || naissance !== date.toISOString().slice(0, 10)) {
+      erreurs.push("Cette date de naissance n'existe pas.");
+    } else if (date > new Date()) {
+      erreurs.push('La date de naissance ne peut pas être dans le futur.');
+    } else if (Date.now() - date.getTime() > 120 * 365.25 * 24 * 3600 * 1000) {
+      erreurs.push('Cette date de naissance est invalide.');
+    }
+  }
+
   return erreurs;
 }
 
@@ -178,6 +199,8 @@ export default {
               // a l'autre quel que soit l'ordre de cochage.
               roles: ROLES.filter((r) => corps.roles.includes(r)),
               adressePostale: corps.adressePostale.trim(),
+              codePostal: corps.codePostal.trim(),
+              dateNaissance: corps.dateNaissance.trim(),
               photoUrl: typeof corps.photoUrl === 'string' ? corps.photoUrl : '',
               creeLe: existant?.creeLe || new Date().toISOString(),
               misAJourLe: new Date().toISOString(),
@@ -193,8 +216,17 @@ export default {
       if (pathname === '/api/utilisateurs' && request.method === 'GET') {
         const jeton = await jetonService(env.FIREBASE_SERVICE_ACCOUNT, SCOPES);
         const tous = await listerCollection(jeton, env.FIREBASE_PROJECT_ID, 'utilisateurs');
-        // On n'expose pas les emails : l'annuaire est lisible sans etre connecte.
-        const publics = tous.map(({ email, ...reste }) => reste);
+        // Liste BLANCHE, et non liste noire : l'annuaire est lisible sans etre
+        // connecte, donc tout champ ajoute au profil ne doit pas s'y retrouver
+        // par defaut. E-mail, adresse, code postal et date de naissance restent
+        // prives.
+        const publics = tous.map(({ id, prenom, nom, roles, photoUrl }) => ({
+          id,
+          prenom,
+          nom,
+          roles,
+          photoUrl,
+        }));
         return json({ utilisateurs: publics, total: publics.length }, 200, cors);
       }
 

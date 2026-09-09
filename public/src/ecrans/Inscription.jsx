@@ -6,6 +6,9 @@ import { Label } from '@/components/ui/label.jsx';
 import { Checkbox } from '@/components/ui/checkbox.jsx';
 import { enregistrerProfil } from '@/lib/api.js';
 
+/** Aujourd'hui, borne haute du champ : on ne naît pas dans le futur. */
+const aujourdhui = () => new Date().toISOString().slice(0, 10);
+
 const ROLES = [
   {
     valeur: 'donateur',
@@ -30,11 +33,23 @@ export default function Inscription({ email, surTermine }) {
   const [champs, setChamps] = useState({
     nom: '',
     prenom: '',
+    dateNaissance: '',
     roles: [],
     adressePostale: '',
+    codePostal: '',
   });
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
+
+  const codePostalValide = /^\d{5}$/.test(champs.codePostal);
+
+  const complet =
+    champs.nom.trim() &&
+    champs.prenom.trim() &&
+    champs.dateNaissance &&
+    champs.roles.length &&
+    champs.adressePostale.trim().length >= 5 &&
+    codePostalValide;
 
   const modifier = (cle) => (e) =>
     setChamps((precedent) => ({ ...precedent, [cle]: e.target.value }));
@@ -92,6 +107,19 @@ export default function Inscription({ email, surTermine }) {
             value={champs.prenom} onChange={modifier('prenom')} />
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="naissance">Date de naissance</Label>
+          <Input
+            id="naissance"
+            type="date"
+            required
+            autoComplete="bday"
+            max={aujourdhui()}
+            value={champs.dateNaissance}
+            onChange={modifier('dateNaissance')}
+          />
+        </div>
+
         <fieldset className="space-y-3">
           <legend className="text-sm font-medium leading-none">
             Que souhaitez-vous faire ?
@@ -128,9 +156,28 @@ export default function Inscription({ email, surTermine }) {
           <Input id="adresse" required autoComplete="street-address"
             placeholder="12 rue de la République, 69002 Lyon"
             value={champs.adressePostale} onChange={modifier('adressePostale')} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="codePostal">Code postal</Label>
+          <Input
+            id="codePostal"
+            required
+            inputMode="numeric"
+            autoComplete="postal-code"
+            maxLength={5}
+            placeholder="69002"
+            value={champs.codePostal}
+            onChange={(e) =>
+              setChamps((p) => ({
+                ...p,
+                codePostal: e.target.value.replace(/\D/g, '').slice(0, 5),
+              }))
+            }
+          />
           <p className="text-xs text-muted-foreground">
-            Les objets se récupèrent en main propre : l’adresse sert à calculer
-            la proximité.
+            Les objets se récupèrent en main propre : le code postal sert à
+            calculer la proximité.
           </p>
         </div>
 
@@ -140,7 +187,7 @@ export default function Inscription({ email, surTermine }) {
           </p>
         )}
 
-        <Button type="submit" className="w-full" disabled={envoi || !champs.roles.length}>
+        <Button type="submit" className="w-full" disabled={envoi || !complet}>
           {envoi && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
           {envoi ? 'Enregistrement…' : 'S’inscrire'}
         </Button>

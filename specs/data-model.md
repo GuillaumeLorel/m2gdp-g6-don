@@ -24,6 +24,7 @@ classDiagram
         +string photoUrl
         +string adressePostale
         +string codePostal
+        +date dateNaissance
         +string[] roles
         +date creeLe
     }
