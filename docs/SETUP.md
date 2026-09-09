@@ -33,31 +33,41 @@ firebase target:apply hosting landing projet-bon-debarras
 firebase target:apply hosting app projet-bon-debarras-app
 ```
 
-## 3. Cloudflare — ⏳ À FAIRE (login navigateur requis)
+## 3. Cloudflare — ✅ FAIT
 
-Tout se fait depuis `workers/`. Le `wrangler login` ouvre le navigateur : il doit
-être lancé par un humain.
+Compte : `af6e99118eacb7dae1f71bab594ad0ed`.
+Worker en ligne : **https://m2gdp-g6-don.guillaume-lorel.workers.dev**
+
+| Ressource | État |
+|-----------|------|
+| `wrangler login` | ✅ |
+| D1 `m2gdp-g6-don-sessions` | ✅ région WEUR, `database_id` dans `wrangler.toml` |
+| R2 `m2gdp-g6-don-fichiers` | ✅ créé le 09/09/2026 |
+| Worker déployé | ✅ version `85f953d9` |
+| Secrets | ✅ `FIREBASE_SERVICE_ACCOUNT` + `FIREBASE_API_KEY` |
+
+Pour reposer un secret (rotation de clé, nouveau compte), depuis `workers/` — en
+pipant le contenu plutôt qu'en le collant, pour qu'il ne reste pas dans
+l'historique du terminal :
 
 ```bash
-cd workers
-wrangler login                                  # 1. ouvre le navigateur
-wrangler d1 create m2gdp-g6-don-sessions        # 2. → note le database_id
-wrangler r2 bucket create m2gdp-g6-don-fichiers # 3.
+cat ../projet-bon-debarras-firebase-adminsdk-fbsvc-*.json \
+  | wrangler secret put FIREBASE_SERVICE_ACCOUNT
+printf '%s' "<api-key>" | wrangler secret put FIREBASE_API_KEY
 ```
 
-4. Reporter le `database_id` renvoyé à l'étape 2 dans
-   [`workers/wrangler.toml`](../workers/wrangler.toml) (ligne `database_id`).
+Les secrets ne sont jamais relisibles ensuite : `wrangler secret list` ne renvoie
+que leurs noms.
 
-5. Enregistrer les secrets (jamais en clair dans le repo) :
-   ```bash
-   # colle le CONTENU du JSON de service account quand il le demande
-   wrangler secret put FIREBASE_SERVICE_ACCOUNT
-   # AIzaSyD8ZbZ-Sf7Rfej1HGYm4AOTHoUi9D6kFj8
-   wrangler secret put FIREBASE_API_KEY
-   ```
-
-`ALLOWED_ORIGIN` est déjà réglé sur `https://projet-bon-debarras-app.web.app`
-dans `wrangler.toml`.
+Notes :
+- **L'ordre compte** : `wrangler secret put` sur un Worker qui n'existe pas encore
+  déclenche une invite interactive. Déployer *avant* de poser les secrets.
+- Le `binding` suggéré par `wrangler d1 create` est ignoré : on garde
+  `DB_SESSIONS`, le nom utilisé dans le code du Worker.
+- R2 demande une activation préalable du service sur le compte Cloudflare
+  (erreur `code: 10042` sinon), moyen de paiement requis même en palier gratuit.
+- `ALLOWED_ORIGIN` est défini dans `wrangler.toml` mais **pas encore lu par le
+  code** : `src/index.js` renvoie toujours `Access-Control-Allow-Origin: *`.
 
 ## 4. Déploiement
 
@@ -71,8 +81,9 @@ dans `wrangler.toml`.
 
 ## Vérification rapide
 
-Après déploiement du worker, tester le healthcheck :
+Healthcheck du worker :
 ```bash
-curl https://m2gdp-g6-don.<ton-sous-domaine>.workers.dev/api/health
+curl https://m2gdp-g6-don.guillaume-lorel.workers.dev/api/health
 ```
-Réponse attendue : `{"status":"ok",...}`.
+Réponse attendue : `{"status":"ok","service":"m2gdp-g6-don","ts":...}`.
+Vérifié le 09/09/2026 : HTTP 200 en ~0,7 s.

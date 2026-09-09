@@ -6,11 +6,11 @@ compatibility_date = "2026-01-01"
 [vars]
 ALLOWED_ORIGIN = "https://projet-bon-debarras-app.web.app"
 
-# Base D1 (sessions, SQL) — récupérer database_id après `wrangler d1 create`
+# Base D1 (sessions, SQL) — créée le 09/09/2026, région WEUR
 [[d1_databases]]
 binding = "DB_SESSIONS"
 database_name = "m2gdp-g6-don-sessions"
-database_id = "REMPLACER_APRES_wrangler_d1_create"
+database_id = "982e2d7f-4610-4c0e-a28e-ff850ac588ee"
 
 # Bucket R2 (fichiers / photos)
 [[r2_buckets]]
