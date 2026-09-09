@@ -97,7 +97,10 @@ paths:
     get:
       tags: ["Profils"]
       summary: "📇 Annuaire public des inscrits"
-      description: "Les adresses e-mail ne sont pas exposées."
+      description: >
+        Liste blanche : seuls `id`, `prenom`, `nom`, `roles` et `photoUrl` sont
+        renvoyés. E-mail, adresse, code postal et date de naissance restent
+        privés — tout champ ajouté au profil est exclu par défaut.
       responses:
         "200":
           description: "Liste"
@@ -197,17 +200,30 @@ components:
             l'ordre de saisie.
         adressePostale:
           type: string
-          description: "Sert à calculer la proximité 📍"
+          description: "Sert à calculer la proximité 📍 — privée, jamais exposée dans l'annuaire"
+        codePostal:
+          type: string
+          pattern: "^[0-9]{5}$"
+          description: "Code postal 📍 — privé, jamais exposé dans l'annuaire"
+        dateNaissance:
+          type: string
+          format: date
+          description: "Date de naissance 🎂 — privée. Aucune condition d'âge : la plateforme est ouverte aux mineurs"
         photoUrl: { type: string, description: "Photo de profil (R2) 📸" }
         creeLe: { type: string, format: date-time }
         misAJourLe: { type: string, format: date-time }
 
     ProfilSoumis:
       type: object
-      required: [nom, prenom, roles, adressePostale]
+      required: [nom, prenom, roles, adressePostale, codePostal, dateNaissance]
       properties:
         nom: { type: string, minLength: 1, maxLength: 80 }
         prenom: { type: string, minLength: 1, maxLength: 80 }
+        codePostal: { type: string, pattern: "^[0-9]{5}$" }
+        dateNaissance:
+          type: string
+          format: date
+          description: "Doit exister, ne pas être dans le futur, et rester sous 120 ans"
         roles:
           type: array
           minItems: 1
