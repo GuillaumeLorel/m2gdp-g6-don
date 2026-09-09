@@ -1,87 +1,118 @@
 import { useEffect, useState } from 'react';
-import { HandHeart, RefreshCw } from 'lucide-react';
-import { API_BASE } from '@/lib/firebase.js';
+import { HandHeart, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
+import { Input } from '@/components/ui/input.jsx';
+import { Label } from '@/components/ui/label.jsx';
+import Connexion from '@/ecrans/Connexion.jsx';
+import Inscription from '@/ecrans/Inscription.jsx';
+import Accueil from '@/ecrans/Accueil.jsx';
+import { chargerProfil } from '@/lib/api.js';
+import { estRetourDeLien, finaliserConnexion, surChangementAuth } from '@/lib/auth.js';
 
 /**
- * Coquille minimale de la PWA.
+ * Aiguillage du POC J2.
  *
- * Volontairement sans identite visuelle : la charte graphique et les maquettes
- * arrivent de l'UX. Ce qui est deja utile ici, c'est la preuve que le front
- * parle bien au backend Cloudflare (CORS compris) : si ce voyant est au vert,
- * la chaine front -> worker est saine.
+ *   pas connecte              -> Connexion (saisie de l'email)
+ *   retour de lien magique    -> finalisation, en redemandant l'adresse si
+ *                                le lien est ouvert sur un autre appareil
+ *   connecte sans profil      -> Inscription
+ *   connecte avec profil      -> Accueil
+ *
+ * Pas de routeur : quatre etats suffisent, et la navigation par onglets
+ * viendra avec les maquettes.
  */
 export default function App() {
-  const [etat, setEtat] = useState('chargement');
-  const [detail, setDetail] = useState(null);
+  const [utilisateur, setUtilisateur] = useState(undefined); // undefined = inconnu
+  const [profil, setProfil] = useState(undefined);
+  const [emailRedemande, setEmailRedemande] = useState(false);
+  const [saisieEmail, setSaisieEmail] = useState('');
+  const [erreur, setErreur] = useState(null);
 
-  async function verifierApi() {
-    setEtat('chargement');
+  // 1. Retour de lien magique : a traiter avant tout le reste.
+  useEffect(() => {
+    if (!estRetourDeLien()) return;
+    finaliserConnexion().catch((e) => {
+      if (e.message === 'EMAIL_MANQUANT') setEmailRedemande(true);
+      else setErreur(e.message);
+    });
+  }, []);
+
+  // 2. Etat de connexion.
+  useEffect(() => surChangementAuth((u) => setUtilisateur(u)), []);
+
+  // 3. Profil, des qu'on sait qui est connecte.
+  useEffect(() => {
+    if (utilisateur === undefined) return;
+    if (utilisateur === null) {
+      setProfil(undefined);
+      return;
+    }
+    chargerProfil().then(setProfil).catch((e) => setErreur(e.message));
+  }, [utilisateur]);
+
+  async function confirmerEmail(evenement) {
+    evenement.preventDefault();
+    setErreur(null);
     try {
-      const reponse = await fetch(`${API_BASE}/api/health`);
-      if (!reponse.ok) throw new Error(`HTTP ${reponse.status}`);
-      setDetail(await reponse.json());
-      setEtat('ok');
-    } catch (erreur) {
-      setDetail({ erreur: erreur.message });
-      setEtat('erreur');
+      await finaliserConnexion(saisieEmail.trim().toLowerCase());
+      setEmailRedemande(false);
+    } catch {
+      setErreur('Ce lien ne correspond pas à cette adresse, ou il a déjà servi.');
     }
   }
 
-  useEffect(() => {
-    verifierApi();
-  }, []);
-
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-6 px-5 py-10">
-      <header className="flex items-center gap-3">
-        <HandHeart className="size-8 shrink-0" aria-hidden="true" />
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">DON</h1>
-          <p className="text-sm text-muted-foreground">
-            Enchères caritatives — Groupe 6
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col px-5 py-8">
+      <div className="mb-8 flex items-center gap-2">
+        <HandHeart className="size-6" aria-hidden="true" />
+        <span className="font-semibold tracking-tight">DON</span>
+        <span className="text-sm text-muted-foreground">· Dons entre particuliers</span>
+      </div>
+
+      <main className="flex-1">
+        {erreur && (
+          <p role="alert" className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            {erreur}
           </p>
-        </div>
-      </header>
-
-      <section className="rounded-lg border p-4">
-        <h2 className="mb-3 text-sm font-medium">Liaison avec le backend</h2>
-
-        <p className="flex items-center gap-2 text-sm">
-          <span
-            className={`inline-block size-2.5 rounded-full ${
-              { chargement: 'bg-muted-foreground', ok: 'bg-green-600', erreur: 'bg-destructive' }[etat]
-            }`}
-            aria-hidden="true"
-          />
-          <span>
-            {etat === 'chargement' && 'Vérification en cours…'}
-            {etat === 'ok' && 'Worker Cloudflare joignable'}
-            {etat === 'erreur' && 'Worker injoignable'}
-          </span>
-        </p>
-
-        {detail && (
-          <pre className="mt-3 overflow-x-auto rounded bg-muted p-3 text-xs">
-            {JSON.stringify(detail, null, 2)}
-          </pre>
         )}
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-4"
-          onClick={verifierApi}
-          disabled={etat === 'chargement'}
-        >
-          <RefreshCw className="size-4" aria-hidden="true" />
-          Relancer le test
-        </Button>
-      </section>
-
-      <p className="text-sm text-muted-foreground">
-        Coquille PWA installable. Les écrans arrivent avec les maquettes UX.
-      </p>
-    </main>
+        {/* Lien ouvert sur un autre appareil que celui de la demande. */}
+        {emailRedemande ? (
+          <form onSubmit={confirmerEmail} className="space-y-4">
+            <h1 className="text-2xl font-semibold tracking-tight">Confirmez votre e-mail</h1>
+            <p className="text-sm text-muted-foreground">
+              Ce lien a été demandé depuis un autre appareil. Saisissez l’adresse
+              utilisée pour terminer la connexion.
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="confirmation">E-mail</Label>
+              <Input
+                id="confirmation" type="email" required autoComplete="email"
+                value={saisieEmail} onChange={(e) => setSaisieEmail(e.target.value)}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={!saisieEmail}>
+              Confirmer
+            </Button>
+          </form>
+        ) : utilisateur === undefined ? (
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            Chargement…
+          </p>
+        ) : utilisateur === null ? (
+          <Connexion />
+        ) : profil === undefined ? (
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            Chargement de votre profil…
+          </p>
+        ) : profil === null ? (
+          <Inscription email={utilisateur.email} surTermine={setProfil} />
+        ) : (
+          <Accueil profil={profil} />
+        )}
+      </main>
+    </div>
   );
 }
