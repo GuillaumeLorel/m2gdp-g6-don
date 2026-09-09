@@ -4,26 +4,39 @@ Ce fichier guide les agents IA (IDE, Copilot, etc.) qui travaillent sur ce dép�
 
 ## Contexte projet
 
-Marketplace **d'enchères caritatives** (nom de code DON). Deux populations :
+Plateforme de **dons d'objets entre particuliers** (nom de code DON).
+Deux populations :
 
-- **Vendeurs** : cèdent des objets inutilisés (mobilier, électroménager…).
-- **Acheteurs** : font des offres ; la meilleure enchère remporte l'objet.
+- **Donateurs** : cèdent gratuitement des objets dont ils n'ont plus l'usage
+  (mobilier, électroménager, matériel scolaire, vêtements, puériculture…).
+- **Bénéficiaires** : l'application vise surtout les **jeunes dans le besoin** —
+  étudiants qui s'installent, personnes en difficulté — qui demandent ces objets.
+
+> Les deux rôles sont **cumulables** : un même compte peut donner et recevoir.
+> Le champ `roles` est donc une **liste** (`donateur`, `beneficiaire`), jamais
+> une valeur unique. Ne pas le retransformer en type exclusif.
 
 Spécificités métier :
 
-- Le prix n'est pas fixe : mécanique **d'enchère** (offres montantes, meilleure
-  offre gagnante).
-- L'argent de la vente est **reversé à une cause caritative**.
-- Les acheteurs viennent **récupérer l'objet chez le vendeur** (dimension de
-  proximité géographique).
-- Une enchère a une **date de fin** (dimension de disponibilité dans le temps).
+- **Aucun argent ne circule.** Pas de prix, pas d'enchère, pas de commission,
+  pas de paiement. Ne jamais introduire de champ monétaire dans le modèle.
+- Ce qui départage plusieurs demandeurs, c'est la **motivation** exprimée, et
+  le donateur **choisit** : pas d'attribution automatique.
+- Les bénéficiaires viennent **récupérer l'objet chez le donateur** : la
+  proximité géographique est un critère de recherche déterminant.
+- Un don suit un cycle `disponible` → `reserve` → `remis`.
+
+> ⚠️ Le projet a **changé de sujet en cours de route**. Il s'agissait
+> initialement d'enchères caritatives. Tout vocabulaire d'enchère — vendeur,
+> acheteur, offre, mise, enchérisseur, montant, cause caritative bénéficiaire —
+> est **obsolète**. Si vous en croisez dans le dépôt, c'est un oubli à corriger.
 
 ## Périmètre d'évaluation
 
 - ✅ Évalué : engagement (roadmap réalisée), ergonomie (navigation claire,
   responsive, mobile-first), fonctionnel (scénario nominal + cas à la marge),
-  réalisme des données (90+ annonces, 30+ profils, 10+ conversations, 10+
-  enchères/réservations).
+  réalisme des données (90+ dons publiés, 30+ profils, 10+ conversations, 10+
+  demandes).
 - ❌ Non évalué : architecture et qualité du code, sécurité, infra, performance.
   Le back est délégué à des services auto-gérés (Firebase, Cloudflare).
 

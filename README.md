@@ -1,10 +1,16 @@
-# m2gdp-g6-don — Enchères caritatives (DON)
+# m2gdp-g6-don — Dons entre particuliers (DON)
 
 Projet Gestion de Projet M2CIM 2026/2027 — Groupe 6.
 
-Marketplace d'enchères caritatives : des vendeurs cèdent des objets qu'ils
-n'utilisent plus, les acheteurs enchérissent, la meilleure offre remporte la
-mise, et l'argent est reversé à des causes caritatives.
+Plateforme de dons d'objets. Des **donateurs** cèdent gratuitement ce dont ils
+n'ont plus l'usage — mobilier, électroménager, matériel scolaire, vêtements.
+Des **bénéficiaires**, souvent des jeunes dans le besoin, étudiants qui
+s'installent ou personnes en difficulté, en font la demande et viennent les
+récupérer en main propre.
+
+**Aucun argent ne circule** : ni prix, ni enchère, ni commission. La plateforme
+est un intermédiaire de confiance qui met en relation deux populations dont les
+besoins se répondent, avec la proximité géographique pour contrainte principale.
 
 ## Structure du dépôt
 

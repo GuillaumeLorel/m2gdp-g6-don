@@ -3,8 +3,9 @@
  *
  * Strategie « network first, cache de secours » sur la navigation uniquement :
  * l'application reste ouvrable hors ligne, mais on ne sert jamais une donnee
- * perimee tant que le reseau repond. C'est le comportement souhaitable pour des
- * encheres, ou une valeur en cache peut etre fausse en quelques secondes.
+ * perimee tant que le reseau repond. C'est le comportement souhaitable ici :
+ * un objet deja reserve ou remis ne doit pas continuer a s'afficher comme
+ * disponible.
  *
  * Volontairement sans dependance (pas de Workbox) : la J2 demande une PWA
  * installable, pas une strategie de cache elaboree.
@@ -32,7 +33,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
 
-  // Jamais de cache sur les appels API : une enchere doit etre fraiche.
+  // Jamais de cache sur les appels API : la disponibilite d'un don change.
   if (new URL(request.url).pathname.startsWith('/api/')) return;
 
   if (request.mode === 'navigate') {

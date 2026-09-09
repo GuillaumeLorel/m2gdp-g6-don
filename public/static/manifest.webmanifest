@@ -1,7 +1,7 @@
 {
-  "name": "DON — Enchères caritatives",
+  "name": "DON — Dons entre particuliers",
   "short_name": "DON",
-  "description": "Donnez une seconde vie à vos objets : les enchères vont à une cause caritative.",
+  "description": "Donnez une seconde vie à vos objets : ce dont vous n’avez plus l’usage servira à quelqu’un près de chez vous.",
   "lang": "fr",
   "start_url": "/",
   "scope": "/",

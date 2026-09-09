@@ -92,8 +92,8 @@ convention du cours (`/public` = App Frontend) :
 
 Côté PWA : `manifest.webmanifest`, icônes 192 et 512 px, et un service worker
 maison sans dépendance. Sa stratégie est **réseau d'abord** sur la navigation,
-et il ne met **jamais** `/api/` en cache — une enchère périmée de quelques
-secondes serait fausse.
+et il ne met **jamais** `/api/` en cache — un objet déjà réservé ne doit pas
+continuer à s'afficher comme disponible.
 
 La charte graphique n'est pas encore posée : les jetons de couleur sont neutres
 dans `src/index.css`. Quand les maquettes UX arriveront, il suffira de remplacer

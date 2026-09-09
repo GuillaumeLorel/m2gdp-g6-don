@@ -1,22 +1,120 @@
 openapi: "3.0.3"
 info:
-  title: "DON — Enchères caritatives API"
-  version: "0.1.0"
+  title: "DON — API dons entre particuliers"
+  version: "0.2.0"
   description: >
-    API de la marketplace d'enchères caritatives (groupe 6).
-    Squelette de départ — à enrichir US par US.
+    API de la plateforme de dons (groupe 6). Des donateurs cèdent gratuitement
+    des objets, des bénéficiaires — souvent des jeunes dans le besoin — en font
+    la demande et viennent les récupérer.
+    Aucun montant ne circule : il n'existe ni prix, ni enchère, ni paiement.
+
+servers:
+  - url: "https://m2gdp-g6-don.guillaume-lorel.workers.dev"
+    description: "Worker Cloudflare (production)"
+
+tags:
+  - name: "Système"
+  - name: "Authentification"
+  - name: "Profils"
+  - name: "Dons"
+  - name: "Demandes"
 
 paths:
   /api/health:
     get:
+      tags: ["Système"]
       summary: "Healthcheck"
       responses:
         "200":
           description: "Service en ligne"
 
-  /api/annonces:
+  /api/auth/statut-email:
+    post:
+      tags: ["Authentification"]
+      summary: "✉️ L'adresse a-t-elle déjà un compte ?"
+      description: >
+        Sert à annoncer honnêtement ce qui va se passer : « lien de connexion »
+        pour un inscrit, « lien d'inscription » pour un nouveau venu.
+        N'envoie aucun e-mail — c'est Firebase Auth qui s'en charge, côté client.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        "200":
+          description: "Réponse"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  existe: { type: boolean }
+        "400":
+          description: "Adresse invalide"
+
+  /api/profil:
     get:
-      summary: "🔍 Rechercher des annonces d'enchères"
+      tags: ["Profils"]
+      summary: "👤 Profil de l'utilisateur connecté"
+      security: [{ jetonFirebase: [] }]
+      responses:
+        "200":
+          description: "Profil"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Profil" }
+        "401":
+          description: "Authentification requise"
+        "404":
+          description: >
+            Volontaire : l'utilisateur est authentifié mais pas encore inscrit.
+            C'est ce code qui déclenche l'affichage du formulaire d'inscription.
+    put:
+      tags: ["Profils"]
+      summary: "💾 Créer ou mettre à jour son profil"
+      description: >
+        L'e-mail n'est jamais accepté dans le corps de la requête : il est repris
+        du jeton vérifié, sinon n'importe qui pourrait s'enregistrer sous
+        l'adresse d'un autre.
+      security: [{ jetonFirebase: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProfilSoumis" }
+      responses:
+        "200": { description: "Profil mis à jour" }
+        "201": { description: "Profil créé" }
+        "401": { description: "Authentification requise" }
+        "422": { description: "Champs invalides" }
+
+  /api/utilisateurs:
+    get:
+      tags: ["Profils"]
+      summary: "📇 Annuaire public des inscrits"
+      description: "Les adresses e-mail ne sont pas exposées."
+      responses:
+        "200":
+          description: "Liste"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  utilisateurs:
+                    type: array
+                    items: { $ref: "#/components/schemas/Profil" }
+                  total: { type: integer }
+
+  /api/dons:
+    get:
+      tags: ["Dons"]
+      summary: "🔍 Rechercher des dons disponibles"
       parameters:
         - name: q
           in: query
@@ -24,26 +122,33 @@ paths:
           schema: { type: string }
         - name: codePostal
           in: query
-          description: "Filtre par code postal 📍"
+          description: "Filtre par code postal 📍 (retrait en main propre)"
           schema: { type: string }
+        - name: categorie
+          in: query
+          schema: { $ref: "#/components/schemas/Categorie" }
       responses:
-        "200":
-          description: "Liste d'annonces"
+        "200": { description: "Liste de dons" }
     post:
-      summary: "➕ Créer une annonce d'enchère"
+      tags: ["Dons"]
+      summary: "🎁 Proposer un objet au don"
+      security: [{ jetonFirebase: [] }]
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/Annonce"
+            schema: { $ref: "#/components/schemas/Don" }
       responses:
-        "201":
-          description: "Annonce créée"
+        "201": { description: "Don publié" }
 
-  /api/annonces/{id}/offres:
+  /api/dons/{id}/demandes:
     post:
-      summary: "💰 Faire une offre (enchère) sur une annonce"
+      tags: ["Demandes"]
+      summary: "🙋 Demander un objet"
+      description: >
+        Le bénéficiaire explique son besoin. C'est la motivation, et non un
+        montant, qui départage plusieurs demandeurs : le donateur choisit.
+      security: [{ jetonFirebase: [] }]
       parameters:
         - name: id
           in: path
@@ -53,68 +158,110 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/Offre"
+            schema: { $ref: "#/components/schemas/Demande" }
       responses:
-        "201":
-          description: "Offre enregistrée"
+        "201": { description: "Demande enregistrée" }
 
 components:
+  securitySchemes:
+    jetonFirebase:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Jeton d'identité Firebase obtenu après connexion par lien magique.
+        Le Worker vérifie signature, expiration, audience et émetteur.
+
   schemas:
-    Annonce:
+    Categorie:
+      type: string
+      enum: [mobilier, electromenager, electronique, vetements, scolaire, puericulture, autre]
+      description: "Catégorie de l'objet 📦"
+
+    Profil:
       type: object
-      required: [title, description, category, startingBid, endsAt, causeId, sellerId]
       properties:
-        title:
+        id: { type: string, description: "Identifiant Firebase 🔑" }
+        nom: { type: string, maxLength: 80 }
+        prenom: { type: string, maxLength: 80 }
+        roles:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [donateur, beneficiaire]
+          description: >
+            Rôles cumulables 🎁🙋 : un même compte peut donner et recevoir.
+            Renvoyé dans l'ordre donateur puis bénéficiaire, quel que soit
+            l'ordre de saisie.
+        adressePostale:
+          type: string
+          description: "Sert à calculer la proximité 📍"
+        photoUrl: { type: string, description: "Photo de profil (R2) 📸" }
+        creeLe: { type: string, format: date-time }
+        misAJourLe: { type: string, format: date-time }
+
+    ProfilSoumis:
+      type: object
+      required: [nom, prenom, roles, adressePostale]
+      properties:
+        nom: { type: string, minLength: 1, maxLength: 80 }
+        prenom: { type: string, minLength: 1, maxLength: 80 }
+        roles:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            type: string
+            enum: [donateur, beneficiaire]
+        adressePostale: { type: string, minLength: 5, maxLength: 200 }
+        photoUrl: { type: string }
+
+    Don:
+      type: object
+      required: [titre, description, categorie, etat, codePostal]
+      properties:
+        titre:
           type: string
           maxLength: 80
-          description: "Titre de l'objet 🏷 (ex : 'Table en chêne vintage')"
+          description: "Titre de l'objet 🏷 (ex : « Bureau étudiant en bon état »)"
         description:
           type: string
           maxLength: 1000
-          description: "Description détaillée de l'objet 📝"
-        category:
+          description: "Description détaillée 📝"
+        categorie: { $ref: "#/components/schemas/Categorie" }
+        etat:
           type: string
-          enum: [mobilier, electromenager, electronique, decoration, autre]
-          description: "Catégorie de l'objet 📦"
-        startingBid:
-          type: number
-          minimum: 0
-          description: "Mise de départ en euros 💶"
-        currentBid:
-          type: number
-          description: "Meilleure offre actuelle 📈 (calculé)"
-        endsAt:
+          enum: [neuf, tres_bon, bon, usage]
+          description: "État de l'objet ✨"
+        codePostal:
           type: string
-          format: date-time
-          description: "Date et heure de fin de l'enchère ⏰"
-        causeId:
-          type: string
-          description: "Cause caritative bénéficiaire ❤️"
-        sellerId:
-          type: string
-          description: "Identifiant du vendeur 👤"
-        postalCode:
-          type: string
-          description: "Code postal pour le retrait de l'objet 📍"
+          description: "Code postal pour le retrait en main propre 📍"
         photos:
           type: array
           items: { type: string, format: uri }
           description: "URLs des photos (stockées sur R2) 📸"
-        status:
+        disponibleJusquau:
           type: string
-          enum: [active, terminee, annulee]
-          default: active
-          description: "Statut de l'enchère 🟡"
+          format: date-time
+          description: "Date limite de retrait ⏳ (facultative)"
+        statut:
+          type: string
+          enum: [disponible, reserve, remis]
+          default: disponible
+          description: "Cycle de vie du don 🟡"
 
-    Offre:
+    Demande:
       type: object
-      required: [amount, bidderId]
+      required: [motivation]
       properties:
-        amount:
-          type: number
-          minimum: 0
-          description: "Montant de l'offre en euros 💰 (doit dépasser currentBid)"
-        bidderId:
+        motivation:
           type: string
-          description: "Identifiant de l'enchérisseur 👤"
+          maxLength: 500
+          description: "Pourquoi cet objet vous serait utile 💬"
+        statut:
+          type: string
+          enum: [en_attente, acceptee, refusee]
+          default: en_attente
+          description: "Suivi de la demande 📌"
