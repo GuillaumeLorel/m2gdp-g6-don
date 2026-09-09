@@ -1,0 +1,22 @@
+name = "m2gdp-g6-don"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# CORS : restreindre l'accès au worker au domaine du front (voir agents.md)
+[vars]
+ALLOWED_ORIGIN = "https://projet-bon-debarras-app.web.app"
+
+# Base D1 (sessions, SQL) — récupérer database_id après `wrangler d1 create`
+[[d1_databases]]
+binding = "DB_SESSIONS"
+database_name = "m2gdp-g6-don-sessions"
+database_id = "REMPLACER_APRES_wrangler_d1_create"
+
+# Bucket R2 (fichiers / photos)
+[[r2_buckets]]
+binding = "BUCKET_FICHIERS"
+bucket_name = "m2gdp-g6-don-fichiers"
+
+# Secrets à définir via `wrangler secret put` (JAMAIS en clair ici) :
+#   FIREBASE_SERVICE_ACCOUNT   -> contenu de la service account key
+#   FIREBASE_API_KEY

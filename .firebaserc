@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "projet-bon-debarras"
+  },
+  "targets": {
+    "projet-bon-debarras": {
+      "hosting": {
+        "landing": ["projet-bon-debarras"],
+        "app": ["projet-bon-debarras-app"]
+      }
+    }
+  }
+}
