@@ -62,7 +62,22 @@ export async function finaliserConnexion(email) {
   const adresse = email || emailEnAttente();
   if (!adresse) throw new Error('EMAIL_MANQUANT');
 
-  await signInWithEmailLink(auth, adresse, window.location.href);
+  try {
+    await signInWithEmailLink(auth, adresse, window.location.href);
+  } catch (erreur) {
+    // Un lien perime ou deja consomme n'est pas une panne : c'est un cas
+    // nominal du parcours, qui merite son propre ecran plutot qu'un message
+    // technique. On le distingue ici pour que l'appelant puisse l'aiguiller.
+    if (
+      erreur.code === 'auth/expired-action-code' ||
+      erreur.code === 'auth/invalid-action-code'
+    ) {
+      const e = new Error('LIEN_INVALIDE');
+      e.expire = erreur.code === 'auth/expired-action-code';
+      throw e;
+    }
+    throw erreur;
+  }
 
   try {
     window.localStorage.removeItem(CLE_EMAIL);

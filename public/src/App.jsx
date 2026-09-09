@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label.jsx';
 import Connexion from '@/ecrans/Connexion.jsx';
 import Inscription from '@/ecrans/Inscription.jsx';
 import Accueil from '@/ecrans/Accueil.jsx';
+import LienInvalide from '@/ecrans/LienInvalide.jsx';
 import { chargerProfil } from '@/lib/api.js';
 import { estRetourDeLien, finaliserConnexion, surChangementAuth } from '@/lib/auth.js';
 
@@ -26,6 +27,7 @@ export default function App() {
   const [profil, setProfil] = useState(undefined);
   const [emailRedemande, setEmailRedemande] = useState(false);
   const [saisieEmail, setSaisieEmail] = useState('');
+  const [lienInvalide, setLienInvalide] = useState(null); // { expire: bool }
   const [erreur, setErreur] = useState(null);
 
   // 1. Retour de lien magique : a traiter avant tout le reste.
@@ -33,6 +35,7 @@ export default function App() {
     if (!estRetourDeLien()) return;
     finaliserConnexion().catch((e) => {
       if (e.message === 'EMAIL_MANQUANT') setEmailRedemande(true);
+      else if (e.message === 'LIEN_INVALIDE') setLienInvalide({ expire: e.expire });
       else setErreur(e.message);
     });
   }, []);
@@ -56,8 +59,13 @@ export default function App() {
     try {
       await finaliserConnexion(saisieEmail.trim().toLowerCase());
       setEmailRedemande(false);
-    } catch {
-      setErreur('Ce lien ne correspond pas à cette adresse, ou il a déjà servi.');
+    } catch (e) {
+      if (e.message === 'LIEN_INVALIDE') {
+        setEmailRedemande(false);
+        setLienInvalide({ expire: e.expire });
+      } else {
+        setErreur('Ce lien ne correspond pas à cette adresse.');
+      }
     }
   }
 
@@ -76,8 +84,11 @@ export default function App() {
           </p>
         )}
 
-        {/* Lien ouvert sur un autre appareil que celui de la demande. */}
-        {emailRedemande ? (
+        {/* Lien perime ou deja consomme : cas nominal, ecran dedie. */}
+        {lienInvalide ? (
+          <LienInvalide expire={lienInvalide.expire} />
+        ) : /* Lien ouvert sur un autre appareil que celui de la demande. */
+        emailRedemande ? (
           <form onSubmit={confirmerEmail} className="space-y-4">
             <h1 className="text-2xl font-semibold tracking-tight">Confirmez votre e-mail</h1>
             <p className="text-sm text-muted-foreground">
