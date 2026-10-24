@@ -1,55 +1,70 @@
 /**
- * Connexion sans mot de passe, par lien magique (Firebase Auth).
+ * Connexion sans mot de passe, par lien magique (Supabase Auth, region UE).
  *
- * C'est Firebase qui envoie l'email : inutile de monter un SMTP. Le Worker,
- * lui, ne voit que le jeton d'identite resultant.
+ * C'est Supabase qui envoie l'e-mail. Le Worker, lui, ne voit que le jeton
+ * d'acces resultant, qu'il fait verifier par Supabase.
+ *
+ * Flux « implicite » : le lien ramene sur l'app avec la session dans l'URL.
+ * Contrairement au flux PKCE, il fonctionne meme si le lien est ouvert sur un
+ * autre appareil que celui qui l'a demande (demande sur ordinateur, ouverture
+ * sur telephone).
  */
-import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  isSignInWithEmailLink,
-  onAuthStateChanged,
-  sendSignInLinkToEmail,
-  signInWithCustomToken,
-  signInWithEmailLink,
-  signOut,
-} from 'firebase/auth';
-import { firebaseConfig } from '@/lib/firebase.js';
+import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_CLE_PUBLIQUE, SUPABASE_URL } from '@/lib/config.js';
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-auth.languageCode = 'fr';
+// Le retour de lien est lu AVANT la creation du client, qui nettoie l'URL des
+// qu'il a recupere la session. Un lien perime arrive avec, dans l'URL :
+// error=access_denied&error_code=otp_expired.
+function lireRetour() {
+  const parametres = new URLSearchParams(
+    `${window.location.hash.replace(/^#/, '')}&${window.location.search.replace(/^\?/, '')}`,
+  );
+  if (parametres.get('access_token')) return { type: 'session' };
+  if (parametres.get('error') || parametres.get('error_code')) {
+    return { type: 'erreur', code: parametres.get('error_code') || parametres.get('error') };
+  }
+  return null;
+}
+const retour = lireRetour();
 
-// En developpement seulement : connexion par jeton personnalise, pour que les
-// tests automatises entrent dans l'app sans ouvrir de boite mail. Le build de
-// production ne contient pas ce code (import.meta.env.DEV y vaut false).
-if (import.meta.env.DEV) {
-  window.__doneoTest = { connecter: (jeton) => signInWithCustomToken(auth, jeton) };
+export const supabase = createClient(SUPABASE_URL, SUPABASE_CLE_PUBLIQUE, {
+  auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true },
+});
+
+// Adresse saisie, gardee pour pre-remplir l'ecran « lien invalide ».
+const CLE_EMAIL = 'doneo.email-en-attente';
+
+/** Messages lisibles pour les refus de Supabase. */
+function traduire(erreur) {
+  const message = erreur?.message || '';
+  if (erreur?.status === 429 || /rate limit|too many/i.test(message)) {
+    return 'Trop de demandes de lien pour le moment. Patientez une minute avant de réessayer.';
+  }
+  if (/invalid.*email|email.*invalid/i.test(message)) return 'Cette adresse e-mail n’est pas valide.';
+  return 'L’envoi du lien a échoué. Réessayez dans un instant.';
 }
 
-// Le lien magique s'ouvre potentiellement dans un autre onglet : Firebase a
-// besoin de retrouver l'adresse saisie au depart. On la garde ici en attendant.
-const CLE_EMAIL = 'don.email-en-attente';
-
-/** Envoie le lien magique a l'adresse indiquee. */
+/** Envoie le lien magique a l'adresse indiquee (cree le compte au besoin). */
 export async function envoyerLienMagique(email) {
-  await sendSignInLinkToEmail(auth, email, {
-    // Le lien ramene sur l'app. Ce domaine doit figurer dans les domaines
-    // autorises de Firebase Auth, sinon le retour est rejete.
-    url: `${window.location.origin}/`,
-    handleCodeInApp: true,
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      // Le lien ramene sur l'app. Cette adresse doit figurer dans les
+      // « Redirect URLs » de Supabase, sinon il ramene sur la « Site URL ».
+      emailRedirectTo: `${window.location.origin}/`,
+      shouldCreateUser: true,
+    },
   });
+  if (error) throw new Error(traduire(error));
   try {
     window.localStorage.setItem(CLE_EMAIL, email);
   } catch {
-    // Navigation privee ou stockage bloque : on redemandera l'email au retour.
+    // Navigation privee ou stockage bloque : sans consequence.
   }
 }
 
 /** L'URL courante est-elle un retour de lien magique ? */
-export function estRetourDeLien() {
-  return isSignInWithEmailLink(auth, window.location.href);
-}
+export const estRetourDeLien = () => retour !== null;
 
 /** Email memorise lors de l'envoi, s'il est encore disponible. */
 export function emailEnAttente() {
@@ -61,47 +76,38 @@ export function emailEnAttente() {
 }
 
 /**
- * Termine la connexion au retour du lien.
- * `email` doit etre fourni si l'appareil qui ouvre le lien n'est pas celui qui
- * a fait la demande (cas classique : demande sur ordinateur, ouverture sur
- * telephone).
+ * Termine la connexion au retour du lien. La session elle-meme est recuperee
+ * par le client Supabase ; on traduit seulement un lien perime ou deja
+ * consomme en une erreur que l'appelant aiguille vers l'ecran dedie — ce
+ * n'est pas une panne, c'est un cas nominal du parcours.
  */
-export async function finaliserConnexion(email) {
-  const adresse = email || emailEnAttente();
-  if (!adresse) throw new Error('EMAIL_MANQUANT');
-
-  try {
-    await signInWithEmailLink(auth, adresse, window.location.href);
-  } catch (erreur) {
-    // Un lien perime ou deja consomme n'est pas une panne : c'est un cas
-    // nominal du parcours, qui merite son propre ecran plutot qu'un message
-    // technique. On le distingue ici pour que l'appelant puisse l'aiguiller.
-    if (
-      erreur.code === 'auth/expired-action-code' ||
-      erreur.code === 'auth/invalid-action-code'
-    ) {
-      const e = new Error('LIEN_INVALIDE');
-      e.expire = erreur.code === 'auth/expired-action-code';
-      throw e;
-    }
-    throw erreur;
+export async function finaliserConnexion() {
+  if (retour?.type === 'erreur') {
+    window.history.replaceState({}, '', `${window.location.origin}/`);
+    const e = new Error('LIEN_INVALIDE');
+    e.expire = retour.code === 'otp_expired';
+    throw e;
   }
-
-  try {
-    window.localStorage.removeItem(CLE_EMAIL);
-  } catch {
-    /* sans importance */
-  }
-
-  // On retire le code a usage unique de la barre d'adresse : il ne doit pas
-  // trainer dans l'historique ni etre rejoue par un rafraichissement.
-  window.history.replaceState({}, '', window.location.origin + '/');
+  await supabase.auth.getSession();
 }
 
-/** Jeton d'identite a presenter au Worker. */
+/** Jeton d'acces a presenter au Worker. */
 export async function jetonIdentite() {
-  return auth.currentUser ? auth.currentUser.getIdToken() : null;
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
 }
 
-export const seDeconnecter = () => signOut(auth);
-export const surChangementAuth = (rappel) => onAuthStateChanged(auth, rappel);
+export const seDeconnecter = () => supabase.auth.signOut();
+
+/** Appelle `rappel(utilisateur | null)` a chaque changement ; renvoie de quoi se desabonner. */
+export function surChangementAuth(rappel) {
+  const { data } = supabase.auth.onAuthStateChange((_evenement, session) => rappel(session?.user ?? null));
+  return () => data.subscription.unsubscribe();
+}
+
+// En developpement seulement : les tests automatises entrent dans l'app en
+// fournissant une session obtenue cote test (avec la cle secrete), sans
+// ouvrir de boite mail. Le build de production ne contient pas ce code.
+if (import.meta.env.DEV) {
+  window.__doneoTest = { connecter: (session) => supabase.auth.setSession(session) };
+}

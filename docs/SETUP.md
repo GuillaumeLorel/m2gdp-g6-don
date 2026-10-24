@@ -6,8 +6,9 @@ Installer le projet, obtenir les accès, travailler à plusieurs et déployer.
 
 ### Ce qui marche sans aucun accès
 
-Le front se lance tout de suite, sans secret : la configuration Firebase côté
-client est publique, et le front appelle le Worker déjà en ligne.
+Le front se lance tout de suite, sans secret : la configuration Supabase côté
+client (adresse du projet, clé publique) est publique, et le front appelle le
+Worker déjà en ligne.
 
 ```bash
 git clone https://github.com/Lucas-ui/m2gdp-g6-don.git
@@ -15,8 +16,8 @@ cd m2gdp-g6-don && git checkout develop
 cd public && npm install && npm run dev
 ```
 
-La connexion par lien magique fonctionne aussi en local : `localhost` fait
-partie des domaines autorisés par Firebase.
+La connexion par lien magique fonctionne aussi en local : `localhost:5173` et
+`localhost:5180` font partie des adresses de retour autorisées par Supabase.
 
 > ⚠️ Il n'y a **qu'un seul environnement**. En local, on lit et on écrit dans
 > la **vraie** base Supabase, celle du site en ligne. Ne pas y créer de
@@ -37,9 +38,9 @@ sans accès Vercel : fusionner dans `main`, puis demander à Guillaume — ou,
 une fois l'application Vercel installée sur le dépôt GitHub, laisser Vercel
 déployer seul à chaque mise à jour de `main` (voir § 6).
 
-La **clé de service Firebase** (JSON) n'est utile que pour lancer le Worker en
-local. Elle se transmet en main propre, jamais par GitHub ni par une
-messagerie de groupe.
+La **clé secrète Supabase** n'est utile que pour lancer le Worker en local, les
+scripts de données ou les tests. Elle se transmet en main propre, jamais par
+GitHub ni par une messagerie de groupe.
 
 ### Lire avant de coder
 
@@ -58,25 +59,12 @@ messagerie de groupe.
 - **Playwright** : `npm init playwright@latest` (dans `/tests`)
 - Un IDE, avec ou sans IA.
 
-## 2. Firebase
+## 2. Firebase (abandonné)
 
-Projet : **`doneo-3561b`** (numéro `134185101825`), sur le forfait **Blaze**
-(l'envoi d'e-mails de connexion dépassait le quota du forfait gratuit).
-
-| Élément | Détail |
-| --- | --- |
-| Authentication | *Email link (passwordless)* |
-| Firestore | **N'est plus utilisé** : les données sont passées sur Supabase (§ 3 bis). Gardé en sauvegarde |
-| Realtime Database | `europe-west1` |
-| Hosting | **N'est plus utilisé** : le front est passé sur Vercel (§ 6). `doneo.web.app` reste en ligne pendant la transition |
-| Clé de service | JSON à la racine, **git-ignoré** |
-
-Config client (publique) : [`public/src/lib/firebase.js`](../public/src/lib/firebase.js).
-
-**Domaines autorisés** (Authentication › Paramètres) : le lien magique ne
-ramène que vers eux. `localhost` et `doneo-app.vercel.app` y figurent ; les
-aperçus de branche Vercel n'y sont pas — Firebase n'accepte pas de joker —,
-donc on ne peut pas s'y connecter.
+Le projet **`doneo-3561b`** n'est plus utilisé : l'authentification et les
+données sont passées sur Supabase (§ 3 bis), le front sur Vercel (§ 6), pour
+rester sur des services hébergés dans l'UE. Il est gardé en sauvegarde ;
+`doneo.web.app` reste en ligne pendant la transition.
 
 ## 3. Cloudflare
 
@@ -87,16 +75,15 @@ Worker en ligne : **https://doneo-api.guillaume-lorel.workers.dev**
 | --- | --- |
 | D1 `doneo-sessions` | région WEUR, `database_id` dans `wrangler.toml` |
 | R2 `doneo-fichiers` | fichiers et photos |
-| Secrets | `FIREBASE_SERVICE_ACCOUNT`, `FIREBASE_API_KEY`, `SUPABASE_SECRET_KEY` |
+| Secrets | `SUPABASE_SECRET_KEY` |
 
-Pour reposer un secret (rotation de clé, nouveau compte), depuis `workers/` — en
-pipant le contenu plutôt qu'en le collant, pour qu'il ne reste pas dans
-l'historique du terminal :
+Pour reposer le secret (rotation de clé), depuis `workers/` — en pipant le
+contenu plutôt qu'en le collant, pour qu'il ne reste pas dans l'historique du
+terminal :
 
 ```bash
-cat ../doneo-3561b-firebase-adminsdk-fbsvc-*.json \
-  | wrangler secret put FIREBASE_SERVICE_ACCOUNT
-printf '%s' "<api-key>" | wrangler secret put FIREBASE_API_KEY
+grep '^SUPABASE_SECRET_KEY=' ../.env.supabase | cut -d= -f2- | tr -d '\r\n' \
+  | wrangler secret put SUPABASE_SECRET_KEY
 ```
 
 Les secrets ne sont jamais relisibles ensuite : `wrangler secret list` ne renvoie
@@ -111,17 +98,26 @@ Notes :
   appeler le Worker, séparées par des virgules ; `*` remplace un segment
   d'adresse, pour les aperçus Vercel. `localhost` est toujours autorisé.
 
-## 3 bis. Supabase (base de données)
+## 3 bis. Supabase (connexion et données)
 
 Projet **`ocapkeuidpuhcsnerkse`** — https://ocapkeuidpuhcsnerkse.supabase.co,
 hébergé en **Irlande** (AWS `eu-west-1`, dans l'UE), Postgres 17.
 
 | Élément | Détail |
 | --- | --- |
-| Tables | `utilisateurs`, `categories`, `associations`, `annonces` — schéma dans [`supabase/migrations/`](../supabase/migrations/) |
+| Authentication | Lien magique (e-mail, sans mot de passe). Le front obtient la session ; le Worker vérifie le jeton auprès de Supabase |
+| Tables | `utilisateurs`, `categories`, `associations`, `annonces` — schéma dans [`supabase/migrations/`](../supabase/migrations/). L'`id` d'un profil est celui du compte de connexion |
 | Accès | **Row Level Security active, sans aucune règle** : la clé publique ne voit rien, seul le Worker (clé secrète) lit et écrit |
-| Clé publique | `sb_publishable_…` — inutile au front tant que l'authentification reste sur Firebase |
+| Clé publique | `sb_publishable_…`, dans [`public/src/lib/config.js`](../public/src/lib/config.js) : ne sert qu'à la connexion |
 | Secrets | Clé secrète `sb_secret_…` et mot de passe de la base, dans `.env.supabase` (git-ignoré) |
+
+Réglages du tableau de bord (Authentication), à reprendre si on recrée le projet :
+
+- **URL Configuration** : *Site URL* `https://doneo-app.vercel.app` ; *Redirect
+  URLs* `https://doneo-app.vercel.app/**`, `http://localhost:5173/**`,
+  `http://localhost:5180/**`. Le lien magique ne ramène que vers ces adresses.
+- **SMTP** : un serveur d'envoi personnalisé (Brevo). Sans lui, Supabase
+  n'envoie le lien qu'aux membres de l'équipe du projet, deux fois par heure.
 
 Créer `.env.supabase` à la racine du dépôt (à demander à Guillaume) :
 
@@ -152,11 +148,8 @@ npm run build    # produit public/dist
 
 Pour tester une route du Worker avant qu'elle soit déployée :
 
-1. Créer `workers/.dev.vars` (git-ignoré) avec les deux secrets du Worker, la
-   clé de service sur une seule ligne et entre apostrophes :
+1. Créer `workers/.dev.vars` (git-ignoré) avec le secret du Worker :
    ```
-   FIREBASE_SERVICE_ACCOUNT='{"type":"service_account",...}'
-   FIREBASE_API_KEY='AIza...'
    SUPABASE_SECRET_KEY='sb_secret_...'
    ```
 2. Lancer le Worker : `cd workers && npx wrangler dev --port 8787`.
@@ -180,9 +173,9 @@ Windows bloque en effet les connexions entrantes vers le Worker local.
    VITE_API_BASE=http://192.168.1.18:5180 npx vite --host 0.0.0.0 --port 5180
    ```
 3. Pour se connecter par lien magique depuis le téléphone, ajouter
-   `192.168.1.18` aux **domaines autorisés** de Firebase Auth (Console Firebase
-   › Authentication › Paramètres). L'adresse change d'un réseau à l'autre :
-   la retirer une fois les tests finis.
+   `http://192.168.1.18:5180/**` aux **Redirect URLs** de Supabase
+   (Authentication › URL Configuration). L'adresse change d'un réseau à
+   l'autre : la retirer une fois les tests finis.
 4. Sur le téléphone : `http://192.168.1.18:5180`.
 
 Particularités liées au fait que l'app vit dans `public/`, pour respecter la

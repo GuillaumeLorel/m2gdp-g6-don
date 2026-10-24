@@ -89,10 +89,10 @@ Voir la skill `verif-infra` pour une vérification complète de la stack.
 
 - **Les secrets du Worker ne sont pas dans le dépôt.** Un `wrangler deploy` les
   conserve, mais recréer le Worker de zéro les perd : il faut alors reposer
-  `FIREBASE_SERVICE_ACCOUNT` et `FIREBASE_API_KEY`.
-- **Ne jamais committer la clé de service.** Elle est ignorée via
-  `*-adminsdk-*.json` dans `.gitignore`.
-- Une nouvelle adresse de front doit être ajoutée aux domaines autorisés de
-  Firebase Auth (sinon les liens magiques sont rejetés) **et** à
+  `SUPABASE_SECRET_KEY` (voir `docs/SETUP.md` § 3).
+- **Ne jamais committer la clé secrète Supabase.** Elle vit dans
+  `.env.supabase` et `workers/.dev.vars`, tous deux git-ignorés.
+- Une nouvelle adresse de front doit être ajoutée aux *Redirect URLs* de
+  Supabase Auth (sinon le lien magique ramène sur la *Site URL*) **et** à
   `ALLOWED_ORIGIN` dans `workers/wrangler.toml` (sinon le Worker refuse ses
   appels).
