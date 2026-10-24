@@ -30,8 +30,8 @@ qu'un lieu approximatif (code postal et ville). Les rôles `offrant` et
 
 | Répertoire   | Contenu                                                        |
 |--------------|----------------------------------------------------------------|
-| `/landing`   | Site vitrine statique (HTML/CSS/img). URL : site.web.app       |
-| `/public`    | Application web frontend (PWA). URL : app.site.web.app         |
+| `/landing`   | Site vitrine statique. https://doneo-vitrine.vercel.app        |
+| `/public`    | Application web frontend (PWA). https://doneo-app.vercel.app   |
 | `/workers`   | Logique métier backend (Cloudflare Workers)                    |
 | `/docs`      | Documentation technique et guides                              |
 | `/design`    | Artefacts UX en HTML (charte graphique, maquettes)             |
@@ -48,7 +48,7 @@ qu'un lieu approximatif (code postal et ville). Les rôles `offrant` et
 - **Données** : Firestore (NoSQL) + Firebase Realtime DB (messages)
 - **Fichiers** : Cloudflare R2
 - **Sessions** : Cloudflare D1 (SQL)
-- **Hébergement** : Firebase Hosting
+- **Hébergement** : Vercel (front et vitrine)
 
 ## Démarrage
 
