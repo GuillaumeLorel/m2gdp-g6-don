@@ -27,10 +27,15 @@ partie des domaines autorisés par Firebase.
 | Accès | Pour quoi | Qui le donne |
 | --- | --- | --- |
 | **GitHub**, collaborateur du dépôt | Pousser des branches, ouvrir des PR | Lucas, propriétaire du dépôt |
-| **Firebase**, rôle Éditeur sur `doneo-3561b` | Déployer le front et la vitrine | Guillaume — Console Firebase › Utilisateurs et autorisations |
 | **Cloudflare**, membre du compte | Déployer le Worker | Guillaume — Dashboard › Manage Account › Members |
 
-Une fois les invitations acceptées : `firebase login` et `wrangler login`.
+Une fois l'invitation acceptée : `wrangler login`.
+
+Le front et la vitrine sont hébergés sur **Vercel**, sur le compte de Guillaume
+(forfait gratuit, qui n'accepte pas de second membre). Pour les mettre en ligne
+sans accès Vercel : fusionner dans `main`, puis demander à Guillaume — ou,
+une fois l'application Vercel installée sur le dépôt GitHub, laisser Vercel
+déployer seul à chaque mise à jour de `main` (voir § 6).
 
 La **clé de service Firebase** (JSON) n'est utile que pour lancer le Worker en
 local. Elle se transmet en main propre, jamais par GitHub ni par une
@@ -48,7 +53,7 @@ messagerie de groupe.
 ## 1. Outils locaux
 
 - **Node.js** (LTS) + npm.
-- **Firebase CLI** : `npm install -g firebase-tools`
+- **Vercel CLI** : `npx vercel` (pas d'installation nécessaire)
 - **Wrangler** (Cloudflare) : `npm install -g wrangler`
 - **Playwright** : `npm init playwright@latest` (dans `/tests`)
 - Un IDE, avec ou sans IA.
@@ -63,18 +68,15 @@ Projet : **`doneo-3561b`** (numéro `134185101825`), sur le forfait **Blaze**
 | Authentication | *Email link (passwordless)* |
 | Firestore | région `eur3` |
 | Realtime Database | `europe-west1` |
-| Hosting — vitrine | https://doneo-vitrine.web.app |
-| Hosting — app | https://doneo.web.app |
+| Hosting | **N'est plus utilisé** : le front est passé sur Vercel (§ 6). `doneo.web.app` reste en ligne pendant la transition |
 | Clé de service | JSON à la racine, **git-ignoré** |
 
 Config client (publique) : [`public/src/lib/firebase.js`](../public/src/lib/firebase.js).
-Les cibles Hosting sont dans [`.firebaserc`](../.firebaserc). Si un poste neuf ne
-les connaît pas :
 
-```bash
-firebase target:apply hosting landing doneo-vitrine
-firebase target:apply hosting app doneo
-```
+**Domaines autorisés** (Authentication › Paramètres) : le lien magique ne
+ramène que vers eux. `localhost` et `doneo-app.vercel.app` y figurent ; les
+aperçus de branche Vercel n'y sont pas — Firebase n'accepte pas de joker —,
+donc on ne peut pas s'y connecter.
 
 ## 3. Cloudflare
 
@@ -105,8 +107,9 @@ Notes :
   déclenche une invite interactive. Déployer *avant* de poser les secrets.
 - Le `binding` suggéré par `wrangler d1 create` est ignoré : on garde
   `DB_SESSIONS`, le nom utilisé dans le code du Worker.
-- `ALLOWED_ORIGIN` est défini dans `wrangler.toml` mais **pas encore lu par le
-  code** : `src/index.js` renvoie toujours `Access-Control-Allow-Origin: *`.
+- `ALLOWED_ORIGIN` (`wrangler.toml`) liste les adresses du front autorisées à
+  appeler le Worker, séparées par des virgules ; `*` remplace un segment
+  d'adresse, pour les aperçus Vercel. `localhost` est toujours autorisé.
 
 ## 4. Application PWA — `public/`
 
@@ -163,7 +166,7 @@ convention du cours (`/public` = App Frontend) :
 - `publicDir` est renommé en **`static/`** — sinon Vite chercherait `public/public`.
   Tout ce qui doit être servi tel quel (manifest, service worker, icônes,
   illustrations) va là.
-- Le build sort dans **`public/dist`**, qui est la cible Hosting `app`.
+- Le build sort dans **`public/dist`**, que Vercel publie (`public/vercel.json`).
   `dist/` est git-ignoré : on ne versionne pas le build.
 
 Côté PWA : `manifest.webmanifest`, icônes 192 et 512 px, et un service worker
@@ -212,14 +215,13 @@ Quand `develop` est stable, on la fusionne dans `main` (par PR `develop` →
 
 ```bash
 git checkout main && git pull
-cd public && npm run build && cd ..
-firebase deploy --only hosting:app
-cd workers && wrangler deploy
+cd workers && npx wrangler deploy && cd ..   # d'abord le Worker
+cd public && npx vercel deploy --prod        # puis le front
 ```
 
 > ⚠️ **Ne jamais déployer depuis une autre branche que `main` à jour.**
-> `firebase deploy` publie le dossier `dist/` de celui qui lance la commande, et
-> `wrangler deploy` son code local : déployer depuis sa branche efface du site
+> `vercel deploy` et `wrangler deploy` publient le code local de celui qui lance
+> la commande : déployer depuis sa branche efface du site
 > en ligne le travail des autres.
 
 Prévenir l'équipe avant un déploiement, pour ne pas déployer à deux.
@@ -233,23 +235,32 @@ Prévenir l'équipe avant un déploiement, pour ne pas déployer à deux.
 
 ## 6. Déploiement — détails
 
-- **Vitrine** : `firebase deploy --only hosting:landing`
-- **App** : `cd public && npm run build` **puis**
-  `firebase deploy --only hosting:app` — sans build, on republie l'ancien `dist/`
-- **Worker backend** : `cd workers && wrangler deploy`
+| Quoi | Où | Commande, depuis `main` à jour |
+| --- | --- | --- |
+| App | https://doneo-app.vercel.app (projet Vercel `doneo`) | `cd public && npx vercel deploy --prod` |
+| Vitrine | https://doneo-vitrine.vercel.app (projet Vercel `doneo-vitrine`) | `cd landing && npx vercel deploy --prod` |
+| Worker | https://doneo-api.guillaume-lorel.workers.dev | `cd workers && npx wrangler deploy` |
 
-Le déploiement Firebase fonctionne aussi **sans `firebase login`** en pointant la
-clé de service, ce qui sert en CI :
+Vercel construit lui-même l'app (`npm run build`, réglages dans
+`public/vercel.json`) : inutile de builder avant. Le dossier `.vercel/` créé
+par `vercel link` relie le dossier au projet ; il est git-ignoré.
 
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="$PWD/doneo-3561b-firebase-adminsdk-*.json"
-firebase deploy --only hosting --project doneo-3561b --non-interactive
-```
+**Hébergement et données** — la demande du 11/10/2026 impose des services
+hébergés en France ou dans l'UE. Vercel ne sert que des fichiers statiques
+(HTML, JS, images) : aucune donnée personnelle n'y transite, elles passent
+toutes par le Worker. La base et l'authentification migrent ensuite vers
+Supabase, en région européenne.
+
+**Déploiement automatique** (à activer) : une fois l'application Vercel
+installée sur le dépôt GitHub — par Lucas, propriétaire —, Vercel déploie
+seul chaque mise à jour de `main` et crée un aperçu pour chaque PR.
 
 Vérifier ensuite que le déploiement a pris :
 
 ```bash
 curl https://doneo-api.guillaume-lorel.workers.dev/api/health
+curl -s -o /dev/null -w "%{http_code}
+" https://doneo-app.vercel.app/recherche
 ```
 
 Réponse attendue : `{"status":"ok","service":"doneo-api","ts":...}`.
