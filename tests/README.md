@@ -36,6 +36,7 @@ appels réseau, sans toucher aux données.
 
 | Fichier | US |
 | --- | --- |
+| `e2e/connexion.spec.js` | Connexion par le lien de l'e-mail ou par le code à 6 chiffres |
 | `e2e/accueil.spec.js` | US-4 — Accueil, menu du bas, derniers objets (#32) |
 | `e2e/illustration-par-defaut.spec.js` | US-12 — Illustration des annonces sans photo (#40) |
 | `e2e/fiche-annonce.spec.js` | US-9 — Fiche d’annonce, adresse jamais exposée (#37) |
