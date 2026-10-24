@@ -119,13 +119,17 @@ Réglages du tableau de bord (Authentication), à reprendre si on recrée le pro
 - **SMTP** : un serveur d'envoi personnalisé. Sans lui, Supabase n'envoie le
   lien qu'aux membres de l'équipe du projet, deux fois par heure.
 - **Emails › Templates** : *Magic Link* reçoit
-  [`supabase/templates/lien-magique.html`](../supabase/templates/lien-magique.html)
-  (objet : « Votre lien de connexion à Donéo »), *Confirm signup* reçoit
-  [`inscription.html`](../supabase/templates/inscription.html) (objet :
-  « Bienvenue sur Donéo : confirmez votre adresse »). Ces modèles sont
-  indispensables : le modèle par défaut met un lien `supabase.co` dans
-  l'e-mail, et le filtre anti-spam de Lyon 2 le rejette (`554 5.7.0 Reject
-  … spam`). Les nôtres pointent sur l'app et ajoutent un code à 6 chiffres.
+  [`supabase/templates/connexion.html`](../supabase/templates/connexion.html)
+  (objet : « Votre code Donéo »), *Confirm signup* reçoit
+  [`inscription.html`](../supabase/templates/inscription.html) (même objet).
+  Ces modèles sont indispensables : ils ne contiennent qu'un **code à 6
+  chiffres, sans lien**. Le filtre anti-spam de Lyon 2 rejette
+  (`554 5.7.0 Reject … spam`) tout e-mail de connexion avec un lien, qu'il
+  pointe sur `supabase.co` ou sur `vercel.app` (essais du 24/10/2026). Éviter
+  aussi le mot « connexion » dans l'objet.
+- **SMTP utilisé** : Gmail (`smtp.gmail.com`, port 587, mot de passe
+  d'application). Avec Brevo, une adresse Gmail comme expéditeur est
+  remplacée par un domaine `brevosend.com` partagé, refusé par Lyon 2.
 
 Créer `.env.supabase` à la racine du dépôt (à demander à Guillaume) :
 
