@@ -50,6 +50,25 @@ export async function ecrireLigne(env, table, id, donnees) {
   return ligne;
 }
 
+/** Vrai si un profil porte deja cette adresse e-mail. */
+export async function profilExistePourEmail(env, email) {
+  const lignes = await appeler(env, `utilisateurs?email=eq.${encodeURIComponent(email)}&select=id&limit=1`);
+  return lignes.length > 0;
+}
+
+/**
+ * Utilisateur connecte, d'apres son jeton d'acces Supabase : Supabase verifie
+ * lui-meme signature et expiration. Renvoie { id, email } ou null.
+ */
+export async function utilisateurDuJeton(env, jeton) {
+  const reponse = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {
+    headers: { apikey: env.SUPABASE_SECRET_KEY, authorization: `Bearer ${jeton}` },
+  });
+  if (!reponse.ok) return null;
+  const { id, email } = await reponse.json();
+  return id ? { id, email } : null;
+}
+
 /**
  * Toute une table. Les volumes du projet — quelques centaines de lignes —
  * tiennent en memoire : on filtre et trie ensuite dans le Worker.

@@ -57,7 +57,7 @@ paths:
       summary: "✉️ L'adresse a-t-elle déjà un compte ? — Déjà en ligne"
       description: >
         Sert uniquement à adapter le message affiché (« lien de connexion » ou
-        « lien pour créer votre compte »). Firebase n'envoie qu'un seul type de
+        « lien pour créer votre compte »). Supabase n'envoie qu'un seul type de
         lien : seul le libellé change.
       requestBody:
         required: true
@@ -83,7 +83,7 @@ paths:
     get:
       tags: ["Profils"]
       summary: "👤 Profil de l'utilisateur connecté — Déjà en ligne"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       responses:
         "200":
           description: "Profil"
@@ -101,7 +101,7 @@ paths:
       description: >
         L'e-mail est repris du jeton vérifié, jamais du corps de la requête :
         sinon n'importe qui pourrait s'enregistrer sous l'adresse d'un autre.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       requestBody:
         required: true
         content:
@@ -240,7 +240,7 @@ paths:
         reçoit un identifiant, puis on le cite dans une annonce ou un message.
         C'est ce qui permet la capture directe depuis l'appareil. Stockage sur
         R2. Un média jamais rattaché au bout de 24 h est purgé.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       requestBody:
         required: true
         content:
@@ -269,7 +269,7 @@ paths:
     delete:
       tags: ["Médias"]
       summary: "🗑️ Supprimer un média non rattaché"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "204": { description: "Média supprimé" }
@@ -297,7 +297,7 @@ paths:
         créneau incohérent — est écarté et listé dans `champsIncertains`.
         Aucune adresse ne doit figurer dans la description générée : le Worker
         vérifie que ni `numeroRue` ni `rue` du profil n'y apparaissent.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       requestBody:
         required: true
         content:
@@ -335,7 +335,7 @@ paths:
         La proximité se calcule sur la **position approchée** de l'annonce, et
         la distance renvoyée est **arrondie à 0,5 km** : une distance exacte,
         interrogée depuis trois points, suffirait à trianguler un domicile.
-      security: [{}, { jetonFirebase: [] }]
+      security: [{}, { jetonSupabase: [] }]
       parameters:
         - name: q
           in: query
@@ -403,7 +403,7 @@ paths:
         se déclare pas soi-même. À la publication, le Worker géocode l'adresse
         complète — coordonnées exactes, privées — et en déduit le quartier
         et la position approchée — décalée de 200 à 500 m —, publics.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       requestBody:
         required: true
         content:
@@ -429,7 +429,7 @@ paths:
         demandeur d'une réservation confirmée la lit sur la réservation,
         l'offrant sur `GET /api/annonces/{id}/edition`. Le schéma public reste
         ainsi une liste blanche, sans champ privé à masquer selon l'appelant.
-      security: [{}, { jetonFirebase: [] }]
+      security: [{}, { jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -448,7 +448,7 @@ paths:
         le report de rendez-vous — et poste un message système
         `creneau_modifie` au détenteur. L'adresse est figée tant qu'une
         réservation est confirmée : le demandeur l'a déjà reçue.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: true
@@ -476,7 +476,7 @@ paths:
         `statutPaiement` passe à `rembourse`, comme pour un désistement — le
         demandeur n'a pas à supporter le retrait de l'offrant. Impossible sur
         une annonce `remis`.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "204": { description: "Annonce retirée" }
@@ -499,7 +499,7 @@ paths:
         Indique aussi quels champs sont figés à l'instant de la lecture, pour
         que l'interface les grise au lieu de laisser l'offrant buter sur un
         409 à l'enregistrement.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -538,7 +538,7 @@ paths:
       tags: ["Favoris"]
       summary: "💜 Ajouter aux favoris"
       description: "Idempotent : ajouter deux fois ne crée pas de doublon."
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "204": { description: "En favori" }
@@ -547,7 +547,7 @@ paths:
     delete:
       tags: ["Favoris"]
       summary: "🤍 Retirer des favoris"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "204": { description: "Retiré des favoris" }
@@ -561,7 +561,7 @@ paths:
         Toutes les annonces mises en favori, y compris celles remises ou
         retirées depuis, pour que l'utilisateur comprenne pourquoi elles ne sont
         plus disponibles.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters:
         - { $ref: "#/components/parameters/Page" }
         - { $ref: "#/components/parameters/ParPage" }
@@ -579,7 +579,7 @@ paths:
     get:
       tags: ["Recherches"]
       summary: "🔖 Mes recherches sauvegardées"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       responses:
         "200":
           description: "Recherches, de la plus récente à la plus ancienne"
@@ -597,7 +597,7 @@ paths:
       tags: ["Recherches"]
       summary: "🔖 Sauvegarder une recherche"
       description: "10 recherches sauvegardées au plus par utilisateur (409 au-delà)."
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       requestBody:
         required: true
         content:
@@ -617,7 +617,7 @@ paths:
     delete:
       tags: ["Recherches"]
       summary: "🗑️ Supprimer une recherche sauvegardée"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "204": { description: "Recherche supprimée" }
@@ -634,7 +634,7 @@ paths:
       description: >
         Public. Les commentaires masqués sont exclus, sauf pour l'offrant de
         l'annonce, qui les voit avec leur statut pour pouvoir les rétablir.
-      security: [{}, { jetonFirebase: [] }]
+      security: [{}, { jetonSupabase: [] }]
       parameters:
         - { $ref: "#/components/parameters/Id" }
         - { $ref: "#/components/parameters/Page" }
@@ -661,7 +661,7 @@ paths:
         Réservé au rôle `demandeur`. L'offrant ne commente pas sa propre
         annonce : il y répond (403). Plus de commentaire sur une annonce
         `remis` ou `retiree` (409).
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: true
@@ -684,7 +684,7 @@ paths:
     delete:
       tags: ["Commentaires"]
       summary: "🗑️ Supprimer son commentaire (auteur)"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "204": { description: "Commentaire supprimé" }
@@ -701,7 +701,7 @@ paths:
         Pas de réponse à la réponse : un fil de discussion public serait un
         forum, classé WON'T. L'interface avertit l'offrant de ne pas y écrire
         son adresse.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: true
@@ -724,7 +724,7 @@ paths:
     post:
       tags: ["Commentaires"]
       summary: "🙈 Masquer ou rétablir un commentaire (offrant de l'annonce)"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: true
@@ -752,7 +752,7 @@ paths:
       tags: ["Conversations"]
       summary: "📨 Mes conversations"
       description: "Triées par activité la plus récente."
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       responses:
         "200":
           description: "Conversations de l'utilisateur, avec leur dernier message"
@@ -775,7 +775,7 @@ paths:
         Crée ou retrouve la conversation entre le demandeur connecté et
         l'offrant de l'annonce — elle est unique par couple (annonce,
         demandeur). Le premier message est facultatif à la création.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: false
@@ -806,7 +806,7 @@ paths:
         Messages des participants et messages système. Un message système porte
         un `evenement` et la `reservationId` concernée : le front en déduit les
         boutons d'action à afficher (payer, refuser, se désister).
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -827,7 +827,7 @@ paths:
     post:
       tags: ["Conversations"]
       summary: "💬 Envoyer un message, avec ou sans pièces jointes"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: true
@@ -870,7 +870,7 @@ paths:
         besoin et reçoit un message système. Aucun paiement à ce stade. La
         vérification de l'état de l'annonce et l'écriture de la réservation se
         font dans une même transaction.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "201":
@@ -897,7 +897,7 @@ paths:
       description: >
         Le détenteur actuel en tête, puis la liste d'attente dans l'ordre.
         Réservé à l'offrant de l'annonce.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -919,7 +919,7 @@ paths:
     get:
       tags: ["Réservations"]
       summary: "🧾 Mes réservations — demandées ou reçues"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters:
         - name: role
           in: query
@@ -954,7 +954,7 @@ paths:
         demandeur, et seulement tant que la réservation est `confirmee`. Elle
         se relit autant que nécessaire — l'ancien contrat ne la renvoyait qu'une
         fois, et le demandeur la perdait en rechargeant la page.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -977,7 +977,7 @@ paths:
         `montantDebite` vaut 0. La réservation passe à `confirmee` — l'annonce
         est déjà `reserve` depuis la proposition — et la réponse contient
         l'adresse exacte.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -1002,7 +1002,7 @@ paths:
         Sur une réservation `proposee`, par son demandeur. Elle passe à
         `annulee` (`refus`) et l'objet est proposé au suivant de la file. Si la
         file est vide, l'annonce redevient `disponible`.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -1029,7 +1029,7 @@ paths:
         file, qui reçoit un message système `objet_propose` : il paie pour
         accepter, ou refuse. Si la file est vide, l'annonce redevient
         `disponible`.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -1053,7 +1053,7 @@ paths:
         Elle passe à `annulee` (`sans_reponse`) et l'objet est proposé au
         premier de la file ; si la file est vide, l'annonce redevient
         `disponible`.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -1075,7 +1075,7 @@ paths:
         Sur une réservation `confirmee`, par l'offrant. Elle passe à `remise`,
         l'annonce à `remis`, et toute la file restante à `annulee`
         (`attribuee_a_autrui`). Les avis s'ouvrent pour les deux parties.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
@@ -1098,7 +1098,7 @@ paths:
         Uniquement sur une réservation `remise`. Le demandeur note
         l'offrant, l'offrant peut noter le demandeur : un avis au plus par
         partie et par réservation.
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: true
@@ -1121,7 +1121,7 @@ paths:
     put:
       tags: ["Avis"]
       summary: "✏️ Modifier son avis"
-      security: [{ jetonFirebase: [] }]
+      security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       requestBody:
         required: true
@@ -1141,14 +1141,14 @@ paths:
 
 components:
   securitySchemes:
-    jetonFirebase:
+    jetonSupabase:
       type: http
       scheme: bearer
       bearerFormat: JWT
       description: >
-        Jeton d'identité Firebase obtenu après connexion par lien magique.
-        Le Worker vérifie signature, expiration, audience et émetteur, puis
-        agit avec la clé de service. Le front n'écrit jamais dans Firestore.
+        Jeton d'accès Supabase obtenu après connexion par lien magique.
+        Le Worker le fait vérifier par Supabase (`GET /auth/v1/user`), puis
+        agit avec la clé secrète. Le front n'écrit jamais dans la base.
 
   parameters:
     Id:
@@ -2016,7 +2016,7 @@ components:
         - $ref: "#/components/schemas/ProfilSoumis"
         - type: object
           properties:
-            id: { type: string, description: "Identifiant Firebase 🔑" }
+            id: { type: string, description: "Identifiant du compte Supabase (UUID) 🔑" }
             email:
               type: string
               format: email

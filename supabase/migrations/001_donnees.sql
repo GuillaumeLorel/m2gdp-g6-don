@@ -7,7 +7,7 @@
 -- Rejouable : chaque instruction ne cree que ce qui n'existe pas encore.
 
 create table if not exists utilisateurs (
-  id                  text primary key,           -- identifiant Firebase Auth
+  id                  text primary key,           -- identifiant du compte Supabase Auth (UUID)
   email               text,
   nom                 text not null,
   prenom              text not null,

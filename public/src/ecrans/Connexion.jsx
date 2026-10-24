@@ -10,7 +10,7 @@ import { statutEmail } from "@/lib/api.js";
  * Ecran 1 des maquettes : « Connexion ».
  *
  * Une seule saisie, pas de mot de passe. On interroge le backend pour savoir si
- * l'adresse a deja un compte : cela ne change rien au lien envoye (Firebase
+ * l'adresse a deja un compte : cela ne change rien au lien envoye (Supabase
  * gere les deux cas), mais cela permet d'annoncer honnetement ce qui va se
  * passer — « lien de connexion » ou « lien d'inscription ».
  */

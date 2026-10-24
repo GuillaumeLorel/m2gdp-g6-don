@@ -2,9 +2,9 @@
  * Worker Cloudflare — Backend Donéo (don caritatif par la vente d'objets)
  *
  * Passerelle entre le front et les services auto-geres. Le front ne touche
- * jamais la base directement : il presente un jeton d'identite Firebase, le
- * Worker le verifie, puis lit et ecrit dans Supabase (Postgres, region UE)
- * avec la cle secrete.
+ * jamais la base directement : il presente son jeton d'acces Supabase, le
+ * Worker le fait verifier, puis lit et ecrit dans Supabase (Postgres, region
+ * UE) avec la cle secrete.
  *
  *   POST /api/auth/statut-email   l'email a-t-il deja un compte ?
  *   GET  /api/profil              profil de l'utilisateur connecte
@@ -17,15 +17,11 @@
  *   GET  /api/health              healthcheck
  */
 
-import { verifierJetonIdentite, jetonService } from './google.js';
-import { ecrireLigne, lireLigne, listerTable } from './base.js';
+import { ecrireLigne, lireLigne, listerTable, profilExistePourEmail, utilisateurDuJeton } from './base.js';
 import { chargerAnnonce, rechercherAnnonces } from './annonces.js';
 import { arbreCategories, associations, versAssociation } from './referentiels.js';
 import { correspond } from './texte.js';
 
-// Firebase ne sert plus qu'a l'authentification : la cle de service n'a besoin
-// que de l'API Identity Toolkit (savoir si un e-mail a deja un compte).
-const SCOPES = ['https://www.googleapis.com/auth/identitytoolkit'];
 
 // Valeurs stockees en base : sans accent ni espace, pour rester stables.
 // Un utilisateur peut cumuler les deux : on donne ce dont on n'a plus besoin
@@ -68,30 +64,11 @@ const json = (donnees, statut, cors) =>
     headers: { 'Content-Type': 'application/json; charset=utf-8', ...cors },
   });
 
-/** Extrait et verifie le jeton d'identite. Renvoie null si absent ou invalide. */
+/** Utilisateur connecte d'apres le jeton presente, ou null si absent ou invalide. */
 async function utilisateurConnecte(request, env) {
   const entete = request.headers.get('Authorization') || '';
   if (!entete.startsWith('Bearer ')) return null;
-  try {
-    return await verifierJetonIdentite(entete.slice(7), env.FIREBASE_PROJECT_ID);
-  } catch {
-    return null;
-  }
-}
-
-/** L'email a-t-il deja un compte Firebase Auth ? */
-async function emailConnu(jeton, projectId, email) {
-  const reponse = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:lookup`,
-    {
-      method: 'POST',
-      headers: { authorization: `Bearer ${jeton}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ email: [email] }),
-    },
-  );
-  if (!reponse.ok) throw new Error(`Identity Toolkit ${reponse.status}`);
-  const { users = [] } = await reponse.json();
-  return users.length > 0;
+  return utilisateurDuJeton(env, entete.slice(7));
 }
 
 /** Valide le profil soumis. Renvoie la liste des erreurs, vide si tout va bien. */
@@ -181,8 +158,9 @@ export default {
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           return json({ erreur: 'Adresse email invalide.' }, 400, cors);
         }
-        const jeton = await jetonService(env.FIREBASE_SERVICE_ACCOUNT, SCOPES);
-        const existe = await emailConnu(jeton, env.FIREBASE_PROJECT_ID, email.toLowerCase());
+        // « A deja un compte » = a deja un profil : c'est ce qui decide si la
+        // personne arrivera sur l'app ou sur le formulaire d'inscription.
+        const existe = await profilExistePourEmail(env, email.toLowerCase());
         return json({ existe }, 200, cors);
       }
 
@@ -194,12 +172,12 @@ export default {
         }
 
         if (request.method === 'GET') {
-          const profil = await lireLigne(env, 'utilisateurs', utilisateur.sub);
+          const profil = await lireLigne(env, 'utilisateurs', utilisateur.id);
           // 404 volontaire : le front s'en sert pour savoir qu'il doit
           // afficher le formulaire d'inscription.
           //
           return profil
-            ? json({ id: utilisateur.sub, ...profil }, 200, cors)
+            ? json({ id: utilisateur.id, ...profil }, 200, cors)
             : json({ erreur: 'Profil inexistant.', inscriptionRequise: true }, 404, cors);
         }
 
@@ -208,9 +186,9 @@ export default {
           const erreurs = validerProfil(corps);
           if (erreurs.length) return json({ erreurs }, 422, cors);
 
-          const existant = await lireLigne(env, 'utilisateurs', utilisateur.sub);
+          const existant = await lireLigne(env, 'utilisateurs', utilisateur.id);
 
-          const profil = await ecrireLigne(env, 'utilisateurs', utilisateur.sub, {
+          const profil = await ecrireLigne(env, 'utilisateurs', utilisateur.id, {
               // L'email vient du jeton verifie, jamais du corps de la requete :
               // sinon n'importe qui pourrait se declarer une autre adresse.
               email: utilisateur.email,
@@ -234,7 +212,7 @@ export default {
               creeLe: existant?.creeLe || new Date().toISOString(),
               misAJourLe: new Date().toISOString(),
           });
-          return json({ id: utilisateur.sub, ...profil }, existant ? 200 : 201, cors);
+          return json({ id: utilisateur.id, ...profil }, existant ? 200 : 201, cors);
         }
 
         return json({ erreur: 'Méthode non autorisée.' }, 405, cors);

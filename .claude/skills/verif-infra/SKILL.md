@@ -1,6 +1,6 @@
 ---
 name: verif-infra
-description: Vérifie de bout en bout que toute la stack serverless du projet Donéo répond — worker Cloudflare, D1, R2, base Supabase, Firebase Auth et les deux sites Vercel. À utiliser avant une démo (J3, J4, J5), après un déploiement, ou quand quelque chose « ne marche plus » sans qu'on sache quel service est en cause.
+description: Vérifie de bout en bout que toute la stack serverless du projet Donéo répond — worker Cloudflare, D1, R2, base et connexion Supabase, et les deux sites Vercel. À utiliser avant une démo (J3, J4, J5), après un déploiement, ou quand quelque chose « ne marche plus » sans qu'on sache quel service est en cause.
 ---
 
 # Vérifier l'infrastructure Donéo
@@ -43,7 +43,7 @@ Vérifier aussi que les secrets sont toujours en place — ils disparaissent si 
 Worker est recréé :
 
 ```bash
-wrangler secret list   # attendu : FIREBASE_SERVICE_ACCOUNT, FIREBASE_API_KEY, SUPABASE_SECRET_KEY
+wrangler secret list   # attendu : SUPABASE_SECRET_KEY
 ```
 
 ## 3. Supabase (base de données)
@@ -59,28 +59,27 @@ curl -s -o /dev/null -w "secrete  -> %{http_code} (200 attendu)
 " -H "apikey: $(grep SUPABASE_SECRET_KEY .env.supabase | cut -d= -f2)" "$U/annonces?select=id&limit=1"
 ```
 
-## 3 bis. Firebase (Auth)
+## 3 bis. Supabase (connexion)
 
-Pas besoin de `firebase login` : la clé de service à la racine du dépôt suffit.
-Signer un JWT RS256 avec `private_key`, l'échanger contre un jeton OAuth sur
-`https://oauth2.googleapis.com/token`, puis appeler les API REST :
+Le Worker doit refuser un jeton absent ou inventé :
 
-- Realtime DB : `PUT`/`GET`/`DELETE` sur
-  `https://doneo-3561b-default-rtdb.europe-west1.firebasedatabase.app/smoke_test.json`
-- Config Auth : `GET https://identitytoolkit.googleapis.com/admin/v2/projects/doneo-3561b/config`
+```bash
+curl -s -o /dev/null -w "sans jeton -> %{http_code} (401 attendu)\n" $W/api/profil
+curl -s -o /dev/null -w "faux jeton -> %{http_code} (401 attendu)\n" \
+  -H "authorization: Bearer faux" $W/api/profil
+```
 
-Scopes nécessaires : `cloud-platform`, `firebase.database`, `userinfo.email`.
+Pour un parcours connecté complet sans boîte mail, lancer les tests Playwright
+(`tests/README.md`) : ils obtiennent une vraie session avec la clé secrète.
 
-**Piège connu** : dans la réponse de la config Auth, un booléen absent vaut
-`false` (l'API omet les valeurs par défaut). On ne peut donc **pas** conclure de
-l'absence de `passwordRequired` que le lien magique est activé. Le seul test
-fiable est un envoi réel via `accounts:sendOobCode` avec
-`requestType: EMAIL_SIGNIN` — qui échoue en `OPERATION_NOT_ALLOWED` si le
-fournisseur est désactivé. Attention : cela envoie un vrai email, demander avant.
+## 4. Envoi des liens
 
-## 4. Domaines autorisés
+Ne se vérifie que dans le tableau de bord Supabase (Authentication) :
 
-Après création d'un site Hosting, son domaine n'est **pas** ajouté
-automatiquement aux domaines autorisés de Firebase Auth. Tout lien magique
-redirigeant vers ce domaine sera rejeté. Vérifier que `authorizedDomains`
-contient bien `doneo-app.vercel.app`.
+- **URL Configuration** : *Site URL* `https://doneo-app.vercel.app`, et
+  `https://doneo-app.vercel.app/**` dans les *Redirect URLs*. Sinon le lien
+  ramène ailleurs que sur l'app.
+- **SMTP** : un serveur personnalisé doit être configuré. Sans lui, Supabase
+  n'envoie qu'aux membres de l'équipe du projet, deux fois par heure.
+
+Un test réel envoie un vrai e-mail : demander avant.
