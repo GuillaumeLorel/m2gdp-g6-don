@@ -1,15 +1,15 @@
 /**
- * Connexion sans mot de passe, par lien magique (Supabase Auth, region UE).
+ * Connexion sans mot de passe, par code a usage unique envoye par e-mail
+ * (Supabase Auth, region UE).
  *
  * C'est Supabase qui envoie l'e-mail. Le Worker, lui, ne voit que le jeton
  * d'acces resultant, qu'il fait verifier par Supabase.
  *
- * Le lien de l'e-mail pointe directement sur l'app, avec un jeton a usage
- * unique (?token_hash=…) que l'app echange contre une session : l'e-mail ne
- * contient aucune adresse supabase.co, domaine que les filtres anti-spam
- * (celui de Lyon 2 notamment) rejettent. Il fonctionne aussi d'un appareil a
- * l'autre. L'e-mail porte en plus un code a 6 chiffres, a saisir dans l'app
- * si le lien est inutilisable. Modeles d'e-mail : supabase/templates/.
+ * L'e-mail ne contient qu'un code a 6 chiffres, sans lien : le filtre
+ * anti-spam de Lyon 2 rejette les e-mails de connexion qui contiennent un
+ * lien, qu'il pointe sur supabase.co ou sur vercel.app (essais du 24/10/2026).
+ * Modeles d'e-mail : supabase/templates/. Les retours de lien restent geres
+ * (?token_hash=… ou #access_token=…), au cas ou un modele en remettrait un.
  */
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_CLE_PUBLIQUE, SUPABASE_URL } from '@/lib/config.js';
@@ -45,18 +45,18 @@ const CLE_EMAIL = 'doneo.email-en-attente';
 function traduire(erreur) {
   const message = erreur?.message || '';
   if (erreur?.status === 429 || /rate limit|too many/i.test(message)) {
-    return 'Trop de demandes de lien pour le moment. Patientez une minute avant de réessayer.';
+    return 'Trop de demandes de code pour le moment. Patientez une minute avant de réessayer.';
   }
   if (/invalid.*email|email.*invalid/i.test(message)) return 'Cette adresse e-mail n’est pas valide.';
-  return 'L’envoi du lien a échoué. Réessayez dans un instant.';
+  return 'L’envoi du code a échoué. Réessayez dans un instant.';
 }
 
-/** Envoie le lien magique a l'adresse indiquee (cree le compte au besoin). */
+/** Envoie le code de connexion a l'adresse indiquee (cree le compte au besoin). */
 export async function envoyerLienMagique(email) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      // Le lien ramene sur l'app ({{ .RedirectTo }} des modeles). Cette
+      // Si un modele remet un lien, il ramene sur l'app ({{ .RedirectTo }}). Cette
       // adresse doit figurer dans les « Redirect URLs » de Supabase, sinon il
       // ramene sur la « Site URL ».
       emailRedirectTo: `${window.location.origin}/`,
@@ -108,7 +108,7 @@ export async function finaliserConnexion() {
   await supabase.auth.getSession();
 }
 
-/** Connexion par le code a 6 chiffres de l'e-mail, si le lien est inutilisable. */
+/** Connexion par le code a 6 chiffres recu par e-mail. */
 export async function verifierCode(email, code) {
   const { error } = await supabase.auth.verifyOtp({ email, token: code.replace(/\s/g, ''), type: 'email' });
   if (!error) return;
