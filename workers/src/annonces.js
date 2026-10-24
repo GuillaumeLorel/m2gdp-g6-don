@@ -3,10 +3,10 @@
  *
  * Les volumes du projet — quelques centaines d'annonces — tiennent en memoire :
  * on lit la collection, puis on filtre, trie et pagine dans le Worker. C'est
- * plus simple que des index composites Firestore, et Firestore ne sait de
+ * plus simple que des requetes SQL dediees pour chaque filtre, et la base ne sait de
  * toute facon pas chercher du texte sans accents.
  */
-import { lireDocument, lireDocuments, listerCollection } from './firestore.js';
+import { lireLigne, lireLignes, listerTable } from './base.js';
 import { associations, categoriesAPlat } from './referentiels.js';
 import { correspond } from './texte.js';
 
@@ -44,11 +44,11 @@ const parId = (liste) => new Map(liste.map((x) => [x.id, x]));
  * Les referentiels viennent du cache ; les offrants sont lus un par un — en
  * un seul appel —, et seulement ceux des annonces renvoyees.
  */
-async function versAnnoncesPubliques(jeton, projectId, annonces) {
+async function versAnnoncesPubliques(env, annonces) {
   const [categories, listeAssociations, utilisateurs] = await Promise.all([
-    categoriesAPlat(jeton, projectId),
-    associations(jeton, projectId),
-    lireDocuments(jeton, projectId, 'utilisateurs', annonces.map((a) => a.offrantId)),
+    categoriesAPlat(env),
+    associations(env),
+    lireLignes(env, 'utilisateurs', annonces.map((a) => a.offrantId)),
   ]);
   const contexte = { categories: parId(categories), associations: parId(listeAssociations), utilisateurs };
   return annonces.map((a) => versAnnoncePublique(a, contexte));
@@ -60,10 +60,10 @@ async function versAnnoncesPubliques(jeton, projectId, annonces) {
  * partage ne doit pas tomber sur une erreur, la fiche dit simplement que
  * l'objet a trouve preneur.
  */
-export async function chargerAnnonce(jeton, projectId, id) {
-  const annonce = await lireDocument(jeton, projectId, 'annonces', id);
+export async function chargerAnnonce(env, id) {
+  const annonce = await lireLigne(env, 'annonces', id);
   if (!annonce || annonce.statut === 'retiree') return null;
-  const [publique] = await versAnnoncesPubliques(jeton, projectId, [{ id, ...annonce }]);
+  const [publique] = await versAnnoncesPubliques(env, [annonce]);
   return publique;
 }
 
@@ -134,7 +134,7 @@ function entier(parametres, nom, defaut, min, max) {
  * GET /api/annonces : filtre, trie et pagine. Renvoie { erreurs } si un
  * parametre est invalide, sinon la page au format PageAnnonces.
  */
-export async function rechercherAnnonces(jeton, projectId, parametres) {
+export async function rechercherAnnonces(env, parametres) {
   const erreurs = [];
   const page = entier(parametres, 'page', 1, 1, 10000);
   const parPage = entier(parametres, 'parPage', 20, 1, 50);
@@ -166,7 +166,7 @@ export async function rechercherAnnonces(jeton, projectId, parametres) {
 
   // Les filtres portent sur toute la collection, d'ou une lecture complete ;
   // les offrants, eux, ne sont lus que pour la page renvoyee.
-  const toutes = await listerCollection(jeton, projectId, 'annonces');
+  const toutes = await listerTable(env, 'annonces');
   const retenues = toutes
     .filter((a) => STATUTS_VISIBLES.includes(a.statut))
     .filter((a) => !categorieId || a.categorieId === categorieId)
@@ -183,6 +183,6 @@ export async function rechercherAnnonces(jeton, projectId, parametres) {
     total: retenues.length,
     page: page.valeur,
     parPage: parPage.valeur,
-    annonces: await versAnnoncesPubliques(jeton, projectId, retenues.slice(debut, debut + parPage.valeur)),
+    annonces: await versAnnoncesPubliques(env, retenues.slice(debut, debut + parPage.valeur)),
   };
 }
