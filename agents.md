@@ -41,7 +41,7 @@ Spécificités métier :
   réalisme des données (90+ annonces, 30+ profils, 10+ conversations, 10+
   réservations).
 - ❌ Non évalué : architecture et qualité du code, sécurité, infra, performance.
-  Le back est délégué à des services auto-gérés (Firebase, Cloudflare, Vercel).
+  Le back est délégué à des services auto-gérés (Supabase, Cloudflare, Vercel).
 
 > Ne pas travailler sur ce qui n'est pas demandé.
 
@@ -50,8 +50,8 @@ Spécificités métier :
 - Frontend **mobile-first**, en **Tailwind CSS v4 + shadcn/ui** (et non Material
   Design : arbitrage acté le 16/09/2026).
 - Données fictives **variées et réalistes**, vocabulaire français sans faute.
-- Le backend (Workers) délègue aux services auto-gérés ; les secrets Firebase
-  restent dans le Worker, jamais exposés côté public.
+- Le backend (Workers) délègue aux services auto-gérés ; la clé secrète Supabase
+  reste dans le Worker, jamais exposés côté public.
 - Front public et vitrine hébergés sur **Vercel** (projets `doneo` et
   `doneo-vitrine`) ; Workers déployés via `wrangler deploy`. Services cloud
   hébergés en France ou dans l'UE (demande du 11/10/2026).
@@ -72,8 +72,9 @@ Détail dans [`docs/SETUP.md`](docs/SETUP.md) § 5.
 
 ## Ce que l'IA ne doit pas faire
 
-- Ne jamais committer de secrets (service account key Firebase, tokens
-  Cloudflare, `.env`). Voir `.gitignore`.
+- Ne jamais committer de secrets (clé secrète Supabase, tokens
+  Cloudflare, `.env`, `.env.supabase`, `.dev.vars`) ni la liste des comptes du
+  cours (`*.local.json`). Voir `.gitignore`.
 - Ne pas gérer les problèmes de production (volumétrie, scalabilité).
 - Ne **jamais** exposer `numeroRue`, `rue` ni `complementAdresse` sur une route
   publique : ces trois champs forment l'adresse exacte, révélée seulement **après

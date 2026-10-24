@@ -21,8 +21,9 @@ description: Commite et pousse selon les conventions de Donéo — branche de ti
 
 - **Ajouter les fichiers un par un** (`git add chemin`), jamais `git add -A` ni
   `git add .`. Sont exclus d'office :
-  - `doneo-3561b-firebase-adminsdk-*.json` (clé de service Firebase) ;
-  - tout `.env`, `.dev.vars`, token Cloudflare ;
+  - `doneo-3561b-firebase-adminsdk-*.json` (ancienne clé de service Firebase) ;
+  - tout `.env`, `.env.supabase`, `.dev.vars`, token Cloudflare ;
+  - `scripts/donnees/*.local.json` (e-mails réels des comptes du cours) ;
   - `.claude/settings.json` et `.claude/settings.local.json` (réglages locaux).
 - **Ne pas toucher au `.gitignore`** sans demande explicite.
 - Relire `git status` et `git diff --staged` avant de commiter.

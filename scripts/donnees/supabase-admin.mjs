@@ -79,6 +79,49 @@ export async function supprimerLot(table, ids) {
   }
 }
 
+/** Supprime toutes les lignes de demonstration (fictif = vrai) d'une table. */
+export async function supprimerFictifs(table) {
+  await appeler(`${table}?fictif=is.true`, { method: 'DELETE' });
+}
+
+/* --- Comptes de connexion (Supabase Auth, API d'administration) --------- */
+
+async function appelerAuth(chemin, options = {}) {
+  const reponse = await fetch(`${URL_SUPABASE}/auth/v1/${chemin}`, {
+    ...options,
+    headers: {
+      apikey: secrets.SUPABASE_SECRET_KEY,
+      authorization: `Bearer ${secrets.SUPABASE_SECRET_KEY}`,
+      'content-type': 'application/json',
+    },
+  });
+  const corps = await reponse.json().catch(() => null);
+  if (!reponse.ok) throw new Error(`Supabase Auth ${reponse.status} : ${JSON.stringify(corps)}`);
+  return corps;
+}
+
+/** Tous les comptes de connexion : une Map e-mail -> compte. */
+export async function listerComptes() {
+  const comptes = new Map();
+  for (let page = 1; ; page++) {
+    const { users } = await appelerAuth(`admin/users?page=${page}&per_page=500`);
+    for (const u of users) comptes.set(u.email?.toLowerCase(), u);
+    if (users.length < 500) return comptes;
+  }
+}
+
+/**
+ * Cree un compte de connexion deja confirme, sans mot de passe : on s'y
+ * connecte par lien magique. Aucun e-mail n'est envoye a la creation.
+ */
+export const creerCompte = (email, id) =>
+  appelerAuth('admin/users', {
+    method: 'POST',
+    body: JSON.stringify({ email, email_confirm: true, ...(id ? { id } : {}) }),
+  });
+
+export const supprimerCompte = (id) => appelerAuth(`admin/users/${id}`, { method: 'DELETE' });
+
 /** Identifiants d'une table. */
 export async function listerIds(table) {
   return (await appeler(`${table}?select=id&limit=10000`)).map((l) => l.id);

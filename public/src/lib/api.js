@@ -1,5 +1,5 @@
 /** Appels au backend Cloudflare Workers. */
-import { API_BASE } from '@/lib/firebase.js';
+import { API_BASE } from '@/lib/config.js';
 import { jetonIdentite } from '@/lib/auth.js';
 
 async function appeler(chemin, options = {}) {

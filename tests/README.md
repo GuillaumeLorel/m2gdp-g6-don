@@ -6,7 +6,8 @@ fichier par US, un test par scénario Gherkin, avec le titre du scénario.
 ## Lancer
 
 Prérequis : le Worker en local (`cd workers && npx wrangler dev --port 8787`,
-voir `docs/SETUP.md`) et la clé de service Firebase à la racine du dépôt.
+voir `docs/SETUP.md`) et la clé secrète Supabase, dans `.env.supabase` à la
+racine du dépôt (ou la variable `SUPABASE_SECRET_KEY`).
 
 ```bash
 cd tests
@@ -20,13 +21,15 @@ npm run rapport                   # rapport HTML, captures des échecs
 
 ## Comment les tests se connectent
 
-Le lien magique passe par une boîte mail : inutilisable dans un test. Les tests
-signent un **jeton personnalisé Firebase** avec la clé de service, et le front le
-consomme par un crochet présent **en développement seulement**
-(`window.__doneoTest`, absent du build de production).
+Le lien magique passe par une boîte mail : inutilisable dans un test. Avec la
+clé secrète, les tests demandent à Supabase un lien sans l'envoyer, l'échangent
+contre une **session**, et le front l'adopte par un crochet présent **en
+développement seulement** (`window.__doneoTest`, absent du build de production).
 
-Ils utilisent les profils de démonstration (`specs/donnees/demo`) : ils existent
-en base mais personne ne peut s'y connecter autrement.
+Ils utilisent deux profils de démonstration (`specs/donnees/demo`) ; leur compte
+de connexion est créé avant les tests (`global-setup.js`). Supabase limite les
+connexions à 30 toutes les 5 minutes : chaque processus de test ouvre une seule
+session par profil et la réutilise.
 
 Les cas d'erreur (service en panne, liste vide) sont simulés en interceptant les
 appels réseau, sans toucher aux données.

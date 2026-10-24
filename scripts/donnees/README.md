@@ -40,11 +40,30 @@ node donnees/charger-donnees-demo.mjs
 node donnees/charger-donnees-demo.mjs --supprimer
 ```
 
-Les profils et annonces de démo ont un identifiant en `demo-` et portent
-`fictif: true`. Les e-mails sont en `@example.org`, un domaine réservé qui ne
-reçoit jamais de message. Ces comptes n'existent pas dans Firebase Auth : ils
-apparaissent dans l'annuaire et comme offrants, mais personne ne peut s'y
-connecter.
+Les profils et annonces de démo portent `fictif: true`. Les annonces ont un
+identifiant en `demo-` ; les profils, un UUID tiré de leur identifiant lisible
+(`identifiants.mjs`), comme les comptes Supabase. Les e-mails sont en
+`@example.org`, un domaine réservé qui ne reçoit jamais de message : personne
+ne s'y connecte, sauf les tests automatisés.
+
+### Comptes du cours
+
+`creer-comptes-cours.mjs` crée un compte pour chaque étudiant du cours et pour
+l'enseignant (mail du 24/10/2026) : compte de connexion déjà confirmé, profil
+rempli avec les deux rôles, adresse et date de naissance tirées au hasard. La
+liste vient de `comptes-cours.local.json`, **git-ignoré** — des e-mails réels
+n'ont rien à faire dans un dépôt public :
+
+```json
+{ "comptes": [{ "prenom": "…", "nom": "…", "email": "…" }] }
+```
+
+```bash
+node donnees/creer-comptes-cours.mjs --simulation
+node donnees/creer-comptes-cours.mjs
+```
+
+Rejouable : un compte ou un profil existant n'est pas modifié.
 
 Les **associations sont réelles** (nom, RNA, siège : annuaire des entreprises),
 les présentations sont des résumés rédigés pour la démo.
