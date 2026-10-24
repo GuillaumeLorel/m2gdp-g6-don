@@ -14,12 +14,12 @@ Chaque test écrit **puis nettoie** ses données. Ne jamais laisser de table
 W="https://doneo-api.guillaume-lorel.workers.dev"
 curl -s -w " -> %{http_code}\n" $W/api/health          # attendu : 200 + status ok
 curl -s -o /dev/null -w "404 attendu -> %{http_code}\n" $W/api/route-bidon
-curl -s -o /dev/null -w "vitrine -> %{http_code}\n" https://doneo-vitrine.web.app
-curl -s -o /dev/null -w "app     -> %{http_code}\n" https://doneo.web.app
+curl -s -o /dev/null -w "vitrine -> %{http_code}\n" https://doneo-vitrine.vercel.app
+curl -s -o /dev/null -w "app     -> %{http_code}\n" https://doneo-app.vercel.app/recherche
 ```
 
-Un **404 sur un site Hosting** signifie presque toujours que `firebase deploy`
-n'a pas été relancé, pas que le site est cassé.
+Un **404 sur l'app** signifie presque toujours que le projet Vercel n'a pas
+été redéployé, ou qu'il manque `public/vercel.json`, pas que le site est cassé.
 
 ## 2. Cloudflare D1 et R2
 
@@ -72,4 +72,4 @@ fournisseur est désactivé. Attention : cela envoie un vrai email, demander ava
 Après création d'un site Hosting, son domaine n'est **pas** ajouté
 automatiquement aux domaines autorisés de Firebase Auth. Tout lien magique
 redirigeant vers ce domaine sera rejeté. Vérifier que `authorizedDomains`
-contient bien `doneo.web.app`.
+contient bien `doneo-app.vercel.app`.

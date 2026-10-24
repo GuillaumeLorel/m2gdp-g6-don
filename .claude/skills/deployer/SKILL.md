@@ -1,6 +1,6 @@
 ---
 name: deployer
-description: Déploie le projet Donéo — le front et la vitrine sur Firebase Hosting, le backend sur Cloudflare Workers. À utiliser dès qu'une modification doit être visible en ligne, avant une démo, ou quand on demande de « mettre en ligne » / « publier » / « déployer » l'application.
+description: Déploie le projet Donéo — le front et la vitrine sur Vercel, le backend sur Cloudflare Workers. À utiliser dès qu'une modification doit être visible en ligne, avant une démo, ou quand on demande de « mettre en ligne » / « publier » / « déployer » l'application.
 ---
 
 # Déployer Donéo
@@ -14,33 +14,33 @@ git checkout main && git pull
 git status   # doit être propre
 ```
 
-**Ne jamais déployer depuis une autre branche.** `firebase deploy` publie le
-`dist/` local et `wrangler deploy` le code local : déployer depuis une branche
+**Ne jamais déployer depuis une autre branche.** `vercel deploy` et
+`wrangler deploy` publient le code local : déployer depuis une branche
 de ticket ou depuis `develop` efface du site en ligne le travail des autres.
 Si ce qui doit partir n'est pas encore dans `main`, le fusionner d'abord
 (`develop` → `main`, par PR), et prévenir l'équipe.
 
-## Front et vitrine (Firebase Hosting)
+## Front et vitrine (Vercel)
 
-**L'app doit être buildée avant d'être déployée.** Firebase publie
-`public/dist`, pas les sources : sauter le build republie silencieusement la
-version précédente.
+Deux projets Vercel, sur le compte de Guillaume (équipe
+`guillaumelorels-projects`). Chaque dossier est relié à son projet par un
+`.vercel/` git-ignoré ; sur un poste neuf : `npx vercel link --project <nom>`.
+
+| Projet | Dossier | Build | URL |
+|-------|---------|-------|-----|
+| `doneo` | `public/` | par Vercel (`public/vercel.json`) | https://doneo-app.vercel.app |
+| `doneo-vitrine` | `landing/` | aucun, HTML statique | https://doneo-vitrine.vercel.app |
 
 ```bash
-cd public && npm run build && cd ..
-export GOOGLE_APPLICATION_CREDENTIALS="$PWD/doneo-3561b-firebase-adminsdk-fbsvc-032b52c11f.json"
-firebase deploy --only hosting --project doneo-3561b --non-interactive
+cd public && npx vercel deploy --prod --yes   # l'app
+cd landing && npx vercel deploy --prod --yes  # la vitrine
 ```
 
-La clé de service évite le `firebase login` interactif — utile en CI et depuis un
-poste non authentifié. Deux cibles sont définies dans `.firebaserc` :
+Vercel construit l'app lui-même : inutile de builder avant. Si le Worker a
+changé aussi, le déployer **d'abord** : le front dépend de ses routes.
 
-| Cible | Dossier publié | Build requis | URL |
-|-------|----------------|--------------|-----|
-| `landing` | `landing/` | non, HTML statique | https://doneo-vitrine.web.app |
-| `app` | `public/dist` | **oui** (`npm run build`) | https://doneo.web.app |
-
-Pour n'en déployer qu'une : `--only hosting:landing` ou `--only hosting:app`.
+Une fois l'application Vercel installée sur le dépôt GitHub (par Lucas),
+chaque mise à jour de `main` se déploie seule : ne plus le faire à la main.
 
 ## Backend (Cloudflare Workers)
 
@@ -67,7 +67,7 @@ de succès :
 
 ```bash
 curl -s https://doneo-api.guillaume-lorel.workers.dev/api/health
-curl -s -o /dev/null -w "%{http_code}\n" https://doneo.web.app
+curl -s -o /dev/null -w "%{http_code}\n" https://doneo-app.vercel.app/recherche
 ```
 
 Voir la skill `verif-infra` pour une vérification complète de la stack.
@@ -79,5 +79,7 @@ Voir la skill `verif-infra` pour une vérification complète de la stack.
   `FIREBASE_SERVICE_ACCOUNT` et `FIREBASE_API_KEY`.
 - **Ne jamais committer la clé de service.** Elle est ignorée via
   `*-adminsdk-*.json` dans `.gitignore`.
-- Un nouveau site Hosting doit être ajouté aux domaines autorisés de Firebase
-  Auth, sinon les liens magiques qui pointent dessus sont rejetés.
+- Une nouvelle adresse de front doit être ajoutée aux domaines autorisés de
+  Firebase Auth (sinon les liens magiques sont rejetés) **et** à
+  `ALLOWED_ORIGIN` dans `workers/wrangler.toml` (sinon le Worker refuse ses
+  appels).

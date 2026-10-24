@@ -7,10 +7,12 @@ compatibility_date = "2026-01-01"
 # demander lequel utiliser, ou deploierait sur le mauvais.
 account_id = "af6e99118eacb7dae1f71bab594ad0ed"
 
-# CORS : restreindre l'acces au worker au domaine du front (voir agents.md).
-# Le code autorise en plus localhost, sinon le dev en local est impossible.
+# CORS : restreindre l'acces au worker aux domaines du front (voir agents.md).
+# Liste separee par des virgules ; « * » remplace un segment d'adresse (apercus
+# Vercel). Le code autorise en plus localhost, sinon le dev en local est
+# impossible. doneo.web.app (Firebase Hosting) reste le temps de la migration.
 [vars]
-ALLOWED_ORIGIN = "https://doneo.web.app"
+ALLOWED_ORIGIN = "https://doneo-app.vercel.app,https://doneo-*-guillaumelorels-projects.vercel.app,https://doneo.web.app"
 # Identifiant du projet Firebase : sert a valider l'audience des jetons.
 # Public, contrairement a la cle de service qui reste dans les secrets.
 FIREBASE_PROJECT_ID = "doneo-3561b"
