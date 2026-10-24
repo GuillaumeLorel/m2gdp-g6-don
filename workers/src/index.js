@@ -39,7 +39,13 @@ const ROLES = ['offrant', 'demandeur'];
  */
 function origineAutorisee(origine, env) {
   if (!origine) return null;
-  if (origine === env.ALLOWED_ORIGIN) return origine;
+  // ALLOWED_ORIGIN est une liste separee par des virgules. Une etoile remplace
+  // un segment d'adresse (lettres, chiffres, tirets) : elle sert aux apercus
+  // que Vercel cree pour chaque branche, dont l'adresse change a chaque fois.
+  const autorisees = (env.ALLOWED_ORIGIN || '').split(',').map((o) => o.trim()).filter(Boolean);
+  const correspond = (modele) =>
+    new RegExp(`^${modele.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[a-z0-9-]+')}$`).test(origine);
+  if (autorisees.some(correspond)) return origine;
   if (/^http:\/\/localhost:\d+$/.test(origine)) return origine;
   if (/^http:\/\/127\.0\.0\.1:\d+$/.test(origine)) return origine;
   return null;
