@@ -432,7 +432,7 @@ Les valeurs chiffrées sont des **propositions à valider** avec le PO.
   simultanées sur une annonce disponible ne doivent pas produire deux
   réservations `proposee` : la lecture du statut de l'annonce, l'écriture de la
   réservation et le passage à `reserve` se font dans une même transaction
-  Firestore.
+  Postgres (Supabase).
 - **Quand une proposition prend fin sans remise** — refus, sans réponse,
   désistement — l'objet passe au suivant ; si la file est vide, l'annonce
   redevient `disponible`.

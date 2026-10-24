@@ -1,6 +1,6 @@
 ---
 name: verif-infra
-description: Vérifie de bout en bout que toute la stack serverless du projet Donéo répond — worker Cloudflare, D1, R2, Firestore, Realtime Database, Auth et les deux sites Hosting. À utiliser avant une démo (J3, J4, J5), après un déploiement, ou quand quelque chose « ne marche plus » sans qu'on sache quel service est en cause.
+description: Vérifie de bout en bout que toute la stack serverless du projet Donéo répond — worker Cloudflare, D1, R2, base Supabase, Firebase Auth et les deux sites Vercel. À utiliser avant une démo (J3, J4, J5), après un déploiement, ou quand quelque chose « ne marche plus » sans qu'on sache quel service est en cause.
 ---
 
 # Vérifier l'infrastructure Donéo
@@ -43,17 +43,28 @@ Vérifier aussi que les secrets sont toujours en place — ils disparaissent si 
 Worker est recréé :
 
 ```bash
-wrangler secret list   # attendu : FIREBASE_SERVICE_ACCOUNT et FIREBASE_API_KEY
+wrangler secret list   # attendu : FIREBASE_SERVICE_ACCOUNT, FIREBASE_API_KEY, SUPABASE_SECRET_KEY
 ```
 
-## 3. Firebase (Firestore, Realtime DB, Auth)
+## 3. Supabase (base de données)
+
+La clé publique doit être **refusée** (RLS sans règle), la clé secrète
+acceptée (lue dans `.env.supabase`) :
+
+```bash
+U=https://ocapkeuidpuhcsnerkse.supabase.co/rest/v1
+curl -s -o /dev/null -w "publique -> %{http_code} (401 attendu)
+" -H "apikey: sb_publishable_mmvcB0QIyEEAJp911GOcUw_xyanIiwK" "$U/annonces?select=id"
+curl -s -o /dev/null -w "secrete  -> %{http_code} (200 attendu)
+" -H "apikey: $(grep SUPABASE_SECRET_KEY .env.supabase | cut -d= -f2)" "$U/annonces?select=id&limit=1"
+```
+
+## 3 bis. Firebase (Auth)
 
 Pas besoin de `firebase login` : la clé de service à la racine du dépôt suffit.
 Signer un JWT RS256 avec `private_key`, l'échanger contre un jeton OAuth sur
 `https://oauth2.googleapis.com/token`, puis appeler les API REST :
 
-- Firestore : `PATCH`/`GET`/`DELETE` sur
-  `https://firestore.googleapis.com/v1/projects/doneo-3561b/databases/(default)/documents/smoke_test/verif`
 - Realtime DB : `PUT`/`GET`/`DELETE` sur
   `https://doneo-3561b-default-rtdb.europe-west1.firebasedatabase.app/smoke_test.json`
 - Config Auth : `GET https://identitytoolkit.googleapis.com/admin/v2/projects/doneo-3561b/config`

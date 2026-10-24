@@ -1,5 +1,5 @@
 /**
- * Charge les associations et les donnees de demonstration dans Firestore.
+ * Charge les associations et les donnees de demonstration dans Supabase.
  *
  *   node scripts/donnees/charger-donnees-demo.mjs --simulation   # n'ecrit rien
  *   node scripts/donnees/charger-donnees-demo.mjs                # charge
@@ -13,7 +13,7 @@
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { RACINE_DEPOT, ecrireLot, listerIds, simulation, supprimerLot } from './firestore-admin.mjs';
+import { RACINE_DEPOT, ecrireLot, listerIds, simulation, supprimerLot } from './supabase-admin.mjs';
 
 const lire = (fichier) => JSON.parse(readFileSync(path.join(RACINE_DEPOT, fichier), 'utf8'));
 

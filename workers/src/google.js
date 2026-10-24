@@ -3,7 +3,7 @@
  *
  * Deux besoins distincts :
  *  - verifier le jeton d'identite presente par un utilisateur (cle publique)
- *  - agir en tant que projet pour lire/ecrire Firestore (cle de service)
+ *  - agir en tant que projet aupres de Firebase Auth (cle de service)
  *
  * Aucune dependance : tout passe par WebCrypto, disponible dans les Workers.
  */
@@ -102,7 +102,7 @@ export async function verifierJetonIdentite(jeton, projectId) {
 
 let cacheAcces = { jeton: null, expire: 0 };
 
-/** Jeton OAuth pour appeler Firestore et l'API Identity Toolkit en admin. */
+/** Jeton OAuth pour appeler l'API Identity Toolkit (Firebase Auth) en admin. */
 export async function jetonService(serviceAccountJson, scopes) {
   if (cacheAcces.jeton && Date.now() < cacheAcces.expire - 60_000) {
     return cacheAcces.jeton;

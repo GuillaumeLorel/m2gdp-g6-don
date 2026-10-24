@@ -1,6 +1,6 @@
 /**
  * Charge le referentiel des categories (specs/donnees/categories.json) dans la
- * collection Firestore `categories`.
+ * table Supabase `categories`.
  *
  *   node scripts/donnees/charger-categories.mjs [--simulation]
  *
@@ -11,7 +11,7 @@
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { RACINE_DEPOT, ecrireLot, listerIds, simulation, supprimerLot } from './firestore-admin.mjs';
+import { RACINE_DEPOT, ecrireLot, listerIds, simulation, supprimerLot } from './supabase-admin.mjs';
 
 const { categories } = JSON.parse(
   readFileSync(path.join(RACINE_DEPOT, 'specs/donnees/categories.json'), 'utf8'),

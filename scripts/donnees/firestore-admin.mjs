@@ -129,5 +129,34 @@ export async function listerIds(collection) {
   return ids;
 }
 
+/** Representation typee Firestore -> objet JS. */
+function depuisChamps(champs = {}) {
+  const objet = {};
+  for (const [nom, enveloppe] of Object.entries(champs)) {
+    const [type, valeur] = Object.entries(enveloppe)[0];
+    if (type === 'integerValue' || type === 'doubleValue') objet[nom] = Number(valeur);
+    else if (type === 'nullValue') objet[nom] = null;
+    else if (type === 'mapValue') objet[nom] = depuisChamps(valeur.fields);
+    else if (type === 'arrayValue') objet[nom] = (valeur.values || []).map((v) => depuisChamps({ v }).v);
+    else objet[nom] = valeur;
+  }
+  return objet;
+}
+
+/** Tous les documents d'une collection, avec leur identifiant. */
+export async function lireCollection(collection) {
+  const documents = [];
+  let pageToken = '';
+  do {
+    const url = new URL(`${BASE}/${collection}`);
+    url.searchParams.set('pageSize', '300');
+    if (pageToken) url.searchParams.set('pageToken', pageToken);
+    const page = await appeler(url);
+    documents.push(...(page.documents || []).map((d) => ({ id: d.name.split('/').pop(), ...depuisChamps(d.fields) })));
+    pageToken = page.nextPageToken || '';
+  } while (pageToken);
+  return documents;
+}
+
 /** Vrai si la ligne de commande demande une simple simulation. */
 export const simulation = process.argv.includes('--simulation');
