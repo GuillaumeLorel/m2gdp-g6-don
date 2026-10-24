@@ -2,9 +2,9 @@
  * Referentiels : categories (et, plus loin, associations).
  *
  * Ils changent rarement : on les garde en memoire quelques minutes, plutot que
- * de relire Firestore a chaque recherche d'annonces qui en a besoin.
+ * de relire la base a chaque recherche d'annonces qui en a besoin.
  */
-import { listerCollection } from './firestore.js';
+import { listerTable } from './base.js';
 
 const DUREE_CACHE = 5 * 60 * 1000;
 const cache = new Map();
@@ -21,13 +21,13 @@ async function enCache(cle, charger) {
  * Categories a plat, telles que stockees : chaque document porte `parentId`
  * (`null` pour une principale). Sert aux index du Worker.
  */
-export function categoriesAPlat(jeton, projectId) {
-  return enCache('categories', () => listerCollection(jeton, projectId, 'categories'));
+export function categoriesAPlat(env) {
+  return enCache('categories', () => listerTable(env, 'categories'));
 }
 
 /** Associations, telles que stockees. */
-export function associations(jeton, projectId) {
-  return enCache('associations', () => listerCollection(jeton, projectId, 'associations'));
+export function associations(env) {
+  return enCache('associations', () => listerTable(env, 'associations'));
 }
 
 /** Champs publics d'une association : liste blanche. */
@@ -53,8 +53,8 @@ const versCategorie = ({ id, libelle, parentId, illustrationUrl, ordre }) => ({
 });
 
 /** Arbre a deux niveaux, trie par `ordre` : la reponse de GET /api/categories. */
-export async function arbreCategories(jeton, projectId) {
-  const toutes = await categoriesAPlat(jeton, projectId);
+export async function arbreCategories(env) {
+  const toutes = await categoriesAPlat(env);
   const parOrdre = (a, b) => (a.ordre ?? 0) - (b.ordre ?? 0);
 
   return toutes

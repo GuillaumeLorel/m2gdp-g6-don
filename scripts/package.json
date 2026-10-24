@@ -9,5 +9,8 @@
   },
   "devDependencies": {
     "lucide-static": "1.53.0"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
   }
 }

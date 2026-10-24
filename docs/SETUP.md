@@ -19,7 +19,7 @@ La connexion par lien magique fonctionne aussi en local : `localhost` fait
 partie des domaines autorisés par Firebase.
 
 > ⚠️ Il n'y a **qu'un seul environnement**. En local, on lit et on écrit dans
-> la **vraie** base Firestore, celle du site en ligne. Ne pas y créer de
+> la **vraie** base Supabase, celle du site en ligne. Ne pas y créer de
 > données de test qu'on ne nettoie pas.
 
 ### Les accès à demander
@@ -66,7 +66,7 @@ Projet : **`doneo-3561b`** (numéro `134185101825`), sur le forfait **Blaze**
 | Élément | Détail |
 | --- | --- |
 | Authentication | *Email link (passwordless)* |
-| Firestore | région `eur3` |
+| Firestore | **N'est plus utilisé** : les données sont passées sur Supabase (§ 3 bis). Gardé en sauvegarde |
 | Realtime Database | `europe-west1` |
 | Hosting | **N'est plus utilisé** : le front est passé sur Vercel (§ 6). `doneo.web.app` reste en ligne pendant la transition |
 | Clé de service | JSON à la racine, **git-ignoré** |
@@ -87,7 +87,7 @@ Worker en ligne : **https://doneo-api.guillaume-lorel.workers.dev**
 | --- | --- |
 | D1 `doneo-sessions` | région WEUR, `database_id` dans `wrangler.toml` |
 | R2 `doneo-fichiers` | fichiers et photos |
-| Secrets | `FIREBASE_SERVICE_ACCOUNT` + `FIREBASE_API_KEY` |
+| Secrets | `FIREBASE_SERVICE_ACCOUNT`, `FIREBASE_API_KEY`, `SUPABASE_SECRET_KEY` |
 
 Pour reposer un secret (rotation de clé, nouveau compte), depuis `workers/` — en
 pipant le contenu plutôt qu'en le collant, pour qu'il ne reste pas dans
@@ -111,6 +111,30 @@ Notes :
   appeler le Worker, séparées par des virgules ; `*` remplace un segment
   d'adresse, pour les aperçus Vercel. `localhost` est toujours autorisé.
 
+## 3 bis. Supabase (base de données)
+
+Projet **`ocapkeuidpuhcsnerkse`** — https://ocapkeuidpuhcsnerkse.supabase.co,
+hébergé en **Irlande** (AWS `eu-west-1`, dans l'UE), Postgres 17.
+
+| Élément | Détail |
+| --- | --- |
+| Tables | `utilisateurs`, `categories`, `associations`, `annonces` — schéma dans [`supabase/migrations/`](../supabase/migrations/) |
+| Accès | **Row Level Security active, sans aucune règle** : la clé publique ne voit rien, seul le Worker (clé secrète) lit et écrit |
+| Clé publique | `sb_publishable_…` — inutile au front tant que l'authentification reste sur Firebase |
+| Secrets | Clé secrète `sb_secret_…` et mot de passe de la base, dans `.env.supabase` (git-ignoré) |
+
+Créer `.env.supabase` à la racine du dépôt (à demander à Guillaume) :
+
+```
+SUPABASE_SECRET_KEY=sb_secret_...
+SUPABASE_DB_PASSWORD=...
+```
+
+Il sert aux scripts de `scripts/donnees/` (migrations, chargements). Le
+Worker en ligne a sa propre copie de la clé (`wrangler secret put
+SUPABASE_SECRET_KEY`). La base ne se joint qu'en IPv6 en direct : les scripts
+passent par le pooler IPv4 (`aws-0-eu-west-1.pooler.supabase.com`).
+
 ## 4. Application PWA — `public/`
 
 Vite + React 19 + **Tailwind CSS v4 + shadcn/ui**, en **JavaScript** (pas
@@ -133,13 +157,14 @@ Pour tester une route du Worker avant qu'elle soit déployée :
    ```
    FIREBASE_SERVICE_ACCOUNT='{"type":"service_account",...}'
    FIREBASE_API_KEY='AIza...'
+   SUPABASE_SECRET_KEY='sb_secret_...'
    ```
 2. Lancer le Worker : `cd workers && npx wrangler dev --port 8787`.
 3. Créer `public/.env.development.local` (git-ignoré) :
    `VITE_API_BASE=http://localhost:8787`, puis relancer `npm run dev`.
 
 Sans ce fichier, le front local appelle le Worker **en ligne**. Le Worker local
-lit et écrit la **vraie** base Firestore.
+lit et écrit la **vraie** base Supabase.
 
 ### Tester sur un téléphone (même Wi-Fi)
 

@@ -45,7 +45,7 @@ qu'un lieu approximatif (code postal et ville). Les rôles `offrant` et
   Design), LeafletJS (carte), Google Places API (géolocalisation)
 - **Backend** : Cloudflare Workers (logique métier)
 - **Auth** : Firebase Authentication (lien magique, sans mot de passe)
-- **Données** : Firestore (NoSQL) + Firebase Realtime DB (messages)
+- **Données** : Supabase Postgres (région UE, `eu-west-1`), via le Worker
 - **Fichiers** : Cloudflare R2
 - **Sessions** : Cloudflare D1 (SQL)
 - **Hébergement** : Vercel (front et vitrine)

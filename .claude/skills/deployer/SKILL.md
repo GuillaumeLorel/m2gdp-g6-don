@@ -36,6 +36,19 @@ cd public && npx vercel deploy --prod --yes   # l'app
 cd landing && npx vercel deploy --prod --yes  # la vitrine
 ```
 
+**Déploiement « Blocked »** : Vercel (forfait gratuit) refuse de déployer un
+commit dont l'auteur n'est pas reconnu comme titulaire du compte. C'est le cas
+des commits de fusion créés par GitHub, signés `…@users.noreply.github.com`.
+Contournement : déployer le contenu de `main` sans ses métadonnées Git.
+
+```bash
+git checkout main && git pull
+D=$(mktemp -d) && git archive main public landing | tar -x -C "$D"
+cp -r public/.vercel "$D/public/" && cp -r landing/.vercel "$D/landing/"
+(cd "$D/public" && npx vercel deploy --prod --yes)
+(cd "$D/landing" && npx vercel deploy --prod --yes)
+```
+
 Vercel construit l'app lui-même : inutile de builder avant. Si le Worker a
 changé aussi, le déployer **d'abord** : le front dépend de ses routes.
 
