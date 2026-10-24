@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F7F2FC;font-family:Arial,Helvetica,sans-serif;color:#2F4F5C;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F7F2FC;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:16px;padding:32px 28px;">
+        <tr><td style="font-size:26px;font-weight:bold;color:#8538C6;padding-bottom:24px;">Donéo</td></tr>
+        <tr><td style="font-size:20px;font-weight:bold;padding-bottom:12px;">Bienvenue sur Donéo</td></tr>
+        <tr><td style="font-size:15px;line-height:1.6;padding-bottom:24px;">
+          Bonjour,<br>
+          vous avez demandé à créer un compte Donéo avec l’adresse <strong>{{ .Email }}</strong>.
+          Cliquez sur le bouton ci-dessous : aucun mot de passe n’est nécessaire.
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:24px;">
+          <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email" style="display:inline-block;background:#9B4DDB;color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;padding:14px 28px;border-radius:999px;">Créer mon compte</a>
+        </td></tr>
+        <tr><td style="font-size:15px;line-height:1.6;padding-bottom:8px;">
+          Le bouton ne fonctionne pas ? Saisissez ce code dans Donéo :
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:24px;">
+          <span style="display:inline-block;background:#E7D6F5;color:#2F4F5C;font-size:26px;font-weight:bold;letter-spacing:6px;padding:10px 20px;border-radius:12px;">{{ .Token }}</span>
+        </td></tr>
+        <tr><td style="font-size:13px;line-height:1.6;color:#5B7480;">
+          Le lien et le code ne servent qu’une fois et expirent au bout d’une heure.
+          Si vous n’êtes pas à l’origine de cette demande, ignorez simplement cet e-mail.
+        </td></tr>
+      </table>
+      <p style="font-size:12px;color:#5B7480;margin:16px 0 0;">Donéo — donner une seconde vie aux objets, au profit d’une association.</p>
+    </td></tr>
+  </table>
+</body>
+</html>

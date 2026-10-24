@@ -4,21 +4,28 @@
  * C'est Supabase qui envoie l'e-mail. Le Worker, lui, ne voit que le jeton
  * d'acces resultant, qu'il fait verifier par Supabase.
  *
- * Flux « implicite » : le lien ramene sur l'app avec la session dans l'URL.
- * Contrairement au flux PKCE, il fonctionne meme si le lien est ouvert sur un
- * autre appareil que celui qui l'a demande (demande sur ordinateur, ouverture
- * sur telephone).
+ * Le lien de l'e-mail pointe directement sur l'app, avec un jeton a usage
+ * unique (?token_hash=…) que l'app echange contre une session : l'e-mail ne
+ * contient aucune adresse supabase.co, domaine que les filtres anti-spam
+ * (celui de Lyon 2 notamment) rejettent. Il fonctionne aussi d'un appareil a
+ * l'autre. L'e-mail porte en plus un code a 6 chiffres, a saisir dans l'app
+ * si le lien est inutilisable. Modeles d'e-mail : supabase/templates/.
  */
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_CLE_PUBLIQUE, SUPABASE_URL } from '@/lib/config.js';
 
 // Le retour de lien est lu AVANT la creation du client, qui nettoie l'URL des
-// qu'il a recupere la session. Un lien perime arrive avec, dans l'URL :
-// error=access_denied&error_code=otp_expired.
+// qu'il a recupere la session. Trois formes : le jeton de nos modeles
+// (?token_hash=…&type=email) ; la session deja ouverte (#access_token=…) si
+// l'e-mail suit encore le modele par defaut de Supabase ; une erreur
+// (error_code=otp_expired pour un lien perime).
 function lireRetour() {
   const parametres = new URLSearchParams(
     `${window.location.hash.replace(/^#/, '')}&${window.location.search.replace(/^\?/, '')}`,
   );
+  if (parametres.get('token_hash')) {
+    return { type: 'jeton', jeton: parametres.get('token_hash'), typeOtp: parametres.get('type') || 'email' };
+  }
   if (parametres.get('access_token')) return { type: 'session' };
   if (parametres.get('error') || parametres.get('error_code')) {
     return { type: 'erreur', code: parametres.get('error_code') || parametres.get('error') };
@@ -49,8 +56,9 @@ export async function envoyerLienMagique(email) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      // Le lien ramene sur l'app. Cette adresse doit figurer dans les
-      // « Redirect URLs » de Supabase, sinon il ramene sur la « Site URL ».
+      // Le lien ramene sur l'app ({{ .RedirectTo }} des modeles). Cette
+      // adresse doit figurer dans les « Redirect URLs » de Supabase, sinon il
+      // ramene sur la « Site URL ».
       emailRedirectTo: `${window.location.origin}/`,
       shouldCreateUser: true,
     },
@@ -82,13 +90,30 @@ export function emailEnAttente() {
  * n'est pas une panne, c'est un cas nominal du parcours.
  */
 export async function finaliserConnexion() {
+  const lienInvalide = (code) => {
+    const e = new Error('LIEN_INVALIDE');
+    e.expire = code === 'otp_expired';
+    return e;
+  };
   if (retour?.type === 'erreur') {
     window.history.replaceState({}, '', `${window.location.origin}/`);
-    const e = new Error('LIEN_INVALIDE');
-    e.expire = retour.code === 'otp_expired';
-    throw e;
+    throw lienInvalide(retour.code);
+  }
+  if (retour?.type === 'jeton') {
+    window.history.replaceState({}, '', `${window.location.origin}/`);
+    const { error } = await supabase.auth.verifyOtp({ token_hash: retour.jeton, type: retour.typeOtp });
+    if (error) throw lienInvalide(error.code);
+    return;
   }
   await supabase.auth.getSession();
+}
+
+/** Connexion par le code a 6 chiffres de l'e-mail, si le lien est inutilisable. */
+export async function verifierCode(email, code) {
+  const { error } = await supabase.auth.verifyOtp({ email, token: code.replace(/\s/g, ''), type: 'email' });
+  if (!error) return;
+  if (error.status === 429) throw new Error(traduire(error));
+  throw new Error('Ce code est incorrect ou a expiré. Vérifiez-le, ou demandez un nouvel e-mail.');
 }
 
 /** Jeton d'acces a presenter au Worker. */

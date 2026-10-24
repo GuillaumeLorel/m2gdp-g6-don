@@ -3,7 +3,7 @@ import { Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import Champ from "@/components/Champ.jsx";
 import Logo from "@/components/Logo.jsx";
-import { envoyerLienMagique } from "@/lib/auth.js";
+import { envoyerLienMagique, verifierCode } from "@/lib/auth.js";
 import { statutEmail } from "@/lib/api.js";
 
 /**
@@ -19,6 +19,23 @@ export default function Connexion() {
   const [etat, setEtat] = useState("saisie"); // saisie | envoi | envoye
   const [dejaInscrit, setDejaInscrit] = useState(false);
   const [erreur, setErreur] = useState(null);
+  const [code, setCode] = useState("");
+  const [verification, setVerification] = useState(false);
+  const [erreurCode, setErreurCode] = useState(null);
+
+  // Une fois le code accepte, la session s'ouvre et App bascule d'elle-meme
+  // sur l'accueil : rien d'autre a faire ici.
+  async function validerCode(evenement) {
+    evenement.preventDefault();
+    setErreurCode(null);
+    setVerification(true);
+    try {
+      await verifierCode(email.trim().toLowerCase(), code);
+    } catch (e) {
+      setErreurCode(e.message);
+      setVerification(false);
+    }
+  }
 
   async function soumettre(evenement) {
     evenement.preventDefault();
@@ -54,8 +71,8 @@ export default function Connexion() {
           <h1 className="doneo-titre mt-7 text-3xl">Consultez vos e-mails</h1>
           <p className="mt-2.5 max-w-76 text-[0.95rem] leading-6 text-muted-foreground">
             {dejaInscrit
-              ? "Un lien de connexion vient d’être envoyé à "
-              : "Un lien pour créer votre compte vient d’être envoyé à "}
+              ? "Un lien de connexion et un code viennent d’être envoyés à "
+              : "Un lien pour créer votre compte et un code viennent d’être envoyés à "}
             <strong className="font-semibold text-foreground">{email}</strong>.
           </p>
         </div>
@@ -73,12 +90,45 @@ export default function Connexion() {
           </p>
         </div>
 
-        <div className="mt-auto pt-8">
+        {/* Repli si le lien ne s'ouvre pas : l'e-mail contient aussi un code. */}
+        <form onSubmit={validerCode} className="mt-6 space-y-3" noValidate>
+          <Champ
+            id="code"
+            etiquette="Ou saisissez le code reçu"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="123456"
+            maxLength={10}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            aria-invalid={erreurCode ? "true" : undefined}
+          />
+          {erreurCode && (
+            <p role="alert" className="text-sm text-destructive">
+              {erreurCode}
+            </p>
+          )}
+          <Button
+            type="submit"
+            variant="doneo"
+            size="pilule"
+            className="w-full"
+            disabled={verification || code.replace(/\s/g, "").length < 6}>
+            {verification && <Loader2 className="size-5 animate-spin" aria-hidden="true" />}
+            {verification ? "Vérification…" : "Valider le code"}
+          </Button>
+        </form>
+
+        <div className="mt-auto pt-6">
           <Button
             variant="doneoSecondaire"
             size="pilule"
             className="w-full"
-            onClick={() => setEtat("saisie")}>
+            onClick={() => {
+              setCode("");
+              setErreurCode(null);
+              setEtat("saisie");
+            }}>
             <Heart className="size-5" aria-hidden="true" />
             Utiliser une autre adresse
           </Button>

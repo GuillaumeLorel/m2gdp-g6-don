@@ -91,6 +91,18 @@ async function ouvrirSession(idLisible) {
   }
 }
 
+/**
+ * Ce que contiendrait l'e-mail de connexion : le jeton du lien et le code a
+ * 6 chiffres. Un nouvel appel invalide les precedents.
+ */
+export async function contenuEmailDeConnexion(idLisible) {
+  const lien = await auth('admin/generate_link', { type: 'magiclink', email: emailDe(idLisible) });
+  if (!lien.corps.hashed_token) throw new Error(`Jeton de test : ${JSON.stringify(lien.corps)}`);
+  return { jeton: lien.corps.hashed_token, code: lien.corps.email_otp };
+}
+
+export { emailDe };
+
 async function sessionDepuisLien(email) {
   const lien = await auth('admin/generate_link', { type: 'magiclink', email });
   if (!lien.corps.hashed_token) throw new Error(`Jeton de test : ${JSON.stringify(lien.corps)}`);
@@ -107,6 +119,9 @@ async function sessionDepuisLien(email) {
 export const PROFILS = {
   offrantEtDemandeur: 'demo-u-005', // Bastien, 8 annonces
   demandeurSeul: 'demo-u-001', // Fatou, aucune annonce
+  // Reserve a connexion.spec.js : un lien demande pour un profil invalide
+  // les precedents, il ne faut pas gener les sessions des autres tests.
+  connexion: 'demo-u-002',
 };
 
 /** Ouvre l'app connecte sous ce profil, sur le chemin demande. */
