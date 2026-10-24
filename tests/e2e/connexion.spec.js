@@ -1,8 +1,8 @@
 /**
- * Connexion par e-mail : le lien pointe sur l'app (?token_hash=…), sans
- * adresse supabase.co que les filtres anti-spam rejettent, et un code a
- * 6 chiffres sert de repli. Les tests s'enchainent : chaque nouvel e-mail
- * invalide le precedent.
+ * Connexion par e-mail : l'e-mail porte un code a 6 chiffres, sans lien (le
+ * filtre anti-spam de Lyon 2 rejette les liens). Le retour par lien
+ * (?token_hash=…) reste gere, au cas ou un modele en remettrait un. Les tests
+ * s'enchainent : chaque nouvel e-mail invalide le precedent.
  */
 import { expect, test } from '@playwright/test';
 import { PROFILS, contenuEmailDeConnexion, emailDe } from './outils.js';
@@ -16,7 +16,7 @@ async function demanderUnLien(page) {
   await page.route('**/auth/v1/otp**', (route) => route.fulfill({ status: 200, json: {} }));
   await page.goto('/');
   await page.getByLabel('Adresse e-mail').fill(emailDe(PROFILS.connexion));
-  await page.getByRole('button', { name: 'Recevoir le lien magique' }).click();
+  await page.getByRole('button', { name: 'Recevoir mon code' }).click();
   await expect(page.getByRole('heading', { name: 'Consultez vos e-mails' })).toBeVisible();
 }
 
@@ -44,7 +44,7 @@ test('Un lien déjà utilisé mène à l’écran dédié', async ({ page, brows
 test('Le code à 6 chiffres ouvre la session', async ({ page }) => {
   await demanderUnLien(page);
   const { code } = await contenuEmailDeConnexion(PROFILS.connexion);
-  await page.getByLabel('Ou saisissez le code reçu').fill(code);
+  await page.getByLabel('Code reçu par e-mail').fill(code);
   await page.getByRole('button', { name: 'Valider le code' }).click();
   await expect(navigation(page)).toBeVisible();
 });
@@ -52,7 +52,7 @@ test('Le code à 6 chiffres ouvre la session', async ({ page }) => {
 test('Un code faux est refusé avec un message clair', async ({ page }) => {
   await demanderUnLien(page);
   await contenuEmailDeConnexion(PROFILS.connexion);
-  await page.getByLabel('Ou saisissez le code reçu').fill('000000');
+  await page.getByLabel('Code reçu par e-mail').fill('000000');
   await page.getByRole('button', { name: 'Valider le code' }).click();
   await expect(page.getByRole('alert')).toHaveText(/incorrect ou a expiré/);
   await expect(navigation(page)).toHaveCount(0);

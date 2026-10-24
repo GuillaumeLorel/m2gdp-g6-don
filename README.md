@@ -44,7 +44,7 @@ qu'un lieu approximatif (code postal et ville). Les rôles `offrant` et
 - **Frontend** : PWA React, **Tailwind CSS v4 + shadcn/ui** (et non Material
   Design), LeafletJS (carte), Google Places API (géolocalisation)
 - **Backend** : Cloudflare Workers (logique métier)
-- **Auth** : Supabase Auth (lien magique, sans mot de passe, région UE)
+- **Auth** : Supabase Auth (code à usage unique par e-mail, sans mot de passe, région UE)
 - **Données** : Supabase Postgres (région UE, `eu-west-1`), via le Worker
 - **Fichiers** : Cloudflare R2
 - **Sessions** : Cloudflare D1 (SQL)

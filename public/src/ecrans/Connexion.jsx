@@ -9,10 +9,10 @@ import { statutEmail } from "@/lib/api.js";
 /**
  * Ecran 1 des maquettes : « Connexion ».
  *
- * Une seule saisie, pas de mot de passe. On interroge le backend pour savoir si
- * l'adresse a deja un compte : cela ne change rien au lien envoye (Supabase
- * gere les deux cas), mais cela permet d'annoncer honnetement ce qui va se
- * passer — « lien de connexion » ou « lien d'inscription ».
+ * Pas de mot de passe : l'adresse e-mail, puis le code a 6 chiffres recu. On
+ * interroge le backend pour savoir si l'adresse a deja un compte : cela ne
+ * change rien au code envoye (Supabase gere les deux cas), mais cela permet
+ * d'annoncer honnetement ce qui va se passer — connexion ou inscription.
  */
 export default function Connexion() {
   const [email, setEmail] = useState("");
@@ -53,48 +53,40 @@ export default function Connexion() {
     }
   }
 
-  /* Confirmation d'envoi : meme mise en page que l'ecran « Demande envoyee »
-     des maquettes — grande pastille, titre, puis les actions en bas. */
+  /* Code envoye : meme mise en page que l'ecran « Demande envoyee » des
+     maquettes — pastille, titre —, avec la saisie du code juste dessous, et
+     pastille reduite pour que le champ reste visible clavier ouvert. */
   if (etat === "envoye") {
     return (
       <section className="flex flex-1 flex-col">
-        <div className="flex flex-col items-center pt-10 text-center">
-          <div className="doneo-pastille size-38">
+        <div className="flex flex-col items-center pt-6 text-center">
+          <div className="doneo-pastille size-28">
             <img
               src="/illustrations/expression-celebration.svg"
               alt=""
               aria-hidden="true"
-              className="size-28"
+              className="size-20"
             />
           </div>
 
-          <h1 className="doneo-titre mt-7 text-3xl">Consultez vos e-mails</h1>
+          <h1 className="doneo-titre mt-5 text-3xl">
+            Consultez vos <span className="whitespace-nowrap">e-mails</span>
+          </h1>
           <p className="mt-2.5 max-w-76 text-[0.95rem] leading-6 text-muted-foreground">
             {dejaInscrit
-              ? "Un lien de connexion et un code viennent d’être envoyés à "
-              : "Un lien pour créer votre compte et un code viennent d’être envoyés à "}
+              ? "Un code de connexion vient d’être envoyé à "
+              : "Un code pour créer votre compte vient d’être envoyé à "}
             <strong className="font-semibold text-foreground">{email}</strong>.
           </p>
         </div>
 
-        <div className="doneo-carte mt-7 flex items-start gap-3 p-4">
-          <img
-            src="/illustrations/objet-etoile.svg"
-            alt=""
-            aria-hidden="true"
-            className="size-9 shrink-0"
-          />
-          <p className="text-[0.8rem] leading-5 text-muted-foreground">
-            Le lien est valable une heure et ne fonctionne qu’une fois. Pensez à
-            regarder vos indésirables.
-          </p>
-        </div>
-
-        {/* Repli si le lien ne s'ouvre pas : l'e-mail contient aussi un code. */}
+        {/* Pas de lien dans l'e-mail : le filtre anti-spam de Lyon 2 rejette
+            les e-mails qui en contiennent (voir lib/auth.js). */}
         <form onSubmit={validerCode} className="mt-6 space-y-3" noValidate>
           <Champ
             id="code"
-            etiquette="Ou saisissez le code reçu"
+            etiquette="Code reçu par e-mail"
+            autoFocus
             inputMode="numeric"
             autoComplete="one-time-code"
             placeholder="123456"
@@ -118,6 +110,19 @@ export default function Connexion() {
             {verification ? "Vérification…" : "Valider le code"}
           </Button>
         </form>
+
+        <div className="doneo-carte mt-6 flex items-start gap-3 p-4">
+          <img
+            src="/illustrations/objet-etoile.svg"
+            alt=""
+            aria-hidden="true"
+            className="size-9 shrink-0"
+          />
+          <p className="text-[0.8rem] leading-5 text-muted-foreground">
+            Le code est valable une heure et ne sert qu’une fois. Rien reçu ?
+            Regardez vos indésirables.
+          </p>
+        </div>
 
         <div className="mt-auto pt-6">
           <Button
@@ -144,7 +149,7 @@ export default function Connexion() {
 
         <h1 className="doneo-titre mt-4 text-[2rem]">Connexion</h1>
         <p className="mt-2 max-w-68 text-[0.95rem] leading-6 text-muted-foreground">
-          Entrez votre e-mail pour recevoir un lien de connexion.
+          Entrez votre e-mail pour recevoir un code de connexion.
         </p>
 
         <img
@@ -191,7 +196,7 @@ export default function Connexion() {
           ) : (
             <Heart className="size-5 fill-current" aria-hidden="true" />
           )}
-          {etat === "envoi" ? "Envoi en cours…" : "Recevoir le lien magique"}
+          {etat === "envoi" ? "Envoi en cours…" : "Recevoir mon code"}
         </Button>
 
         <p className="text-center text-[0.8rem] text-muted-foreground">
