@@ -40,7 +40,10 @@ node donnees/charger-donnees-demo.mjs
 node donnees/charger-donnees-demo.mjs --supprimer
 ```
 
-Les profils et annonces de démo portent `fictif: true`. Les annonces ont un
+Les profils et annonces de démo portent `fictif: true`. 44 annonces ont une
+photo (`specs/donnees/demo/photos.json`, crédits dans `CREDITS-PHOTOS.md`),
+envoyée dans Supabase Storage ; les autres gardent l’illustration de leur
+catégorie. Les annonces ont un
 identifiant en `demo-` ; les profils, un UUID tiré de leur identifiant lisible
 (`identifiants.mjs`), comme les comptes Supabase. Les e-mails sont en
 `@example.org`, un domaine réservé qui ne reçoit jamais de message : personne
