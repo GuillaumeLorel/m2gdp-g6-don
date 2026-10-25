@@ -5,7 +5,23 @@ description: Déploie le projet Donéo — le front et la vitrine sur Vercel, le
 
 # Déployer Donéo
 
-Deux cibles indépendantes. Ne déployer que celle qui a changé.
+## Normalement : fusionner dans `main`, rien d'autre
+
+Chaque mise à jour de `main` déclenche `.github/workflows/deployer.yml` :
+le Worker, puis l'app et la vitrine, puis une vérification que tout répond.
+Mettre en ligne = fusionner la PR `develop` → `main`, puis suivre le run :
+
+```bash
+gh run list --workflow deployer.yml --limit 1
+gh run watch "$(gh run list --workflow deployer.yml --limit 1 --json databaseId -q '.[0].databaseId')" --exit-status
+```
+
+Relancer sans nouveau commit : `gh workflow run deployer.yml --ref main`.
+Un échec « secret absent » : poser `CLOUDFLARE_API_TOKEN` ou `VERCEL_TOKEN`
+(`docs/SETUP.md` § 6).
+
+Le reste de cette page décrit le **déploiement à la main**, en secours
+seulement (GitHub Actions en panne, secret expiré).
 
 ## Avant tout : partir de `main` à jour
 
@@ -50,10 +66,8 @@ cp -r public/.vercel "$D/public/" && cp -r landing/.vercel "$D/landing/"
 ```
 
 Vercel construit l'app lui-même : inutile de builder avant. Si le Worker a
-changé aussi, le déployer **d'abord** : le front dépend de ses routes.
-
-Une fois l'application Vercel installée sur le dépôt GitHub (par Lucas),
-chaque mise à jour de `main` se déploie seule : ne plus le faire à la main.
+changé aussi, le déployer **d'abord** : le front dépend de ses routes. Le
+workflow fait exactement la même chose (copie sans historique git).
 
 ## Backend (Cloudflare Workers)
 

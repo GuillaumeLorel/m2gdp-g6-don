@@ -33,10 +33,9 @@ La connexion par lien magique fonctionne aussi en local : `localhost:5173` et
 Une fois l'invitation acceptée : `wrangler login`.
 
 Le front et la vitrine sont hébergés sur **Vercel**, sur le compte de Guillaume
-(forfait gratuit, qui n'accepte pas de second membre). Pour les mettre en ligne
-sans accès Vercel : fusionner dans `main`, puis demander à Guillaume — ou,
-une fois l'application Vercel installée sur le dépôt GitHub, laisser Vercel
-déployer seul à chaque mise à jour de `main` (voir § 6).
+(forfait gratuit, qui n'accepte pas de second membre). Aucun accès Vercel ni
+Cloudflare n'est nécessaire pour mettre en ligne : **fusionner dans `main`
+suffit**, GitHub Actions déploie tout (voir § 6).
 
 La **clé secrète Supabase** n'est utile que pour lancer le Worker en local, les
 scripts de données ou les tests. Elle se transmet en main propre, jamais par
@@ -241,20 +240,16 @@ plus la fusion fait mal. Récupérer `develop` régulièrement :
 ### Mettre en ligne
 
 Quand `develop` est stable, on la fusionne dans `main` (par PR `develop` →
-`main`), **puis** on déploie depuis `main` :
+`main`). **C'est tout** : la fusion déclenche le workflow
+[`.github/workflows/deployer.yml`](../.github/workflows/deployer.yml), qui
+déploie le Worker, puis l'app et la vitrine, puis vérifie que tout répond.
+Suivre son avancement dans l'onglet **Actions** du dépôt (3 à 4 minutes).
 
-```bash
-git checkout main && git pull
-cd workers && npx wrangler deploy && cd ..   # d'abord le Worker
-cd public && npx vercel deploy --prod        # puis le front
-```
-
-> ⚠️ **Ne jamais déployer depuis une autre branche que `main` à jour.**
-> `vercel deploy` et `wrangler deploy` publient le code local de celui qui lance
-> la commande : déployer depuis sa branche efface du site
-> en ligne le travail des autres.
-
-Prévenir l'équipe avant un déploiement, pour ne pas déployer à deux.
+> ⚠️ **Ne plus déployer à la main.** `vercel deploy` et `wrangler deploy`
+> publient le code local de celui qui lance la commande : depuis une autre
+> branche que `main` à jour, cela efface du site en ligne le travail des
+> autres. En cas de besoin, relancer le workflow (Actions › Déployer › *Run
+> workflow*) plutôt que la commande.
 
 ### Règles
 
@@ -265,15 +260,30 @@ Prévenir l'équipe avant un déploiement, pour ne pas déployer à deux.
 
 ## 6. Déploiement — détails
 
-| Quoi | Où | Commande, depuis `main` à jour |
+| Quoi | Où | Déployé par |
 | --- | --- | --- |
-| App | https://doneo-app.vercel.app (projet Vercel `doneo`) | `cd public && npx vercel deploy --prod` |
-| Vitrine | https://doneo-vitrine.vercel.app (projet Vercel `doneo-vitrine`) | `cd landing && npx vercel deploy --prod` |
-| Worker | https://doneo-api.guillaume-lorel.workers.dev | `cd workers && npx wrangler deploy` |
+| Worker | https://doneo-api.guillaume-lorel.workers.dev | job `worker`, en premier : le front dépend de ses routes |
+| App | https://doneo-app.vercel.app (projet Vercel `doneo`) | job `vercel (app)` |
+| Vitrine | https://doneo-vitrine.vercel.app (projet Vercel `doneo-vitrine`) | job `vercel (vitrine)` |
 
 Vercel construit lui-même l'app (`npm run build`, réglages dans
-`public/vercel.json`) : inutile de builder avant. Le dossier `.vercel/` créé
-par `vercel link` relie le dossier au projet ; il est git-ignoré.
+`public/vercel.json`) : inutile de builder avant. Le workflow lui envoie une
+**copie du dossier sans l'historique git** : sur le forfait gratuit, Vercel
+bloque (« Blocked ») un déploiement dont le commit n'est pas signé du
+titulaire du compte, ce qui est le cas des fusions de PR.
+
+**Secrets du workflow** (Settings › Secrets and variables › Actions), posés
+une fois par Guillaume :
+
+| Secret | Où le créer |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | dash.cloudflare.com › My Profile › API Tokens › *Create Token* › modèle « Edit Cloudflare Workers » |
+| `VERCEL_TOKEN` | vercel.com/account/tokens › *Create*, portée sur l'équipe du projet |
+
+Les poser depuis un terminal, sans les coller dans un fichier :
+`gh secret set CLOUDFLARE_API_TOKEN` puis `gh secret set VERCEL_TOKEN`
+(chacun demande la valeur, masquée). Les secrets du Worker lui-même (clé
+Supabase) ne sont pas concernés : `wrangler deploy` les conserve.
 
 **Hébergement et données** — la demande du 11/10/2026 impose des services
 hébergés en France ou dans l'UE. Vercel ne sert que des fichiers statiques
@@ -281,11 +291,7 @@ hébergés en France ou dans l'UE. Vercel ne sert que des fichiers statiques
 toutes par le Worker. La base et l'authentification migrent ensuite vers
 Supabase, en région européenne.
 
-**Déploiement automatique** (à activer) : une fois l'application Vercel
-installée sur le dépôt GitHub — par Guillaume, propriétaire —, Vercel déploie
-seul chaque mise à jour de `main` et crée un aperçu pour chaque PR.
-
-Vérifier ensuite que le déploiement a pris :
+Le workflow vérifie lui-même la mise en ligne. Pour vérifier à la main :
 
 ```bash
 curl https://doneo-api.guillaume-lorel.workers.dev/api/health
