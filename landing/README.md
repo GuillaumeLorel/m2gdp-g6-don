@@ -1,13 +1,8 @@
 # Donéo — Site vitrine statique
 
 Site vitrine statique pour Donéo, en HTML / CSS / JavaScript vanilla, sans
-étape de build. Prêt à être déployé sur Firebase Hosting.
-
-## Prérequis
-
-- Un compte Google et un projet Firebase créé sur https://console.firebase.google.com
-- Node.js installé (pour la CLI Firebase uniquement)
-- La CLI Firebase : `npm install -g firebase-tools`
+étape de build. Hébergé sur Vercel (projet `doneo-vitrine`) :
+https://doneo-vitrine.vercel.app
 
 ## Aperçu local
 
@@ -19,23 +14,19 @@ un serveur statique quelconque, par exemple :
 npx serve public
 ```
 
-## Déploiement sur Firebase Hosting
+## Déploiement
 
-Depuis la racine du projet (là où se trouve `firebase.json`) :
+Comme le reste du projet : seulement depuis `main` à jour, voir
+[`docs/SETUP.md`](../docs/SETUP.md) et la skill `deployer`. Depuis `landing/` :
 
 ```bash
-firebase login
-firebase init hosting
-firebase deploy
+npx vercel deploy --prod
 ```
 
-Lors de `firebase init hosting`, répondez :
-- dossier public : `public` (déjà configuré dans `firebase.json`)
-- application une page (SPA) : non
-- fichier déjà existant : ne pas écraser `index.html` / `404.html`
-
-Le projet Firebase utilisé par défaut est `doneo-app` (voir `.firebaserc`).
-Remplacez cet identifiant par celui de votre propre projet Firebase si besoin.
+`vercel.json` sert le dossier `public/`, sans extension `.html` dans les
+adresses (`cleanUrls`), avec `404.html` pour les pages introuvables, la
+consigne de non-indexation sur toutes les pages et un cache long pour
+`assets/`, `css/` et `js/` (versionnés par `?v=` dans le HTML).
 
 ## Polices et illustrations : état actuel
 
@@ -88,7 +79,7 @@ Elles restent disponibles dans le dossier pour un usage futur.
 
 ## Application web, captures d'écran et QR code
 
-Donéo est une application web, accessible à l'adresse https://doneo.web.app/.
+Donéo est une application web, accessible à l'adresse https://doneo-app.vercel.app/.
 Tous les appels à l'action du site vitrine y renvoient, dans un nouvel onglet.
 
 - `public/assets/screens/*.webp` : écrans de l'application, recadrés à partir
@@ -96,11 +87,11 @@ Tous les appels à l'action du site vitrine y renvoient, dans un nouvel onglet.
   Pour régénérer (ou ajouter une capture) : déposer le PNG dans
   `public/assets/screens/`, puis `npm i sharp && node scripts/recadrer-captures.mjs` (ou
   `node scripts/recadrer-captures.mjs creation-annonce` pour une seule capture).
-- `public/assets/qr-doneo.svg` : QR code statique vers https://doneo.web.app/,
+- `public/assets/qr-doneo.svg` : QR code statique vers https://doneo-app.vercel.app/,
   affiché dans le bloc d'appel à l'action final (masqué sous 640px). Il a été
   généré une seule fois ; aucune librairie QR n'est chargée par le site. Pour
   le régénérer :
-  `npx qrcode -t svg -e M -q 4 -d 2F4F5C -l FFFFFF -o public/assets/qr-doneo.svg "https://doneo.web.app/"`
+  `npx qrcode -t svg -e M -q 4 -d 2F4F5C -l FFFFFF -o public/assets/qr-doneo.svg "https://doneo-app.vercel.app/"`
 - `public/assets/illustrations/logo-doneo.svg` : son `viewBox` est recadré au
   ras des lettres DONÉO (accent compris), sans marge vide ; la hauteur fixée
   en CSS est donc celle du mot.
@@ -109,7 +100,7 @@ Tous les appels à l'action du site vitrine y renvoient, dans un nouvel onglet.
 
 Le site est une version de démonstration : `<meta name="robots" content="noindex, nofollow">`
 sur toutes les pages, `robots.txt` en `Disallow: /`, en-tête `X-Robots-Tag: noindex`
-sur toutes les routes (`firebase.json`) et pas de `sitemap.xml`.
+sur toutes les routes (`vercel.json`) et pas de `sitemap.xml`.
 
 ## Formulaire de contact (démonstration)
 
@@ -123,8 +114,7 @@ réinitialisés et un message invite à écrire à hello@doneo.fr.
 
 ```
 /
-├── firebase.json
-├── .firebaserc
+├── vercel.json
 ├── README.md
 └── public/
     ├── index.html
@@ -139,7 +129,7 @@ réinitialisés et un message invite à écrire à hello@doneo.fr.
     ├── js/
     │   └── main.js
     └── assets/
-        ├── qr-doneo.svg        (QR code vers https://doneo.web.app/)
+        ├── qr-doneo.svg        (QR code vers https://doneo-app.vercel.app/)
         ├── fonts/
         │   └── web/            (woff2 optimisés, utilisés par le CSS)
         ├── illustrations/

@@ -365,7 +365,7 @@ function initCopieLien() {
       try {
         await copierTexte(bouton.dataset.copier);
       } catch {
-        message = 'Copie impossible : l\'adresse est doneo.web.app';
+        message = 'Copie impossible : l\'adresse est doneo-app.vercel.app';
         duree = 5000;
       }
 
