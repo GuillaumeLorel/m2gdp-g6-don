@@ -1,12 +1,13 @@
 import { useEffect, useId, useState } from "react";
 import { useNavigate } from "react-router";
-import { ChevronDown, ChevronLeft, Heart, Loader2, Lock } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, Heart, Loader2, Lock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import Champ, { CLASSES_CHAMP } from "@/components/Champ.jsx";
 import { EtatVide } from "@/components/Etats.jsx";
+import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import PhotosAnnonce from "@/components/PhotosAnnonce.jsx";
 import { chargerAssociations, chargerCategories, enregistrerProfil, publierAnnonce } from "@/lib/api.js";
-import { LIBELLES_ETAT } from "@/lib/format.js";
+import { LIBELLES_ETAT, formaterCreneau, formaterParticipation } from "@/lib/format.js";
 import { cn } from "@/lib/utils.js";
 
 /** Montants proposes d'un geste : une participation se veut modeste. */
@@ -113,6 +114,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
   }
 
   const categorie = categories.find((c) => c.id === champs.categorieId);
+  const sousCategorie = categorie?.sousCategories.find((s) => s.id === champs.sousCategorieId);
   const titreManquant = !champs.titre.trim();
   const etape1Complete =
     !titreManquant && categorie && champs.sousCategorieId && champs.etat && champs.description.trim();
@@ -165,7 +167,10 @@ export default function CreerAnnonce({ profil, surProfil }) {
   const revenir = () => (etape === 2 ? setEtape(1) : window.history.state?.idx > 0 ? naviguer(-1) : naviguer("/"));
 
   return (
-    <section className="mx-auto w-full max-w-xl pb-4">
+    // Grand ecran : le formulaire a gauche, l'apercu de l'annonce a droite,
+    // qui reste a l'ecran pendant la saisie. Mobile : le formulaire seul.
+    <section className="mx-auto w-full max-w-xl pb-4 lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start lg:gap-14">
+      <div>
       <header>
         <div className="flex items-center gap-3.5">
           <button
@@ -411,7 +416,83 @@ export default function CreerAnnonce({ profil, surProfil }) {
           </Button>
         </form>
       )}
+      </div>
+
+      <aside
+        aria-label="Aperçu de votre annonce"
+        className="hidden lg:sticky lg:top-[calc(var(--hauteur-entete)+2rem)] lg:block">
+        <Apercu
+          etape={etape}
+          annonce={{
+            titre: champs.titre.trim(),
+            etat: champs.etat,
+            sousCategorie,
+            illustrationUrl: sousCategorie?.illustrationUrl || categorie?.illustrationUrl,
+            medias: photos.map((p) => ({ type: "photo", url: p.url })),
+            participation: participationValide ? participation : null,
+            association: associations.find((a) => a.id === champs.associationId),
+            creneauRetrait: creneauSaisi && !erreurCreneau ? { debut: debut.toISOString(), fin: fin.toISOString() } : null,
+            ville: champs.ville.trim(),
+          }}
+        />
+      </aside>
     </section>
+  );
+}
+
+/**
+ * Apercu de l'annonce en cours de saisie (grand ecran), dans l'esprit de la
+ * fiche : visuel, titre, caracteristiques, participation. Il se remplit au
+ * fil de la saisie ; un conseil adapte a l'etape l'accompagne.
+ */
+function Apercu({ annonce, etape }) {
+  return (
+    <div className="space-y-4">
+      <p className="doneo-etiquette">Aperçu de votre annonce</p>
+      <div className="doneo-carte overflow-hidden p-0">
+        <ImageAnnonce annonce={annonce} className="aspect-4/3 w-full" />
+        <div className="space-y-3 p-5">
+          <p className={`doneo-titre text-xl leading-tight ${annonce.titre ? "" : "text-muted-foreground"}`}>
+            {annonce.titre || "Titre de l’objet"}
+          </p>
+          <ul className="flex flex-wrap gap-1.5 text-xs font-medium text-ardoise">
+            {annonce.sousCategorie && (
+              <li className="rounded-full bg-pervenche px-2.5 py-1">{annonce.sousCategorie.libelle}</li>
+            )}
+            {annonce.etat && <li className="rounded-full bg-menthe px-2.5 py-1">{LIBELLES_ETAT[annonce.etat]}</li>}
+            {annonce.ville && (
+              <li className="flex items-center gap-1 rounded-full border border-primary/15 bg-white px-2.5 py-1">
+                <MapPin className="size-3" aria-hidden="true" />
+                {annonce.ville}
+              </li>
+            )}
+          </ul>
+          <div className="rounded-2xl bg-lavande p-3.5">
+            <p className="font-titre text-lg leading-tight font-semibold text-ardoise">
+              {annonce.participation ? formaterParticipation(annonce.participation) : "… €"}{" "}
+              <span className="text-sm font-medium text-violet-fonce">— participation</span>
+            </p>
+            <p className="mt-0.5 text-xs text-ardoise">
+              {annonce.association ? `Reversée à ${annonce.association.nom}` : "Association à choisir à l’étape 2"}
+            </p>
+          </div>
+          {annonce.creneauRetrait && (
+            <p className="flex items-center gap-1.5 text-xs text-ardoise">
+              <CalendarDays className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
+              {formaterCreneau(annonce.creneauRetrait)}
+            </p>
+          )}
+        </div>
+      </div>
+      <div className="flex items-start gap-3 rounded-3xl bg-white/60 p-4">
+        <img src="/illustrations/objet-etoile.svg" alt="" aria-hidden="true" className="size-9 shrink-0" />
+        <p className="text-xs leading-5 text-muted-foreground text-pretty">
+          {etape === 1
+            ? "Une photo nette, prise à la lumière du jour, et les dimensions dans la description : l’objet trouve preneur plus vite."
+            : "Restez modeste : la participation soutient une association, ce n’est pas le prix de l’objet."}
+        </p>
+      </div>
+    </div>
   );
 }
 
