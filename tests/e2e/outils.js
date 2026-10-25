@@ -158,17 +158,17 @@ export async function supprimerAnnonces(ids) {
 }
 
 /**
- * Supprime toutes les photos d'un profil de demonstration (fichiers du bucket
- * `medias` et lignes de la table) : les tests televersent dans le vrai
- * Supabase Storage. Un profil de demo n'a pas de vraie photo a garder.
+ * Supprime les photos televersees par un profil de demonstration depuis
+ * `depuis` (fichiers du bucket `medias` et lignes de la table) : les tests
+ * televersent dans le vrai Supabase Storage. Les photos plus anciennes sont
+ * celles des donnees de demo : on n'y touche pas.
  */
-export async function supprimerPhotosDe(idLisible) {
+export async function supprimerPhotosDe(idLisible, depuis) {
   const cle = cleSecrete();
   const entetes = { apikey: cle, authorization: `Bearer ${cle}` };
   const proprietaire = encodeURIComponent(idUtilisateurDemo(idLisible));
-  const lignes = await (
-    await fetch(`${URL_SUPABASE}/rest/v1/medias?proprietaireId=eq.${proprietaire}&select=id`, { headers: entetes })
-  ).json();
+  const filtre = `proprietaireId=eq.${proprietaire}&creeLe=gte.${encodeURIComponent(depuis)}`;
+  const lignes = await (await fetch(`${URL_SUPABASE}/rest/v1/medias?${filtre}&select=id`, { headers: entetes })).json();
   if (!Array.isArray(lignes) || lignes.length === 0) return;
   const fichiers = await fetch(`${URL_SUPABASE}/storage/v1/object/medias`, {
     method: 'DELETE',
@@ -176,7 +176,7 @@ export async function supprimerPhotosDe(idLisible) {
     body: JSON.stringify({ prefixes: lignes.map((l) => l.id) }),
   });
   if (!fichiers.ok) throw new Error(`Nettoyage des photos : ${await fichiers.text()}`);
-  await fetch(`${URL_SUPABASE}/rest/v1/medias?proprietaireId=eq.${proprietaire}`, { method: 'DELETE', headers: entetes });
+  await fetch(`${URL_SUPABASE}/rest/v1/medias?${filtre}`, { method: 'DELETE', headers: entetes });
 }
 
 /** Aucune barre de defilement horizontale (critere « affichage sur mobile »). */
