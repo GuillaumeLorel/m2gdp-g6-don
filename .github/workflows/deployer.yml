@@ -1,0 +1,102 @@
+# Deploiement automatique : chaque mise a jour de `main` part en ligne.
+#
+#   1. le Worker Cloudflare (l'API), d'abord : le front depend de ses routes ;
+#   2. l'app et la vitrine sur Vercel, en parallele ;
+#   3. une verification que tout repond.
+#
+# Secrets du depot (Settings > Secrets and variables > Actions), voir
+# docs/SETUP.md § 6 : CLOUDFLARE_API_TOKEN et VERCEL_TOKEN.
+#
+# Vercel est appele avec une copie du dossier, sans l'historique git : sur le
+# forfait gratuit, Vercel bloque (« Blocked ») les deploiements dont le commit
+# n'est pas signe du titulaire du compte, ce qui est le cas des fusions de PR.
+
+name: Déployer
+
+on:
+  push:
+    branches: [main]
+  # Relance a la main depuis l'onglet Actions, sans nouveau commit.
+  workflow_dispatch:
+
+# Deux mises a jour rapprochees : la seconde attend la fin de la premiere.
+concurrency:
+  group: deploiement-production
+  cancel-in-progress: false
+
+env:
+  VERCEL_ORG_ID: team_L7dU57MBAEMeyamDeFXq0FDF
+
+jobs:
+  worker:
+    name: Worker Cloudflare (API)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Vérifier le secret
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN absent du dépôt (voir docs/SETUP.md § 6)."
+            exit 1
+          fi
+      # Les secrets du Worker (cle Supabase) restent ceux deja poses :
+      # `wrangler deploy` ne les touche pas.
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: workers
+          command: deploy
+
+  vercel:
+    name: Vercel (${{ matrix.site.nom }})
+    needs: worker
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        site:
+          - { nom: app, dossier: public, projet: prj_sHYI3xNzJsxq8MGKgjLvgr8CzsyS }
+          - { nom: vitrine, dossier: landing, projet: prj_534PRxOXXkHVE1f3ur23Y76rhKM8 }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Vérifier le secret
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::Secret VERCEL_TOKEN absent du dépôt (voir docs/SETUP.md § 6)."
+            exit 1
+          fi
+      - name: Déployer
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ matrix.site.projet }}
+        run: |
+          COPIE="$RUNNER_TEMP/${{ matrix.site.nom }}"
+          mkdir -p "$COPIE"
+          cp -r "${{ matrix.site.dossier }}/." "$COPIE"
+          cd "$COPIE"
+          npx --yes vercel@65 deploy --prod --yes --token "$VERCEL_TOKEN"
+
+  verification:
+    name: Vérifier la mise en ligne
+    needs: vercel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tout répond
+        run: |
+          set -e
+          verifier() {
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$1")
+            echo "$1 -> $code"
+            [ "$code" = "200" ]
+          }
+          verifier https://doneo-api.guillaume-lorel.workers.dev/api/health
+          verifier https://doneo-app.vercel.app/
+          verifier https://doneo-app.vercel.app/recherche
+          verifier https://doneo-vitrine.vercel.app/
