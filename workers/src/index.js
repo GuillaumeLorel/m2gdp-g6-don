@@ -13,12 +13,19 @@
  *   GET  /api/categories          arbre des categories
  *   GET  /api/associations        associations beneficiaires
  *   GET  /api/annonces            recherche d'annonces (forme publique)
+ *   POST /api/annonces            publier une annonce (offrant)
  *   GET  /api/annonces/{id}       fiche publique d'une annonce
+ *   POST /api/medias              televerser une photo
+ *   GET  /api/medias/{id}         le fichier d'une photo
+ *   DELETE /api/medias/{id}       supprimer une de ses photos
  *   GET  /api/health              healthcheck
  */
 
 import { ecrireLigne, lireLigne, listerTable, profilExistePourEmail, utilisateurDuJeton } from './base.js';
+import { validerAdresse } from './adresse.js';
 import { chargerAnnonce, rechercherAnnonces } from './annonces.js';
+import { servir, supprimer, televerser } from './medias.js';
+import { publierAnnonce } from './publication.js';
 import { arbreCategories, associations, versAssociation } from './referentiels.js';
 import { correspond } from './texte.js';
 
@@ -90,30 +97,8 @@ function validerProfil(corps) {
   }
   // Adresse decomposee, et non une chaine unique : cela permet de publier
   // codePostal + ville dans l'annuaire sans jamais laisser sortir le numero et
-  // la rue. Voir specs/data-model.md, « Adresse a deux niveaux ».
-  if (texte(corps.numeroRue).length < 1) {
-    erreurs.push('Le numéro de rue est obligatoire.');
-  } else if (texte(corps.numeroRue).length > 10) {
-    erreurs.push('Le numéro de rue est trop long (10 max).');
-  }
-
-  if (texte(corps.rue).length < 2) {
-    erreurs.push('La rue est obligatoire.');
-  } else if (texte(corps.rue).length > 150) {
-    erreurs.push('Le nom de rue est trop long (150 max).');
-  }
-
-  // Facultatif : on ne controle que la longueur s'il est renseigne.
-  if (texte(corps.complementAdresse).length > 100) {
-    erreurs.push("Le complément d'adresse est trop long (100 max).");
-  }
-
-  if (!/^\d{5}$/.test(texte(corps.codePostal))) {
-    erreurs.push('Le code postal doit comporter 5 chiffres.');
-  }
-
-  if (texte(corps.ville).length < 1) erreurs.push('La ville est obligatoire.');
-  if (texte(corps.ville).length > 100) erreurs.push('Le nom de ville est trop long (100 max).');
+  // la rue. Memes regles que pour le lieu de retrait d'une annonce.
+  erreurs.push(...validerAdresse(corps));
 
   // Pas de condition d'age : la plateforme est ouverte aux mineurs. On verifie
   // seulement que la date existe et reste plausible.
@@ -142,7 +127,7 @@ export default {
       return new Response(null, { status: 204, headers: cors });
     }
 
-    const { pathname } = new URL(request.url);
+    const { pathname, origin: origine } = new URL(request.url);
 
     try {
       /* --- Healthcheck ------------------------------------------------ */
@@ -269,17 +254,46 @@ export default {
 
       /* --- Annonces ------------------------------------------------------ */
       if (pathname === '/api/annonces' && request.method === 'GET') {
-        const resultat = await rechercherAnnonces(env, new URL(request.url).searchParams);
+        const resultat = await rechercherAnnonces(env, new URL(request.url).searchParams, origine);
         if (resultat.erreurs) return json({ erreurs: resultat.erreurs }, 422, cors);
         return json(resultat, 200, cors);
       }
 
+      if (pathname === '/api/annonces' && request.method === 'POST') {
+        const utilisateur = await utilisateurConnecte(request, env);
+        if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
+        const corps = await request.json().catch(() => ({}));
+        const { statut, corps: reponse } = await publierAnnonce(env, corps, utilisateur.id, origine);
+        return json(reponse, statut, cors);
+      }
+
       const routeAnnonce = /^\/api\/annonces\/([A-Za-z0-9_-]{1,64})$/.exec(pathname);
       if (routeAnnonce && request.method === 'GET') {
-        const annonce = await chargerAnnonce(env, routeAnnonce[1]);
+        const annonce = await chargerAnnonce(env, routeAnnonce[1], origine);
         return annonce
           ? json(annonce, 200, cors)
           : json({ erreur: 'Cette annonce n’existe pas ou a été retirée.' }, 404, cors);
+      }
+
+      /* --- Medias (photos des annonces) --------------------------------- */
+      if (pathname === '/api/medias' && request.method === 'POST') {
+        const utilisateur = await utilisateurConnecte(request, env);
+        if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
+        const { statut, corps } = await televerser(env, request, utilisateur.id, origine);
+        return json(corps, statut, cors);
+      }
+
+      const routeMedia = /^\/api\/medias\/([A-Za-z0-9-]{1,64})$/.exec(pathname);
+      if (routeMedia && request.method === 'GET') {
+        // Public, comme l'annonce qui montre la photo.
+        return (await servir(env, routeMedia[1], cors)) || json({ erreur: 'Photo introuvable.' }, 404, cors);
+      }
+      if (routeMedia && request.method === 'DELETE') {
+        const utilisateur = await utilisateurConnecte(request, env);
+        if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
+        const statut = await supprimer(env, routeMedia[1], utilisateur.id);
+        if (statut === 204) return new Response(null, { status: 204, headers: cors });
+        return json({ erreur: statut === 403 ? 'Cette photo appartient à un autre membre.' : 'Photo introuvable.' }, statut, cors);
       }
 
       return json({ erreur: 'Route non trouvée', chemin: pathname }, 404, cors);
