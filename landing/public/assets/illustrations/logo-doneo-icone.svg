@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Donéo">
+  <!-- Icône dérivée du D de logo-doneo.svg (fichier officiel déposé), recadré et centré sur un fond rond. -->
+  <circle cx="32" cy="32" r="30" fill="#E7D6F5"/>
+  <g transform="translate(-32.4,-30.8) scale(0.145)" fill="#8A4DC8" fill-rule="evenodd">
+    <path d="M 329,334 L 327,342 L 327,508 L 328,532 L 330,534 L 458,535 L 471,533 L 489,528 L 509,519 L 526,507 L 544,487 L 552,473 L 558,456 L 561,438 L 560,416 L 556,400 L 544,376 L 522,354 L 493,339 L 461,332 L 334,331 Z M 398,383 L 444,383 L 445,384 L 451,384 L 452,385 L 460,387 L 466,390 L 468,392 L 472,394 L 480,402 L 480,403 L 484,408 L 486,412 L 486,414 L 488,417 L 488,420 L 489,421 L 489,426 L 490,427 L 490,438 L 489,439 L 488,447 L 486,450 L 486,452 L 483,458 L 476,466 L 476,467 L 468,474 L 456,480 L 450,481 L 449,482 L 444,482 L 443,483 L 398,483 L 396,481 L 396,385 Z"/>
+  </g>
+</svg>
