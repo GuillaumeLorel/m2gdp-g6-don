@@ -11,7 +11,7 @@ client (adresse du projet, clé publique) est publique, et le front appelle le
 Worker déjà en ligne.
 
 ```bash
-git clone https://github.com/Lucas-ui/m2gdp-g6-don.git
+git clone https://github.com/GuillaumeLorel/m2gdp-g6-don.git
 cd m2gdp-g6-don && git checkout develop
 cd public && npm install && npm run dev
 ```
@@ -27,7 +27,7 @@ La connexion par lien magique fonctionne aussi en local : `localhost:5173` et
 
 | Accès | Pour quoi | Qui le donne |
 | --- | --- | --- |
-| **GitHub**, collaborateur du dépôt | Pousser des branches, ouvrir des PR | Lucas, propriétaire du dépôt |
+| **GitHub**, collaborateur du dépôt | Pousser des branches, ouvrir des PR | Guillaume, propriétaire du dépôt depuis le 25/10/2026 |
 | **Cloudflare**, membre du compte | Déployer le Worker | Guillaume — Dashboard › Manage Account › Members |
 
 Une fois l'invitation acceptée : `wrangler login`.
@@ -282,7 +282,7 @@ toutes par le Worker. La base et l'authentification migrent ensuite vers
 Supabase, en région européenne.
 
 **Déploiement automatique** (à activer) : une fois l'application Vercel
-installée sur le dépôt GitHub — par Lucas, propriétaire —, Vercel déploie
+installée sur le dépôt GitHub — par Guillaume, propriétaire —, Vercel déploie
 seul chaque mise à jour de `main` et crée un aperçu pour chaque PR.
 
 Vérifier ensuite que le déploiement a pris :
