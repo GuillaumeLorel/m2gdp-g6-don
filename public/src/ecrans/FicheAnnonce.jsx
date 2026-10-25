@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
-import { CalendarDays, ChevronLeft, Gift, Heart, Lock, MapPin } from "lucide-react";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
+import { CalendarDays, CircleCheck, ChevronLeft, Gift, Heart, Lock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { EtatVide, ErreurChargement } from "@/components/Etats.jsx";
@@ -41,6 +41,8 @@ function BoutonSurPhoto({ children, ...props }) {
 export default function FicheAnnonce({ profil }) {
   const { id } = useParams();
   const naviguer = useNavigate();
+  // Arrivee depuis la creation (US-6) : on confirme la publication.
+  const publiee = useLocation().state?.publiee === true;
   const [annonce, setAnnonce] = useState(undefined); // undefined = chargement, null = introuvable
   const [erreur, setErreur] = useState(null);
 
@@ -122,6 +124,12 @@ export default function FicheAnnonce({ profil }) {
       </div>
 
       <div className="px-5 pt-5 lg:p-0">
+        {publiee && (
+          <p role="status" className="mb-4 flex items-center gap-2.5 rounded-2xl bg-menthe p-3.5 text-sm font-medium text-ardoise">
+            <CircleCheck className="size-5 shrink-0 text-succes" aria-hidden="true" />
+            Votre annonce est en ligne : les demandeurs peuvent la voir dès maintenant.
+          </p>
+        )}
         <h1 className="doneo-titre text-[1.75rem] leading-tight lg:text-[2.6rem]">{annonce.titre}</h1>
 
         <ul className="mt-3 flex flex-wrap gap-2 text-sm font-medium" aria-label="Caractéristiques">

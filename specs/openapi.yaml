@@ -266,6 +266,23 @@ paths:
         "415": { description: "Format non pris en charge" }
 
   /api/medias/{id}:
+    get:
+      tags: ["Médias"]
+      summary: "🖼️ Le fichier d'un média"
+      description: >
+        Public, comme l'annonce qui le montre : c'est l'adresse `url` du
+        schéma Media. Le bucket R2 n'a pas d'accès public, le Worker sert le
+        fichier. Un identifiant désigne toujours le même fichier : la réponse
+        se met en cache indéfiniment.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Le fichier"
+          content:
+            image/jpeg: { schema: { type: string, format: binary } }
+            image/png: { schema: { type: string, format: binary } }
+            image/webp: { schema: { type: string, format: binary } }
+        "404": { $ref: "#/components/responses/Introuvable" }
     delete:
       tags: ["Médias"]
       summary: "🗑️ Supprimer un média non rattaché"
@@ -418,7 +435,18 @@ paths:
         "401": { $ref: "#/components/responses/NonAuthentifie" }
         "403":
           description: "Réservé aux comptes ayant le rôle `offrant`, ou média d'autrui cité"
-        "422": { $ref: "#/components/responses/Invalide" }
+        "422":
+          description: >
+            Saisie invalide — toutes les erreurs d'un coup —, ou adresse de
+            retrait introuvable au géocodage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErreursValidation" }
+        "503":
+          description: "Service de géocodage (Géoplateforme de l'IGN) indisponible : réessayer"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Erreur" }
 
   /api/annonces/{id}:
     get:

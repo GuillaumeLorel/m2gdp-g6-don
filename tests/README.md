@@ -37,6 +37,7 @@ appels réseau, sans toucher aux données.
 | Fichier | US |
 | --- | --- |
 | `e2e/connexion.spec.js` | Connexion par le code à 6 chiffres de l’e-mail (et par lien, encore géré) |
+| `e2e/creer-annonce.spec.js` | US-6, US-7, US-8 — Créer une annonce en deux étapes, participation et créneau, adresse préremplie (#34, #35, #36) |
 | `e2e/accueil.spec.js` | US-4 — Accueil, menu du bas, derniers objets (#32) |
 | `e2e/illustration-par-defaut.spec.js` | US-12 — Illustration des annonces sans photo (#40) |
 | `e2e/fiche-annonce.spec.js` | US-9 — Fiche d’annonce, adresse jamais exposée (#37) |
