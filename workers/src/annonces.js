@@ -146,6 +146,9 @@ export async function rechercherAnnonces(env, parametres, origine) {
 
   const categorieId = parametres.get('categorieId');
   const sousCategorieId = parametres.get('sousCategorieId');
+  // US-5 : les dons en cours d'un membre, pour son accueil. Ses annonces sont
+  // de toute facon publiques : le filtre ne revele rien de plus.
+  const offrantId = parametres.get('offrantId');
   const q = (parametres.get('q') || '').trim();
   if (q.length > 100) erreurs.push('La recherche est trop longue (100 caractères au plus).');
 
@@ -171,6 +174,7 @@ export async function rechercherAnnonces(env, parametres, origine) {
   const toutes = await listerTable(env, 'annonces');
   const retenues = toutes
     .filter((a) => STATUTS_VISIBLES.includes(a.statut))
+    .filter((a) => !offrantId || a.offrantId === offrantId)
     .filter((a) => !categorieId || a.categorieId === categorieId)
     .filter((a) => !sousCategorieId || a.sousCategorieId === sousCategorieId)
     .filter((a) => !etat || a.etat === etat)

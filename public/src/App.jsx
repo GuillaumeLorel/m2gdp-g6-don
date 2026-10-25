@@ -137,7 +137,7 @@ export default function App() {
     return (
       <Routes>
         <Route element={<CoqueConnectee profil={profil} />}>
-          <Route index element={<Accueil />} />
+          <Route index element={<Accueil profil={profil} />} />
           <Route path="recherche" element={<Recherche />} />
           <Route path="creer" element={<CreerAnnonce profil={profil} surProfil={setProfil} />} />
           <Route

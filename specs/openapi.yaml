@@ -358,6 +358,12 @@ paths:
           in: query
           description: "Recherche texte dans le titre et la description"
           schema: { type: string }
+        - name: offrantId
+          in: query
+          description: >
+            Les annonces d'un membre — sert aux « dons en cours » de son
+            accueil. Ses annonces sont publiques : rien de plus n'est révélé.
+          schema: { type: string }
         - name: categorieId
           in: query
           schema: { type: string }
