@@ -142,6 +142,22 @@ export async function ouvrirConnecte(page, uid, chemin = '/') {
   }
 }
 
+/**
+ * Supprime les annonces publiees par un test : il n'y a qu'une base, celle du
+ * site en ligne (docs/SETUP.md). Les photos, elles, restent dans le R2 local
+ * de `wrangler dev`.
+ */
+export async function supprimerAnnonces(ids) {
+  if (ids.length === 0) return;
+  const cle = cleSecrete();
+  const liste = ids.map((id) => `"${id}"`).join(',');
+  const reponse = await fetch(`${URL_SUPABASE}/rest/v1/annonces?id=in.(${encodeURIComponent(liste)})`, {
+    method: 'DELETE',
+    headers: { apikey: cle, authorization: `Bearer ${cle}` },
+  });
+  if (!reponse.ok) throw new Error(`Nettoyage des annonces : ${await reponse.text()}`);
+}
+
 /** Aucune barre de defilement horizontale (critere « affichage sur mobile »). */
 export async function attendrePasDeDefilementHorizontal(page) {
   const debord = await page.evaluate(

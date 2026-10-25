@@ -6,6 +6,7 @@ import EnTeteBureau from "@/components/EnTeteBureau.jsx";
 import MenuBas from "@/components/MenuBas.jsx";
 import PanneauMarque from "@/components/PanneauMarque.jsx";
 import Connexion from "@/ecrans/Connexion.jsx";
+import CreerAnnonce from "@/ecrans/CreerAnnonce.jsx";
 import Inscription from "@/ecrans/Inscription.jsx";
 import Accueil from "@/ecrans/Accueil.jsx";
 import Annuaire from "@/ecrans/Annuaire.jsx";
@@ -136,16 +137,9 @@ export default function App() {
     return (
       <Routes>
         <Route element={<CoqueConnectee profil={profil} />}>
-          <Route index element={<Accueil />} />
+          <Route index element={<Accueil profil={profil} />} />
           <Route path="recherche" element={<Recherche />} />
-          <Route
-            path="creer"
-            element={
-              <Bientot titre="Créer une annonce" illustration="/illustrations/objet-cadeau.svg">
-                La publication d’un objet arrive avec la prochaine version.
-              </Bientot>
-            }
-          />
+          <Route path="creer" element={<CreerAnnonce profil={profil} surProfil={setProfil} />} />
           <Route
             path="favoris"
             element={

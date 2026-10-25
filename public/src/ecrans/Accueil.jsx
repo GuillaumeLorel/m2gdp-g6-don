@@ -6,6 +6,7 @@ import CarteAnnonce from "@/components/CarteAnnonce.jsx";
 import { EtatVide, ErreurChargement, ListeEnChargement } from "@/components/Etats.jsx";
 import BandeauAccueil from "@/components/BandeauAccueil.jsx";
 import CommentCaMarche from "@/components/CommentCaMarche.jsx";
+import EnCours from "@/components/EnCours.jsx";
 import EnTeteCollant from "@/components/EnTeteCollant.jsx";
 import { Marque } from "@/components/Logo.jsx";
 import { chargerCategories, chercherAnnonces } from "@/lib/api.js";
@@ -20,13 +21,14 @@ const NOMBRE_DERNIERS_GRILLE = 12;
 
 /**
  * Accueil (US-4, issue #32) : la barre de recherche, les puces de categories,
- * l'accroche, puis les derniers objets ajoutes.
+ * l'accroche, ce qui est en cours pour la personne (US-5, #33), puis les
+ * derniers objets ajoutes.
  *
  * La barre de recherche ouvre l'ecran Recherche, elle ne filtre pas l'accueil ;
  * les puces, elles, filtrent la liste sur place. Pas de cloche de
  * notifications : les notifications sont hors perimetre (WON'T).
  */
-export default function Accueil() {
+export default function Accueil({ profil }) {
   const [categories, setCategories] = useState([]);
   const [categorieId, setCategorieId] = useState("");
   const grandEcran = useGrandEcran();
@@ -137,6 +139,11 @@ export default function Accueil() {
             className="absolute -top-3 -right-2 size-9 rotate-12"
           />
         </div>
+      </div>
+
+      {/* Grand ecran : juste sous le bandeau (meme ordre, mais apres lui). */}
+      <div className="lg:order-1">
+        <EnCours profil={profil} />
       </div>
 
       {/* scroll-mt : le titre reste visible sous l'en-tete collant. */}

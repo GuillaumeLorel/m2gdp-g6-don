@@ -102,3 +102,47 @@ export async function chercherAnnonces(criteres = {}) {
   }
   return donnees;
 }
+
+/** Associations beneficiaires, triees par nom. */
+export async function chargerAssociations() {
+  const { ok, donnees } = await appeler('/api/associations');
+  if (!ok) throw new Error(donnees.erreur || 'Chargement des associations impossible.');
+  return donnees.associations;
+}
+
+/**
+ * Televerse une photo (multipart). Renvoie le media ; en cas de refus, une
+ * erreur dont le message s'affiche tel quel (format, poids).
+ */
+export async function televerserPhoto(fichier) {
+  const jeton = await jetonIdentite();
+  if (!jeton) throw new Error('Non connecté.');
+  const formulaire = new FormData();
+  formulaire.append('fichier', fichier, fichier.name || 'photo.jpg');
+  const reponse = await fetch(`${API_BASE}/api/medias`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${jeton}` },
+    body: formulaire,
+  }).catch(() => null);
+  if (!reponse) throw new Error('Envoi de la photo impossible : vérifiez votre connexion.');
+  const donnees = await reponse.json().catch(() => ({}));
+  if (!reponse.ok) throw new Error(donnees.erreur || donnees.erreurs?.join(' ') || 'Envoi de la photo impossible.');
+  return donnees;
+}
+
+/** Supprime une photo pas encore publiee. Un echec est sans consequence. */
+export async function supprimerPhoto(id) {
+  await appeler(`/api/medias/${encodeURIComponent(id)}`, { method: 'DELETE', authentifie: true }).catch(() => {});
+}
+
+/**
+ * Publie une annonce. Renvoie l'annonce creee, ou leve une erreur portant
+ * `erreurs` : la liste complete des refus, a afficher en une fois.
+ */
+export async function publierAnnonce(annonce) {
+  const { ok, donnees } = await appeler('/api/annonces', { method: 'POST', authentifie: true, body: annonce });
+  if (ok) return donnees;
+  const erreur = new Error('Publication refusée.');
+  erreur.erreurs = donnees.erreurs || [donnees.erreur || 'Publication impossible. Réessayez dans un instant.'];
+  throw erreur;
+}
