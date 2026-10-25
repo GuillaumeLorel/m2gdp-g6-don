@@ -129,3 +129,32 @@ export async function listerIds(table) {
 
 /** Vrai si la ligne de commande demande une simple simulation. */
 export const simulation = process.argv.includes('--simulation');
+
+/* --- Supabase Storage ------------------------------------------------------ */
+
+const entetesStockage = () => ({
+  apikey: secrets.SUPABASE_SECRET_KEY,
+  authorization: `Bearer ${secrets.SUPABASE_SECRET_KEY}`,
+});
+
+/** Depose (ou remplace) un fichier dans un bucket. */
+export async function deposerFichier(bucket, nom, contenu, typeMime) {
+  const reponse = await fetch(`${URL_SUPABASE}/storage/v1/object/${bucket}/${nom}`, {
+    method: 'POST',
+    headers: { ...entetesStockage(), 'content-type': typeMime, 'x-upsert': 'true', 'cache-control': 'max-age=31536000' },
+    body: contenu,
+  });
+  if (!reponse.ok) throw new Error(`Supabase Storage ${reponse.status} : ${await reponse.text()}`);
+}
+
+/** Retire des fichiers d'un bucket ; les absents sont ignores. */
+export async function retirerFichiers(bucket, noms) {
+  for (let i = 0; i < noms.length; i += 100) {
+    const reponse = await fetch(`${URL_SUPABASE}/storage/v1/object/${bucket}`, {
+      method: 'DELETE',
+      headers: { ...entetesStockage(), 'content-type': 'application/json' },
+      body: JSON.stringify({ prefixes: noms.slice(i, i + 100) }),
+    });
+    if (!reponse.ok) throw new Error(`Supabase Storage ${reponse.status} : ${await reponse.text()}`);
+  }
+}
