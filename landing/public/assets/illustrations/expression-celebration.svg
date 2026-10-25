@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg data-dc-tpl="284" width="50" height="50" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path data-dc-tpl="285" d="M32 55 10 34a13.5 13.5 0 0 1 19.1-19.1L32 17.8l2.9-2.9A13.5 13.5 0 0 1 54 34z" fill="#C79BEC" stroke="#2F4F5C" stroke-width="2.4" stroke-linejoin="round"/>
+          <circle data-dc-tpl="286" cx="24" cy="30" r="2.6" fill="#2F4F5C"/><circle data-dc-tpl="287" cx="40" cy="30" r="2.6" fill="#2F4F5C"/>
+          <path data-dc-tpl="288" d="M26 37h12a6 6 0 0 1-12 0z" fill="#2F4F5C"/>
+          <path data-dc-tpl="289" d="M12 12l4 5M52 12l-4 5M32 4v6" stroke="#E23C8E" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>

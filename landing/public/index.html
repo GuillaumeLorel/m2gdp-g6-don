@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Donéo — Donné, pas jeté. Le don d'objets qui soutient une association</title>
+  <meta name="description" content="Donéo permet de donner un objet dont vous n'avez plus l'usage en fixant une participation solidaire, reversée à l'association de votre choix après une micro-commission de fonctionnement.">
+  <link rel="canonical" href="https://doneo-app.web.app/">
+  <meta name="theme-color" content="#9B4DDB">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Donéo — Donné, pas jeté.">
+  <meta property="og:description" content="Vous donnez un objet, vous fixez une participation solidaire, et l'essentiel part à l'association de votre choix.">
+  <meta property="og:image" content="https://doneo-app.web.app/assets/illustrations/objet-cadeau.svg">
+  <meta property="og:url" content="https://doneo-app.web.app/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css?v=4">
+
+  <style>
+    /* CSS critique — héro et en-tête, pour un premier affichage sans décalage */
+    body { margin: 0; background: #F7F2FC; font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    .entete { position: sticky; top: 0; background: rgba(247,242,252,0.85); }
+    .hero { background: linear-gradient(135deg, #B06BE8 0%, #9B4DDB 100%); border-radius: 0 0 40px 40px; color: #fff; }
+  </style>
+</head>
+<body>
+  <a class="lien-evitement" href="#contenu-principal">Aller au contenu</a>
+
+  <header class="entete">
+    <div class="conteneur entete__barre">
+      <a class="entete__logo" href="index.html" aria-label="Donéo — Accueil">
+        <img src="assets/illustrations/logo-doneo.svg" alt="Donéo" width="166" height="40">
+      </a>
+
+      <nav class="entete__nav" aria-label="Navigation principale">
+        <ul class="entete__liste-nav">
+          <li><a class="entete__lien" href="#concept">Le concept</a></li>
+          <li><a class="entete__lien" href="#comment-ca-marche">Comment ça marche</a></li>
+          <li><a class="entete__lien" href="#parcours">Parcours</a></li>
+          <li><a class="entete__lien" href="#tarifs">Tarifs</a></li>
+          <li><a class="entete__lien" href="#associations">Associations</a></li>
+          <li><a class="entete__lien" href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <div class="entete__actions">
+        <a class="bouton bouton--principal entete__cta" href="https://doneo.web.app/" target="_blank" rel="noopener">Ouvrir l'app<span class="visually-hidden"> Donéo, nouvel onglet</span><svg class="icone-sortante" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 4h6v6"/><path d="M12 4 4 12"/></svg></a>
+        <button type="button" class="bouton-burger" aria-expanded="false" aria-controls="menu-mobile" aria-label="Ouvrir le menu">
+          <span class="bouton-burger__trait"></span>
+          <span class="bouton-burger__trait"></span>
+          <span class="bouton-burger__trait"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="superposition"></div>
+
+  <nav id="menu-mobile" class="menu-mobile" aria-label="Navigation mobile">
+    <div class="menu-mobile__entete">
+      <button type="button" class="menu-mobile__fermer" aria-label="Fermer le menu">✕</button>
+    </div>
+    <ul class="menu-mobile__liste">
+      <li><a class="menu-mobile__lien" href="#concept">Le concept</a></li>
+      <li><a class="menu-mobile__lien" href="#comment-ca-marche">Comment ça marche</a></li>
+      <li><a class="menu-mobile__lien" href="#parcours">Parcours</a></li>
+      <li><a class="menu-mobile__lien" href="#tarifs">Tarifs</a></li>
+      <li><a class="menu-mobile__lien" href="#associations">Associations</a></li>
+      <li><a class="menu-mobile__lien" href="#faq">FAQ</a></li>
+    </ul>
+    <a class="bouton bouton--principal bouton--large" href="https://doneo.web.app/" target="_blank" rel="noopener">Ouvrir l'app<span class="visually-hidden"> Donéo, nouvel onglet</span><svg class="icone-sortante" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 4h6v6"/><path d="M12 4 4 12"/></svg></a>
+  </nav>
+
+  <main id="contenu-principal">
+
+    <!-- 5.2 HERO -->
+    <section class="hero">
+      <div class="blob blob--1 blob--lavande" aria-hidden="true"></div>
+      <div class="blob blob--2 blob--menthe" aria-hidden="true"></div>
+      <div class="conteneur hero__grille">
+        <div>
+          <h1 class="hero__titre">Donné, pas jeté.</h1>
+          <p class="hero__sous-titre">Vous donnez un objet, vous fixez une participation solidaire, et l'essentiel part à l'association de votre choix.</p>
+          <div class="hero__actions">
+            <a class="bouton bouton--sur-violet" href="https://doneo.web.app/" target="_blank" rel="noopener">Donner un objet<span class="visually-hidden"> sur l'app Donéo, nouvel onglet</span></a>
+            <a class="bouton bouton--contour-blanc" href="https://doneo.web.app/" target="_blank" rel="noopener">Trouver un objet<span class="visually-hidden"> sur l'app Donéo, nouvel onglet</span></a>
+          </div>
+          <p class="hero__app">
+            <a class="hero__lien-app" href="https://doneo.web.app/" target="_blank" rel="noopener">doneo.web.app<span class="hero__lien-app-fleche" aria-hidden="true">→</span><span class="visually-hidden"> : ouvrir l'app Donéo, nouvel onglet</span></a>
+          </p>
+          <div class="hero__chiffres">
+            <span class="hero__chiffre">2 € de participation solidaire en moyenne</span>
+            <span class="hero__chiffre">L'essentiel reversé aux associations</span>
+            <span class="hero__chiffre">Une micro-commission pour faire vivre la plateforme</span>
+          </div>
+        </div>
+        <div class="hero__visuel">
+          <div class="telephone telephone--hero">
+            <div class="telephone__cadre">
+              <span class="telephone__encoche" aria-hidden="true"></span>
+              <div class="telephone__ecran">
+                <img src="assets/screens/accueil.webp" alt="Écran d'accueil de l'application Donéo : barre de recherche, catégories et derniers objets ajoutés avec leur participation solidaire" width="776" height="1684" fetchpriority="high">
+              </div>
+            </div>
+            <img class="telephone__sticker" src="assets/illustrations/objet-coeur.svg" alt="" width="120" height="120">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.3 LE CONCEPT -->
+    <section id="concept" class="section">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Entre la revente et la poubelle, il manquait quelque chose</h2>
+        </div>
+        <div class="grille grille--3">
+          <article class="concept-carte au-defilement">
+            <img class="concept-carte__icone" src="assets/illustrations/icons/icon-calendrier-annule.svg" alt="" loading="lazy" width="56" height="56">
+            <h3 class="concept-carte__titre">Le don pur ne marche pas</h3>
+            <p class="concept-carte__texte">Sans engagement, un rendez-vous sur deux est annulé et l'objet reste chez vous.</p>
+          </article>
+          <article class="concept-carte au-defilement">
+            <img class="concept-carte__icone" src="assets/illustrations/icons/icon-etiquette-barree.svg" alt="" loading="lazy" width="56" height="56">
+            <h3 class="concept-carte__titre">La revente dénature le geste</h3>
+            <p class="concept-carte__texte">Marchandage, lowballing, et l'impression de brader ce qu'on voulait offrir.</p>
+          </article>
+          <article class="concept-carte au-defilement">
+            <img class="concept-carte__icone" src="assets/illustrations/icons/icon-coeur-cadeau.svg" alt="" loading="lazy" width="56" height="56">
+            <h3 class="concept-carte__titre">Donéo fait les deux</h3>
+            <p class="concept-carte__texte">Une participation solidaire qui engage le preneur, et qui finit pour l'essentiel sur le compte d'une association.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.4 PRODUITS ET SERVICES -->
+    <section id="produits" class="section section--lavande">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Ce que fait l'application</h2>
+        </div>
+        <div class="produits__grille">
+          <div class="grille grille--services">
+            <article class="service-carte service-carte--lavande au-defilement">
+              <img class="service-carte__icone" src="assets/illustrations/icons/icon-appareil-photo.svg" alt="" loading="lazy" width="48" height="48">
+              <h3 class="service-carte__titre">Publier en deux minutes</h3>
+              <p class="service-carte__texte">Photo, titre, participation solidaire, association. C'est en ligne.</p>
+            </article>
+            <article class="service-carte service-carte--menthe au-defilement">
+              <img class="service-carte__icone" src="assets/illustrations/icons/icon-localisation.svg" alt="" loading="lazy" width="48" height="48">
+              <h3 class="service-carte__titre">Chercher autour de soi</h3>
+              <p class="service-carte__texte">Vue carte ou vue liste, filtrée par distance à pied.</p>
+            </article>
+            <article class="service-carte service-carte--pervenche au-defilement">
+              <img class="service-carte__icone" src="assets/illustrations/icons/icon-eclair.svg" alt="" loading="lazy" width="48" height="48">
+              <h3 class="service-carte__titre">Réserver d'un geste</h3>
+              <p class="service-carte__texte">Le premier qui demande l'objet l'obtient et confirme en payant la participation. Fini la file de messages.</p>
+            </article>
+            <article class="service-carte service-carte--menthe au-defilement">
+              <img class="service-carte__icone" src="assets/illustrations/icons/icon-calendrier.svg" alt="" loading="lazy" width="48" height="48">
+              <h3 class="service-carte__titre">Un créneau fixé à l'avance</h3>
+              <p class="service-carte__texte">L'offrant fixe le créneau de retrait en publiant. Pas d'agenda à négocier.</p>
+            </article>
+            <article class="service-carte service-carte--pervenche au-defilement">
+              <img class="service-carte__icone" src="assets/illustrations/icons/icon-message.svg" alt="" loading="lazy" width="48" height="48">
+              <h3 class="service-carte__titre">Échanger par messagerie</h3>
+              <p class="service-carte__texte">Une conversation rattachée à l'annonce, jamais de numéro de téléphone à donner.</p>
+            </article>
+            <article class="service-carte service-carte--lavande au-defilement">
+              <img class="service-carte__icone" src="assets/illustrations/icons/icon-recu.svg" alt="" loading="lazy" width="48" height="48">
+              <h3 class="service-carte__titre">Recevoir son reçu</h3>
+              <p class="service-carte__texte">La preuve du versement à l'association arrive après chaque don.</p>
+            </article>
+          </div>
+          <div class="produits__visuel">
+            <div class="telephone telephone--petit telephone--inverse">
+              <div class="telephone__cadre">
+                <span class="telephone__encoche" aria-hidden="true"></span>
+                <div class="telephone__ecran">
+                  <img src="assets/screens/visualisation-annonce.webp" alt="Fiche d'une annonce vue par le demandeur dans l'application Donéo : photo de l'objet, participation solidaire de 2 € pour Emmaüs, profil de l'offrante et retrait de l'objet" width="776" height="1684" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.5 COMMENT ÇA MARCHE -->
+    <section id="comment-ca-marche" class="section">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Comment ça marche</h2>
+          <p class="section__sous-titre">Deux parcours, un seul objet qui change de mains.</p>
+        </div>
+
+        <div role="tablist" aria-label="Choisir un parcours" class="onglets__liste">
+          <button type="button" role="tab" id="onglet-donne" aria-selected="true" aria-controls="panneau-donne" class="onglets__bouton" tabindex="0">Je donne</button>
+          <button type="button" role="tab" id="onglet-cherche" aria-selected="false" aria-controls="panneau-cherche" class="onglets__bouton" tabindex="-1">Je cherche</button>
+        </div>
+
+        <div class="ccm__grille">
+          <div class="ccm__panneaux">
+            <div id="panneau-donne" role="tabpanel" aria-labelledby="onglet-donne" class="onglets__panneau">
+              <ol class="etapes">
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">1</span>
+                  <div>
+                    <h3 class="etape__titre">Je photographie l'objet</h3>
+                    <p class="etape__texte">Une photo, un titre, l'état réel. Deux minutes suffisent.</p>
+                  </div>
+                </li>
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">2</span>
+                  <div>
+                    <h3 class="etape__titre">Je fixe une participation solidaire</h3>
+                    <p class="etape__texte">Le montant est libre et reste bas par principe. Ce n'est pas un prix de vente, c'est un engagement.</p>
+                  </div>
+                </li>
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">3</span>
+                  <div>
+                    <h3 class="etape__titre">Je choisis une association</h3>
+                    <p class="etape__texte">Emmaüs, les Restos du Cœur, le Secours Populaire. C'est elle qui recevra l'essentiel de la participation.</p>
+                  </div>
+                </li>
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">4</span>
+                  <div>
+                    <h3 class="etape__titre">Je remets l'objet</h3>
+                    <p class="etape__texte">Au créneau que j'ai fixé. Le versement part automatiquement.</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+
+            <div id="panneau-cherche" role="tabpanel" aria-labelledby="onglet-cherche" class="onglets__panneau" hidden>
+              <ol class="etapes">
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">1</span>
+                  <div>
+                    <h3 class="etape__titre">Je cherche autour de moi</h3>
+                    <p class="etape__texte">Les objets disponibles à distance de marche, filtrés par catégorie.</p>
+                  </div>
+                </li>
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">2</span>
+                  <div>
+                    <h3 class="etape__titre">Je demande l'objet</h3>
+                    <p class="etape__texte">Le premier qui demande l'obtient. Je confirme en payant quelques euros de participation.</p>
+                  </div>
+                </li>
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">3</span>
+                  <div>
+                    <h3 class="etape__titre">Je viens au créneau</h3>
+                    <p class="etape__texte">Le créneau est fixé par l'offrant : je sais tout de suite si ça m'arrange.</p>
+                  </div>
+                </li>
+                <li class="etape">
+                  <span class="etape__numero" aria-hidden="true">4</span>
+                  <div>
+                    <h3 class="etape__titre">Je récupère l'objet</h3>
+                    <p class="etape__texte">À pied, à quelques rues. Et mes 2 € ont soutenu une association.</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+          </div>
+          <div class="ccm__visuel">
+            <div class="telephone">
+              <div class="telephone__cadre">
+                <span class="telephone__encoche" aria-hidden="true"></span>
+                <div class="telephone__ecran">
+                  <img class="est-actif" data-panneau="panneau-donne" src="assets/screens/creation-annonce.webp" alt="Écran de création d'annonce dans l'application Donéo : photos, titre, catégorie, état et description de l'objet" width="776" height="1684" loading="lazy">
+                  <img data-panneau="panneau-cherche" src="assets/screens/recherche-carte.webp" alt="Recherche sur carte dans l'application Donéo : objets disponibles autour de soi, à Lyon" width="776" height="1684" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.6 PARCOURS UTILISATEURS -->
+    <section id="parcours" class="section section--lavande">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Deux personnes, deux besoins</h2>
+        </div>
+        <div class="grille grille--2">
+          <article class="persona-carte persona-carte--violet au-defilement">
+            <img class="persona-carte__illustration" src="assets/illustrations/objet-coeur.svg" alt="Objet avec un cœur, symbolisant le geste de Léa" width="72" height="72" loading="lazy">
+            <span class="persona-carte__etiquette">LÉA, 27 ANS — OFFRANTE</span>
+            <p class="persona-carte__citation">« Il faut que tout parte avant le 30. »</p>
+            <p class="persona-carte__texte">Léa déménage dans trois semaines. Elle doit vider son appartement sans passer par la déchetterie, et préfère que ses meubles servent encore à quelqu'un.</p>
+            <h3 class="persona-carte__sous-titre">Ce que Donéo change pour elle</h3>
+            <ul class="persona-carte__liste">
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>Un preneur qui s'est engagé en payant, donc qui vient vraiment</li>
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>Plus de marchandage sur une participation déjà modeste</li>
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>Le créneau de retrait, c'est elle qui le fixe</li>
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>La preuve que ses 2 € ont bien soutenu l'association</li>
+            </ul>
+          </article>
+          <article class="persona-carte persona-carte--rose au-defilement">
+            <img class="persona-carte__illustration" src="assets/illustrations/expression-reconnaissant.svg" alt="Cœur au sourire reconnaissant, représentant Jérôme" width="72" height="72" loading="lazy">
+            <span class="persona-carte__etiquette">JÉRÔME, 22 ANS — DEMANDEUR</span>
+            <p class="persona-carte__citation">« Je n'ai rien demandé à personne. »</p>
+            <p class="persona-carte__texte">Jérôme vient d'emménager dans un studio non meublé. Budget très serré, pas de voiture, et l'envie de ne pas se sentir assisté.</p>
+            <h3 class="persona-carte__sous-titre">Ce que Donéo change pour lui</h3>
+            <ul class="persona-carte__liste">
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>Des objets utiles à distance de marche</li>
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>Une réservation immédiate, avant que l'objet ne parte</li>
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>L'état réel de l'objet connu avant de se déplacer</li>
+              <li><span class="persona-carte__coche" aria-hidden="true">✓</span>Un don qui ne ressemble pas à de la charité</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.7 TARIFS -->
+    <section id="tarifs" class="section">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Tarifs</h2>
+          <p class="section__sous-titre">Une micro-commission est prélevée sur la participation pour couvrir les frais de fonctionnement. Le reste est reversé à l'association choisie par l'offrant.</p>
+        </div>
+        <div class="grille grille--3">
+          <article class="tarif-carte au-defilement">
+            <h3 class="tarif-carte__titre">Particulier</h3>
+            <p class="tarif-carte__prix">Gratuit</p>
+            <p class="tarif-carte__mention">Inscription et publication sans frais</p>
+            <ul class="tarif-carte__liste">
+              <li>Publier un nombre illimité d'objets</li>
+              <li>Réserver les objets disponibles</li>
+              <li>Messagerie rattachée aux annonces</li>
+              <li>Reçus de dons téléchargeables</li>
+            </ul>
+            <a class="bouton bouton--secondaire bouton--large" href="https://doneo.web.app/" target="_blank" rel="noopener">Ouvrir l'app<span class="visually-hidden"> Donéo, nouvel onglet</span><svg class="icone-sortante" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 4h6v6"/><path d="M12 4 4 12"/></svg></a>
+          </article>
+
+          <article class="tarif-carte tarif-carte--mise-en-avant au-defilement">
+            <span class="tarif-carte__pastille">Le plus utilisé</span>
+            <h3 class="tarif-carte__titre">Association bénéficiaire</h3>
+            <p class="tarif-carte__prix">Gratuit</p>
+            <p class="tarif-carte__mention">Sans engagement</p>
+            <ul class="tarif-carte__liste">
+              <li>Référencement dans le choix des offrants</li>
+              <li>Versement mensuel automatisé</li>
+              <li>Tableau de bord des montants collectés</li>
+              <li>Page dédiée à votre cause</li>
+            </ul>
+            <a class="bouton bouton--principal bouton--large" href="#contact">Proposer votre association</a>
+          </article>
+
+          <article class="tarif-carte au-defilement">
+            <h3 class="tarif-carte__titre">Entreprise et collectivité</h3>
+            <p class="tarif-carte__prix">Sur devis</p>
+            <p class="tarif-carte__mention">À partir de 290 € / campagne</p>
+            <ul class="tarif-carte__liste">
+              <li>Campagnes de dons internes lors des déménagements de bureaux</li>
+              <li>Collecte de matériel informatique reconditionné</li>
+              <li>Reporting RSE sur les objets détournés de la benne</li>
+              <li>Accompagnement dédié</li>
+            </ul>
+            <a class="bouton bouton--secondaire bouton--large" href="#contact">Nous contacter</a>
+          </article>
+        </div>
+        <p class="tarifs__note">Une micro-commission est prélevée sur la participation pour couvrir les frais de fonctionnement. Le reste est reversé à l'association choisie par l'offrant.</p>
+      </div>
+    </section>
+
+    <!-- 5.8 ASSOCIATIONS -->
+    <!-- Les partenariats associatifs présentés ci-dessous sont fictifs : ce site est réalisé dans le cadre d'un projet étudiant et aucune des associations citées n'est réellement partenaire de Donéo. -->
+    <section id="associations" class="section section--lavande">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Des causes que vous pouvez soutenir</h2>
+          <p class="section__sous-titre">Au moment de publier, vous choisissez l'association qui recevra l'essentiel de votre participation solidaire.</p>
+        </div>
+        <div class="grille grille--partenaires">
+          <article class="partenaire-carte au-defilement">
+            <span class="pastille-cause pastille-cause--lavande">
+              <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 13 14 4.5 24.5 13"/><path d="M6.5 11v12.5h15V11"/><path d="M14 21c-3.06 -2.04 -4.25 -3.4 -4.25 -4.93a2.13 2.13 0 0 1 4.25 -0.85a2.13 2.13 0 0 1 4.25 0.85c0 1.53 -1.19 2.89 -4.25 4.93z"/></svg>
+            </span>
+            <div>
+              <p class="partenaire-carte__nom">Emmaüs</p>
+              <p class="partenaire-carte__texte">Lutte contre l'exclusion et réemploi solidaire</p>
+            </div>
+          </article>
+          <article class="partenaire-carte au-defilement">
+            <span class="pastille-cause pastille-cause--rose">
+              <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4.5 13h19a9.5 8 0 0 1-19 0z"/><path d="M10.5 24.5h7"/><path d="M10 10q-1.5-1.5 0-3t0-3"/><path d="M14 10q-1.5-1.5 0-3t0-3"/><path d="M18 10q-1.5-1.5 0-3t0-3"/></svg>
+            </span>
+            <div>
+              <p class="partenaire-carte__nom">Les Restos du Cœur</p>
+              <p class="partenaire-carte__texte">Aide alimentaire et accompagnement</p>
+            </div>
+          </article>
+          <article class="partenaire-carte au-defilement">
+            <span class="pastille-cause pastille-cause--menthe">
+              <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 14c-3.42 -2.28 -4.75 -3.8 -4.75 -5.51a2.38 2.38 0 0 1 4.75 -0.95a2.38 2.38 0 0 1 4.75 0.95c0 1.71 -1.33 3.23 -4.75 5.51z"/><path d="M3.5 18H7.5c1.5 0 2.5-1 4.5-1h4a1.6 1.6 0 0 1 0 3.2h-3.5"/><path d="M16.2 20.2l5.2-2.6a1.6 1.6 0 0 1 1.8 2.6L17.5 24H8l-2-1H3.5"/></svg>
+            </span>
+            <div>
+              <p class="partenaire-carte__nom">Secours Populaire</p>
+              <p class="partenaire-carte__texte">Solidarité de proximité toute l'année</p>
+            </div>
+          </article>
+          <article class="partenaire-carte au-defilement">
+            <span class="pastille-cause pastille-cause--pervenche">
+              <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 9h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3z"/><path d="M10.5 9V7a1.5 1.5 0 0 1 1.5-1.5h4A1.5 1.5 0 0 1 17.5 7v2"/><path d="M14 13v7M10.5 16.5h7"/></svg>
+            </span>
+            <div>
+              <p class="partenaire-carte__nom">La Croix-Rouge française</p>
+              <p class="partenaire-carte__texte">Urgence, secourisme et action sociale</p>
+            </div>
+          </article>
+          <article class="partenaire-carte au-defilement">
+            <span class="pastille-cause pastille-cause--citron">
+              <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h9A2.5 2.5 0 0 1 18 6.5v5a2.5 2.5 0 0 1-2.5 2.5H10l-3.5 3v-3A2.5 2.5 0 0 1 4 11.5z"/><path d="M20.5 11h1A2.5 2.5 0 0 1 24 13.5V18a2.5 2.5 0 0 1-2.5 2.5v3l-3.5-3h-3a2.5 2.5 0 0 1-2.5-2.5v-1.5"/></svg>
+            </span>
+            <div>
+              <p class="partenaire-carte__nom">Les Petits Frères des Pauvres</p>
+              <p class="partenaire-carte__texte">Contre l'isolement des personnes âgées</p>
+            </div>
+          </article>
+          <article class="partenaire-carte au-defilement">
+            <span class="pastille-cause pastille-cause--lavande">
+              <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 16c-3.78 -2.52 -5.25 -4.2 -5.25 -6.09a2.63 2.63 0 0 1 5.25 -1.05a2.63 2.63 0 0 1 5.25 1.05c0 1.89 -1.47 3.57 -5.25 6.09z"/><path d="M20.5 14.5c-2.88 -1.92 -4 -3.2 -4 -4.64a2 2 0 0 1 4 -0.8a2 2 0 0 1 4 0.8c0 1.44 -1.12 2.72 -4 4.64z"/><path d="M14.5 23c-1.98 -1.32 -2.75 -2.2 -2.75 -3.19a1.38 1.38 0 0 1 2.75 -0.55a1.38 1.38 0 0 1 2.75 0.55c0 0.99 -0.77 1.87 -2.75 3.19z"/></svg>
+            </span>
+            <div>
+              <p class="partenaire-carte__nom">Le Secours Catholique</p>
+              <p class="partenaire-carte__texte">Accompagnement des familles en précarité</p>
+            </div>
+          </article>
+        </div>
+        <p class="partenaires__appel"><a href="#contact">Votre association souhaite être proposée aux offrants ?</a></p>
+      </div>
+    </section>
+
+    <!-- 5.9 TÉMOIGNAGES -->
+    <section id="temoignages" class="section">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Ils ont essayé</h2>
+        </div>
+        <div class="grille grille--3">
+          <article class="temoignage-carte au-defilement">
+            <div class="temoignage-carte__entete">
+              <span class="pastille-initiales pastille-initiales--1" aria-hidden="true">LR</span>
+              <div>
+                <p class="temoignage-carte__nom">Léa R.</p>
+                <p class="temoignage-carte__role">Offrante, Lyon 7e</p>
+              </div>
+            </div>
+            <p class="temoignage-carte__citation">« J'ai publié mon étagère un dimanche soir, elle était réservée deux heures plus tard. Le gars est venu, pour de vrai. »</p>
+            <span class="etoiles" aria-label="5 étoiles sur 5">★★★★★</span>
+          </article>
+          <article class="temoignage-carte au-defilement">
+            <div class="temoignage-carte__entete">
+              <span class="pastille-initiales pastille-initiales--2" aria-hidden="true">JM</span>
+              <div>
+                <p class="temoignage-carte__nom">Jérôme M.</p>
+                <p class="temoignage-carte__role">Demandeur, Villeurbanne</p>
+              </div>
+            </div>
+            <p class="temoignage-carte__citation">« J'ai meublé mon studio en trois semaines pour moins de quinze euros. Et cet argent a soutenu Emmaüs. »</p>
+            <span class="etoiles" aria-label="5 étoiles sur 5">★★★★★</span>
+          </article>
+          <article class="temoignage-carte au-defilement">
+            <div class="temoignage-carte__entete">
+              <span class="pastille-initiales pastille-initiales--3" aria-hidden="true">NB</span>
+              <div>
+                <p class="temoignage-carte__nom">Nadia B.</p>
+                <p class="temoignage-carte__role">Responsable collecte, association bénéficiaire</p>
+              </div>
+            </div>
+            <p class="temoignage-carte__citation">« Des petits montants, mais réguliers, et surtout des offrants qui découvrent notre travail. »</p>
+            <span class="etoiles" aria-label="5 étoiles sur 5">★★★★★</span>
+          </article>
+        </div>
+        <p class="mention-discrete">Témoignages illustratifs.</p>
+      </div>
+    </section>
+
+    <!-- 5.10 FAQ -->
+    <section id="faq" class="section section--lavande">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Foire aux questions</h2>
+        </div>
+        <div class="faq__groupes">
+          <div class="faq__groupe">
+            <h3 class="faq__titre-groupe">Offrants</h3>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="true" aria-controls="faq-don-1" id="faq-don-1-q">
+                  Pourquoi fixer une participation si c'est un don ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-don-1" role="region" aria-labelledby="faq-don-1-q" class="faq-item__reponse">Parce qu'un don gratuit n'engage personne. Une participation solidaire de quelques euros suffit à garantir que le preneur se déplace vraiment, et cette somme finance une association.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-don-2" id="faq-don-2-q">
+                  Qui reçoit l'argent ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-don-2" role="region" aria-labelledby="faq-don-2-q" class="faq-item__reponse" hidden>L'association que vous avez choisie au moment de publier l'annonce, déduction faite d'une micro-commission de fonctionnement prélevée par Donéo.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-don-3" id="faq-don-3-q">
+                  Comment est fixée la participation solidaire ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-don-3" role="region" aria-labelledby="faq-don-3-q" class="faq-item__reponse" hidden>Vous la fixez librement. Par principe, elle reste basse : ce n'est pas un prix de vente, c'est un geste solidaire.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-don-4" id="faq-don-4-q">
+                  Et si personne ne vient chercher l'objet ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-don-4" role="region" aria-labelledby="faq-don-4-q" class="faq-item__reponse" hidden>Une fois le créneau passé, la réservation est annulée et la participation est remboursée. L'objet est aussitôt proposé à la personne suivante sur la liste d'attente.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-don-5" id="faq-don-5-q">
+                  Puis-je donner autre chose que des meubles ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-don-5" role="region" aria-labelledby="faq-don-5-q" class="faq-item__reponse" hidden>Oui : vaisselle, électroménager, vêtements, livres, matériel informatique. Tout sauf les objets interdits à la revente et les denrées périssables.</p>
+            </div>
+          </div>
+
+          <div class="faq__groupe">
+            <h3 class="faq__titre-groupe">Demandeurs</h3>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="true" aria-controls="faq-ben-1" id="faq-ben-1-q">
+                  Dois-je justifier ma situation ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-ben-1" role="region" aria-labelledby="faq-ben-1-q" class="faq-item__reponse">Non, jamais. Donéo ne demande aucun justificatif de revenus. La participation solidaire remplace le dossier.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-ben-2" id="faq-ben-2-q">
+                  Que se passe-t-il après ma réservation ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-ben-2" role="region" aria-labelledby="faq-ben-2-q" class="faq-item__reponse" hidden>Si votre demande est arrivée la première, l'objet vous revient. Vous confirmez en payant la participation, puis vous venez au créneau fixé par l'offrant. L'adresse exacte s'échange par messagerie.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-ben-3" id="faq-ben-3-q">
+                  Comment savoir si l'objet est en bon état ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-ben-3" role="region" aria-labelledby="faq-ben-3-q" class="faq-item__reponse" hidden>Chaque annonce affiche l'état déclaré et des photos réelles. Vous pouvez poser vos questions avant de réserver.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-ben-4" id="faq-ben-4-q">
+                  Puis-je annuler ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-ben-4" role="region" aria-labelledby="faq-ben-4-q" class="faq-item__reponse" hidden>Oui. Si vous annulez, votre participation vous est remboursée et l'objet est proposé à la personne suivante.</p>
+            </div>
+
+            <div class="faq-item au-defilement">
+              <h4 style="margin:0;">
+                <button type="button" class="faq-item__question" aria-expanded="false" aria-controls="faq-ben-5" id="faq-ben-5-q">
+                  Dois-je avoir une voiture ?
+                  <span class="faq-item__icone" aria-hidden="true">+</span>
+                </button>
+              </h4>
+              <p id="faq-ben-5" role="region" aria-labelledby="faq-ben-5-q" class="faq-item__reponse" hidden>Non. Le filtre de distance permet de ne voir que les objets accessibles à pied ou en transports.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.11 CTA FINAL -->
+    <section id="cta-final" class="section">
+      <div class="conteneur">
+        <div class="cta-final au-defilement">
+          <div class="blob blob--1 blob--lavande" aria-hidden="true"></div>
+          <div class="cta-final__grille">
+            <div class="cta-final__contenu">
+              <h2 class="cta-final__titre">Votre prochain déménagement peut aider quelqu'un</h2>
+              <p class="cta-final__texte">Pas de téléchargement, pas de store : Donéo s'ouvre directement dans votre navigateur.</p>
+              <a class="bouton bouton--sur-violet cta-final__bouton" href="https://doneo.web.app/" target="_blank" rel="noopener">Ouvrir Donéo<span class="visually-hidden">, nouvel onglet</span><svg class="cta-final__fleche" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+              <div class="cta-final__adresse">
+                <a class="cta-final__url" href="https://doneo.web.app/" target="_blank" rel="noopener">doneo.web.app<span class="visually-hidden"> : ouvrir l'app Donéo, nouvel onglet</span></a>
+                <button type="button" class="cta-final__copier" data-copier="https://doneo.web.app/" data-statut="cta-final-statut" aria-label="Copier le lien" title="Copier le lien">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5"/></svg>
+                </button>
+                <span id="cta-final-statut" class="cta-final__statut" role="status"></span>
+              </div>
+              <ol class="cta-final__etapes">
+                <li class="cta-final__etape">
+                  <span class="cta-final__etape-icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M10 13.5a4.5 4.5 0 0 0 6.6.4l2.8-2.8a4.5 4.5 0 0 0-6.4-6.4l-1.5 1.5"/><path d="M14 10.5a4.5 4.5 0 0 0-6.6-.4l-2.8 2.8a4.5 4.5 0 0 0 6.4 6.4l1.5-1.5"/></svg></span>
+                  <span>1. Ouvrez le lien</span>
+                </li>
+                <li class="cta-final__etape">
+                  <span class="cta-final__etape-icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8.5v6M9 11.5h6"/><path d="M10.5 18.5h3"/></svg></span>
+                  <span>2. Ajoutez Donéo à votre écran d'accueil</span>
+                </li>
+                <li class="cta-final__etape">
+                  <span class="cta-final__etape-icone" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 11.5h16v9H4z"/><path d="M3 7.5h18v4H3z"/><path d="M12 7.5v13"/><path d="M12 7.5C10.5 4 7 3.5 7 5.5s3 2 5 2c2 0 5 0 5-2s-3.5-1.5-5 2z"/></svg></span>
+                  <span>3. Publiez votre premier objet</span>
+                </li>
+              </ol>
+            </div>
+            <figure class="cta-final__qr">
+              <img class="cta-final__qr-code" src="assets/qr-doneo.svg" alt="QR code vers doneo.web.app" width="176" height="176" loading="lazy">
+              <figcaption class="cta-final__qr-legende">Scannez avec votre téléphone</figcaption>
+              <img class="cta-final__qr-coeur" src="assets/illustrations/expression-celebration.svg" alt="" width="88" height="88" loading="lazy">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5.12 CONTACT -->
+    <section id="contact" class="section">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 class="section__titre">Une question ? Écrivez-nous</h2>
+        </div>
+        <div class="contact__grille">
+          <form id="formulaire-contact" class="formulaire au-defilement" novalidate>
+            <div role="status" id="formulaire-statut" class="formulaire__statut"></div>
+
+            <div class="champ">
+              <label class="champ__label" for="champ-nom">Nom et prénom <span class="champ__obligatoire" aria-hidden="true">*</span></label>
+              <input class="champ__input" type="text" id="champ-nom" name="nom" required aria-describedby="erreur-nom" aria-invalid="false" autocomplete="name">
+              <p class="champ__erreur" id="erreur-nom"></p>
+            </div>
+
+            <div class="champ">
+              <label class="champ__label" for="champ-email">Adresse e-mail <span class="champ__obligatoire" aria-hidden="true">*</span></label>
+              <input class="champ__input" type="email" id="champ-email" name="email" required aria-describedby="erreur-email" aria-invalid="false" autocomplete="email">
+              <p class="champ__erreur" id="erreur-email"></p>
+            </div>
+
+            <div class="champ">
+              <label class="champ__label" for="champ-profil">Vous êtes <span class="champ__obligatoire" aria-hidden="true">*</span></label>
+              <select class="champ__select" id="champ-profil" name="profil" required aria-describedby="erreur-profil" aria-invalid="false">
+                <option value="">Choisissez une option</option>
+                <option value="Particulier">Particulier</option>
+                <option value="Association">Association</option>
+                <option value="Entreprise">Entreprise</option>
+                <option value="Presse">Presse</option>
+              </select>
+              <p class="champ__erreur" id="erreur-profil"></p>
+            </div>
+
+            <div class="champ">
+              <label class="champ__label" for="champ-message">Votre message <span class="champ__obligatoire" aria-hidden="true">*</span></label>
+              <textarea class="champ__textarea" id="champ-message" name="message" required aria-describedby="erreur-message" aria-invalid="false"></textarea>
+              <p class="champ__erreur" id="erreur-message"></p>
+            </div>
+
+            <div class="champ champ--case">
+              <input type="checkbox" id="champ-consentement" name="consentement" required aria-describedby="erreur-consentement" aria-invalid="false">
+              <label for="champ-consentement">J'accepte que mes données soient utilisées pour traiter ma demande.</label>
+            </div>
+            <p class="champ__erreur" id="erreur-consentement"></p>
+
+            <button type="submit" class="bouton bouton--principal">Envoyer</button>
+            <p class="mention-discrete">Formulaire de démonstration, aucune donnée n'est collectée.</p>
+          </form>
+
+          <aside class="coordonnees au-defilement">
+            <h3 class="coordonnees__titre">Nos coordonnées</h3>
+            <p class="coordonnees__item">hello@doneo.fr</p>
+            <p class="coordonnees__item">Lyon, France</p>
+            <div class="coordonnees__reseaux" aria-label="Réseaux sociaux de Donéo">
+              <span class="coordonnees__reseau" aria-disabled="true" role="link" aria-label="Instagram (lien indisponible)">IG</span>
+              <span class="coordonnees__reseau" aria-disabled="true" role="link" aria-label="LinkedIn (lien indisponible)">IN</span>
+              <span class="coordonnees__reseau" aria-disabled="true" role="link" aria-label="X (lien indisponible)">X</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 5.13 FOOTER -->
+  <footer class="pied">
+    <div class="conteneur">
+      <div class="pied__grille">
+        <div>
+          <a class="pied__logo" href="index.html" aria-label="Donéo — Accueil">
+            <img src="assets/illustrations/logo-doneo.svg" alt="Donéo" width="183" height="44">
+          </a>
+          <p class="pied__baseline">Donné, pas jeté.</p>
+        </div>
+        <div>
+          <h3 class="pied__titre-colonne">Navigation</h3>
+          <ul class="pied__liste">
+            <li><a href="#concept">Le concept</a></li>
+            <li><a href="#comment-ca-marche">Comment ça marche</a></li>
+            <li><a href="#parcours">Parcours</a></li>
+            <li><a href="#tarifs">Tarifs</a></li>
+            <li><a href="#associations">Associations</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="pied__titre-colonne">Ressources</h3>
+          <ul class="pied__liste">
+            <li><a href="cgv.html">CGV</a></li>
+            <li><a href="mentions-legales.html">Mentions légales</a></li>
+            <li><a href="confidentialite.html">Confidentialité</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="pied__titre-colonne">Contact</h3>
+          <ul class="pied__liste">
+            <li><a href="mailto:hello@doneo.fr">hello@doneo.fr</a></li>
+            <li>Lyon, France</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pied__bas">
+        <p>© 2026 Donéo SAS — Site de démonstration.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=4" type="module"></script>
+</body>
+</html>
