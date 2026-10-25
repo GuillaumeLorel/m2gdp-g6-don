@@ -3,12 +3,17 @@
  * US-7 (#35) — fixer la participation et le créneau ;
  * US-8 (#36) — préremplir l'adresse de retrait depuis le profil.
  *
- * Les annonces publiees ici partent dans la vraie base : elles sont
- * supprimees a la fin (supprimerAnnonces).
+ * Les annonces et les photos publiees ici partent dans la vraie base et le
+ * vrai stockage : elles sont supprimees a la fin.
  */
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import { PROFILS, attendrePasDeDefilementHorizontal, ouvrirConnecte, supprimerAnnonces } from './outils.js';
+import {
+  PROFILS,
+  attendrePasDeDefilementHorizontal,
+  ouvrirConnecte,
+  supprimerAnnonces,
+} from './outils.js';
 
 const bastien = JSON.parse(
   readFileSync(new URL('../../specs/donnees/demo/utilisateurs.json', import.meta.url), 'utf8'),
@@ -22,6 +27,8 @@ const PNG = Buffer.from(
 const photo = (nom = 'etagere.png') => ({ name: nom, mimeType: 'image/png', buffer: PNG });
 
 const publiees = [];
+// Les photos, elles, sont supprimees une fois tous les tests finis
+// (global-teardown.js) : d'autres navigateurs en televersent en parallele.
 test.afterAll(() => supprimerAnnonces(publiees));
 
 const champ = (page, nom) => page.getByLabel(nom, { exact: true });
@@ -54,7 +61,8 @@ test('Publier une annonce complète (cas nominal)', async ({ page }) => {
   publiees.push(page.url().split('/').pop());
   await expect(page.getByRole('status')).toContainText('Votre annonce est en ligne');
   await expect(page.getByRole('heading', { level: 1, name: 'Étagère bois 3 niveaux' })).toBeVisible();
-  await expect(page.locator('img[src*="/api/medias/"]').first()).toBeVisible();
+  // La photo vient directement de Supabase Storage.
+  await expect(page.locator('img[src*="/storage/v1/object/public/medias/"]').first()).toBeVisible();
   // Disponible : ni bandeau « réservé », ni « trouvé preneur ».
   await expect(page.getByText(/déjà réservé|trouvé preneur/)).toHaveCount(0);
 });

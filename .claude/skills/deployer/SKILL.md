@@ -83,8 +83,8 @@ Valider la configuration sans rien publier :
 wrangler deploy --dry-run --outdir /tmp/dry
 ```
 
-Le dry-run affiche les bindings résolus (`DB_SESSIONS`, `BUCKET_FICHIERS`,
-`ALLOWED_ORIGIN`) : c'est le moyen le plus rapide de détecter un `wrangler.toml`
+Le dry-run affiche les bindings résolus (`DB_SESSIONS`,
+`ALLOWED_ORIGIN`, `SUPABASE_URL`) : c'est le moyen le plus rapide de détecter un `wrangler.toml`
 cassé avant de déployer.
 
 ## Après déploiement

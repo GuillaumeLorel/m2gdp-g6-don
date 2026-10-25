@@ -16,7 +16,7 @@
  *   POST /api/annonces            publier une annonce (offrant)
  *   GET  /api/annonces/{id}       fiche publique d'une annonce
  *   POST /api/medias              televerser une photo
- *   GET  /api/medias/{id}         le fichier d'une photo
+ *   GET  /api/medias/{id}         redirige vers le fichier (Supabase Storage)
  *   DELETE /api/medias/{id}       supprimer une de ses photos
  *   GET  /api/health              healthcheck
  */
@@ -24,7 +24,7 @@
 import { ecrireLigne, lireLigne, listerTable, profilExistePourEmail, utilisateurDuJeton } from './base.js';
 import { validerAdresse } from './adresse.js';
 import { chargerAnnonce, rechercherAnnonces } from './annonces.js';
-import { servir, supprimer, televerser } from './medias.js';
+import { supprimer, televerser, urlMedia } from './medias.js';
 import { publierAnnonce } from './publication.js';
 import { arbreCategories, associations, versAssociation } from './referentiels.js';
 import { correspond } from './texte.js';
@@ -127,7 +127,7 @@ export default {
       return new Response(null, { status: 204, headers: cors });
     }
 
-    const { pathname, origin: origine } = new URL(request.url);
+    const { pathname } = new URL(request.url);
 
     try {
       /* --- Healthcheck ------------------------------------------------ */
@@ -254,7 +254,7 @@ export default {
 
       /* --- Annonces ------------------------------------------------------ */
       if (pathname === '/api/annonces' && request.method === 'GET') {
-        const resultat = await rechercherAnnonces(env, new URL(request.url).searchParams, origine);
+        const resultat = await rechercherAnnonces(env, new URL(request.url).searchParams);
         if (resultat.erreurs) return json({ erreurs: resultat.erreurs }, 422, cors);
         return json(resultat, 200, cors);
       }
@@ -263,13 +263,13 @@ export default {
         const utilisateur = await utilisateurConnecte(request, env);
         if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
         const corps = await request.json().catch(() => ({}));
-        const { statut, corps: reponse } = await publierAnnonce(env, corps, utilisateur.id, origine);
+        const { statut, corps: reponse } = await publierAnnonce(env, corps, utilisateur.id);
         return json(reponse, statut, cors);
       }
 
       const routeAnnonce = /^\/api\/annonces\/([A-Za-z0-9_-]{1,64})$/.exec(pathname);
       if (routeAnnonce && request.method === 'GET') {
-        const annonce = await chargerAnnonce(env, routeAnnonce[1], origine);
+        const annonce = await chargerAnnonce(env, routeAnnonce[1]);
         return annonce
           ? json(annonce, 200, cors)
           : json({ erreur: 'Cette annonce n’existe pas ou a été retirée.' }, 404, cors);
@@ -279,14 +279,14 @@ export default {
       if (pathname === '/api/medias' && request.method === 'POST') {
         const utilisateur = await utilisateurConnecte(request, env);
         if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
-        const { statut, corps } = await televerser(env, request, utilisateur.id, origine);
+        const { statut, corps } = await televerser(env, request, utilisateur.id);
         return json(corps, statut, cors);
       }
 
       const routeMedia = /^\/api\/medias\/([A-Za-z0-9-]{1,64})$/.exec(pathname);
       if (routeMedia && request.method === 'GET') {
-        // Public, comme l'annonce qui montre la photo.
-        return (await servir(env, routeMedia[1], cors)) || json({ erreur: 'Photo introuvable.' }, 404, cors);
+        // Les photos sont servies par Supabase Storage : on y renvoie.
+        return Response.redirect(urlMedia(env, routeMedia[1]), 302);
       }
       if (routeMedia && request.method === 'DELETE') {
         const utilisateur = await utilisateurConnecte(request, env);

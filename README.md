@@ -46,7 +46,7 @@ qu'un lieu approximatif (code postal et ville). Les rôles `offrant` et
 - **Backend** : Cloudflare Workers (logique métier)
 - **Auth** : Supabase Auth (code à usage unique par e-mail, sans mot de passe, région UE)
 - **Données** : Supabase Postgres (région UE, `eu-west-1`), via le Worker
-- **Fichiers** : Cloudflare R2
+- **Fichiers** : Supabase Storage (photos des annonces, région UE)
 - **Sessions** : Cloudflare D1 (SQL)
 - **Hébergement** : Vercel (front et vitrine)
 

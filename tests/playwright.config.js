@@ -8,6 +8,7 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
   globalSetup: './global-setup.js',
+  globalTeardown: './global-teardown.js',
   timeout: 30_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,

@@ -1,6 +1,6 @@
 ---
 name: verif-infra
-description: Vérifie de bout en bout que toute la stack serverless du projet Donéo répond — worker Cloudflare, D1, R2, base et connexion Supabase, et les deux sites Vercel. À utiliser avant une démo (J3, J4, J5), après un déploiement, ou quand quelque chose « ne marche plus » sans qu'on sache quel service est en cause.
+description: Vérifie de bout en bout que toute la stack serverless du projet Donéo répond — worker Cloudflare, D1, base, stockage et connexion Supabase, et les deux sites Vercel. À utiliser avant une démo (J3, J4, J5), après un déploiement, ou quand quelque chose « ne marche plus » sans qu'on sache quel service est en cause.
 ---
 
 # Vérifier l'infrastructure Donéo
@@ -21,7 +21,7 @@ curl -s -o /dev/null -w "app     -> %{http_code}\n" https://doneo-app.vercel.app
 Un **404 sur l'app** signifie presque toujours que le projet Vercel n'a pas
 été redéployé, ou qu'il manque `public/vercel.json`, pas que le site est cassé.
 
-## 2. Cloudflare D1 et R2
+## 2. Cloudflare D1
 
 Depuis `workers/`, avec `wrangler` authentifié. Le drapeau `--remote` est
 indispensable : sans lui, wrangler tape une base locale et le test ne prouve
@@ -32,12 +32,10 @@ wrangler d1 execute doneo-sessions --remote --yes \
   --command "CREATE TABLE IF NOT EXISTS smoke_test (id INTEGER PRIMARY KEY, note TEXT); \
              INSERT INTO smoke_test (note) VALUES ('verif'); SELECT * FROM smoke_test;"
 wrangler d1 execute doneo-sessions --remote --yes --command "DROP TABLE smoke_test;"
-
-echo test > /tmp/smoke.txt
-wrangler r2 object put doneo-fichiers/smoke.txt --file /tmp/smoke.txt --remote
-wrangler r2 object get doneo-fichiers/smoke.txt --file /tmp/dl.txt --remote
-wrangler r2 object delete doneo-fichiers/smoke.txt --remote
 ```
+
+Les photos ne sont plus sur R2 (bucket `doneo-fichiers`, inutilisé) mais dans
+Supabase Storage : voir § 3.
 
 Vérifier aussi que les secrets sont toujours en place — ils disparaissent si le
 Worker est recréé :
@@ -57,6 +55,14 @@ curl -s -o /dev/null -w "publique -> %{http_code} (401 attendu)
 " -H "apikey: sb_publishable_mmvcB0QIyEEAJp911GOcUw_xyanIiwK" "$U/annonces?select=id"
 curl -s -o /dev/null -w "secrete  -> %{http_code} (200 attendu)
 " -H "apikey: $(grep SUPABASE_SECRET_KEY .env.supabase | cut -d= -f2)" "$U/annonces?select=id&limit=1"
+```
+
+Stockage des photos (bucket `medias`, public en lecture) : le bucket doit
+exister et rester public, écriture réservée à la clé secrète.
+
+```bash
+curl -s "https://ocapkeuidpuhcsnerkse.supabase.co/storage/v1/bucket/medias"   -H "apikey: $(grep SUPABASE_SECRET_KEY .env.supabase | cut -d= -f2)"   -H "authorization: Bearer $(grep SUPABASE_SECRET_KEY .env.supabase | cut -d= -f2)"
+# attendu : "public":true, "file_size_limit":5242880
 ```
 
 ## 3 bis. Supabase (connexion)

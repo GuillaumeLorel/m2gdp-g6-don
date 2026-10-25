@@ -304,7 +304,8 @@ classDiagram
   `thematique` fournit une seconde liste de filtrage.
 - **Creneau** — valeur, pas entité : un intervalle `debut` → `fin`, avec
   `fin > debut` et `debut` dans le futur à la publication.
-- **Media** — un fichier stocké sur R2 (`doneo-fichiers`). `type` : `photo`,
+- **Media** — un fichier stocké dans Supabase Storage (bucket `medias`, public
+  en lecture, région UE), décrit par une ligne de la table `medias`. `type` : `photo`,
   `video` ou `audio`. On stocke ses métadonnées pour vérifier qu'un utilisateur
   ne joint que **ses propres** fichiers.
 - **Reservation** — voir la machine à états ci-dessous. `offrantId` est recopié

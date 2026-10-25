@@ -66,7 +66,7 @@ async function validerChamps(env, corps) {
  * Publie l'annonce. Renvoie { statut, corps } : 201 et l'annonce publique, ou
  * 403 / 422 / 503 avec le ou les messages a afficher.
  */
-export async function publierAnnonce(env, corps, utilisateurId, origine) {
+export async function publierAnnonce(env, corps, utilisateurId) {
   const profil = await lireLigne(env, 'utilisateurs', utilisateurId);
   if (!profil?.roles?.includes('offrant')) {
     return { statut: 403, corps: { erreur: 'Ajoutez le rôle offrant à votre profil pour publier une annonce.' } };
@@ -130,6 +130,6 @@ export async function publierAnnonce(env, corps, utilisateurId, origine) {
     creeLe: maintenant,
     misAJourLe: maintenant,
   });
-  const [publique] = await versAnnoncesPubliques(env, [annonce], origine);
+  const [publique] = await versAnnoncesPubliques(env, [annonce]);
   return { statut: 201, corps: publique };
 }

@@ -73,7 +73,7 @@ Worker en ligne : **https://doneo-api.guillaume-lorel.workers.dev**
 | Ressource | Détail |
 | --- | --- |
 | D1 `doneo-sessions` | région WEUR, `database_id` dans `wrangler.toml` |
-| R2 `doneo-fichiers` | fichiers et photos |
+| R2 `doneo-fichiers` | **plus utilisé** depuis le 25/10/2026 : les photos sont dans Supabase Storage (§ 3 bis) |
 | Secrets | `SUPABASE_SECRET_KEY` |
 
 Pour reposer le secret (rotation de clé), depuis `workers/` — en pipant le
@@ -105,7 +105,8 @@ hébergé en **Irlande** (AWS `eu-west-1`, dans l'UE), Postgres 17.
 | Élément | Détail |
 | --- | --- |
 | Authentication | Lien magique (e-mail, sans mot de passe). Le front obtient la session ; le Worker vérifie le jeton auprès de Supabase |
-| Tables | `utilisateurs`, `categories`, `associations`, `annonces` — schéma dans [`supabase/migrations/`](../supabase/migrations/). L'`id` d'un profil est celui du compte de connexion |
+| Storage | Bucket `medias` : photos des annonces, **public en lecture** (le navigateur les charge directement), écriture par le Worker seul. 5 Mo, JPEG / PNG / WebP |
+| Tables | `utilisateurs`, `categories`, `associations`, `annonces`, `medias` — schéma dans [`supabase/migrations/`](../supabase/migrations/). L'`id` d'un profil est celui du compte de connexion |
 | Accès | **Row Level Security active, sans aucune règle** : la clé publique ne voit rien, seul le Worker (clé secrète) lit et écrit |
 | Clé publique | `sb_publishable_…`, dans [`public/src/lib/config.js`](../public/src/lib/config.js) : ne sert qu'à la connexion |
 | Secrets | Clé secrète `sb_secret_…` et mot de passe de la base, dans `.env.supabase` (git-ignoré) |
