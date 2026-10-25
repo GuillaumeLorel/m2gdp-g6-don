@@ -20,7 +20,9 @@ async function appeler(env, chemin, options = {}) {
     },
   });
   if (!reponse.ok) throw new Error(`Supabase ${reponse.status} : ${await reponse.text()}`);
-  return reponse.json();
+  // Une suppression repond sans corps (204).
+  const texte = await reponse.text();
+  return texte ? JSON.parse(texte) : null;
 }
 
 const filtreIds = (ids) =>
@@ -75,4 +77,43 @@ export async function utilisateurDuJeton(env, jeton) {
  */
 export function listerTable(env, table, limite = 2000) {
   return appeler(env, `${table}?select=*&limit=${limite}`);
+}
+
+/** Supprime une ligne ; sans effet si elle n'existe pas. */
+export async function supprimerLigne(env, table, id) {
+  await appeler(env, `${table}?${filtreIds([id])}`, { method: 'DELETE', headers: { prefer: 'return=minimal' } });
+}
+
+/* --- Supabase Storage ------------------------------------------------------ */
+
+const urlStockage = (env, chemin) => `${env.SUPABASE_URL}/storage/v1/${chemin}`;
+const entetesStockage = (env) => ({ apikey: env.SUPABASE_SECRET_KEY, authorization: `Bearer ${env.SUPABASE_SECRET_KEY}` });
+
+/** Adresse publique d'un fichier d'un bucket public. */
+export const urlPublique = (env, bucket, nom) => urlStockage(env, `object/public/${bucket}/${nom}`);
+
+/** Depose un fichier dans un bucket. */
+export async function deposerFichier(env, bucket, nom, contenu, typeMime) {
+  const reponse = await fetch(urlStockage(env, `object/${bucket}/${nom}`), {
+    method: 'POST',
+    headers: {
+      ...entetesStockage(env),
+      'content-type': typeMime,
+      // Un nom designe toujours le meme fichier : cache d'un an.
+      'cache-control': 'max-age=31536000',
+    },
+    body: contenu,
+  });
+  if (!reponse.ok) throw new Error(`Supabase Storage ${reponse.status} : ${await reponse.text()}`);
+}
+
+/** Retire des fichiers d'un bucket ; les absents sont ignores. */
+export async function retirerFichiers(env, bucket, noms) {
+  if (noms.length === 0) return;
+  const reponse = await fetch(urlStockage(env, `object/${bucket}`), {
+    method: 'DELETE',
+    headers: { ...entetesStockage(env), 'content-type': 'application/json' },
+    body: JSON.stringify({ prefixes: noms }),
+  });
+  if (!reponse.ok) throw new Error(`Supabase Storage ${reponse.status} : ${await reponse.text()}`);
 }

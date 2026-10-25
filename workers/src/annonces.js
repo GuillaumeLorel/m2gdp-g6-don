@@ -45,13 +45,13 @@ const parId = (liste) => new Map(liste.map((x) => [x.id, x]));
  * Les referentiels viennent du cache ; les offrants sont lus un par un — en
  * un seul appel —, et seulement ceux des annonces renvoyees.
  */
-export async function versAnnoncesPubliques(env, annonces, origine) {
+export async function versAnnoncesPubliques(env, annonces) {
   const [categories, listeAssociations, utilisateurs] = await Promise.all([
     categoriesAPlat(env),
     associations(env),
     lireLignes(env, 'utilisateurs', annonces.map((a) => a.offrantId)),
   ]);
-  const contexte = { categories: parId(categories), associations: parId(listeAssociations), utilisateurs, origine };
+  const contexte = { categories: parId(categories), associations: parId(listeAssociations), utilisateurs, env };
   return annonces.map((a) => versAnnoncePublique(a, contexte));
 }
 
@@ -61,10 +61,10 @@ export async function versAnnoncesPubliques(env, annonces, origine) {
  * partage ne doit pas tomber sur une erreur, la fiche dit simplement que
  * l'objet a trouve preneur.
  */
-export async function chargerAnnonce(env, id, origine) {
+export async function chargerAnnonce(env, id) {
   const annonce = await lireLigne(env, 'annonces', id);
   if (!annonce || annonce.statut === 'retiree') return null;
-  const [publique] = await versAnnoncesPubliques(env, [annonce], origine);
+  const [publique] = await versAnnoncesPubliques(env, [annonce]);
   return publique;
 }
 
@@ -109,8 +109,8 @@ export function versAnnoncePublique(annonce, contexte) {
     quartier: annonce.quartier || null,
     latitudeApprochee: annonce.latitudeApprochee,
     longitudeApprochee: annonce.longitudeApprochee,
-    // Les photos sont servies par le Worker : leur adresse en depend.
-    medias: (annonce.mediaIds || []).map((id) => versMedia(contexte.origine, id)),
+    // Photos servies directement par Supabase Storage.
+    medias: (annonce.mediaIds || []).map((id) => versMedia(contexte.env, id)),
     // US-12 : sans photo, l'annonce prend l'illustration de sa sous-categorie,
     // plus precise, sinon celle de sa categorie principale.
     illustrationUrl: sousCategorie?.illustrationUrl || categorie?.illustrationUrl,
@@ -136,7 +136,7 @@ function entier(parametres, nom, defaut, min, max) {
  * GET /api/annonces : filtre, trie et pagine. Renvoie { erreurs } si un
  * parametre est invalide, sinon la page au format PageAnnonces.
  */
-export async function rechercherAnnonces(env, parametres, origine) {
+export async function rechercherAnnonces(env, parametres) {
   const erreurs = [];
   const page = entier(parametres, 'page', 1, 1, 10000);
   const parPage = entier(parametres, 'parPage', 20, 1, 50);
@@ -189,6 +189,6 @@ export async function rechercherAnnonces(env, parametres, origine) {
     total: retenues.length,
     page: page.valeur,
     parPage: parPage.valeur,
-    annonces: await versAnnoncesPubliques(env, retenues.slice(debut, debut + parPage.valeur), origine),
+    annonces: await versAnnoncesPubliques(env, retenues.slice(debut, debut + parPage.valeur)),
   };
 }
