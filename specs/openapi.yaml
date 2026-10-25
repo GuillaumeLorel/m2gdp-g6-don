@@ -238,8 +238,9 @@ paths:
       description: >
         Le téléversement est séparé de la publication : on envoie le fichier, on
         reçoit un identifiant, puis on le cite dans une annonce ou un message.
-        C'est ce qui permet la capture directe depuis l'appareil. Stockage sur
-        R2. Un média jamais rattaché au bout de 24 h est purgé.
+        C'est ce qui permet la capture directe depuis l'appareil. Stockage dans
+        Supabase Storage (bucket `medias`, région UE), auteur noté dans la
+        table `medias`. Un média jamais rattaché au bout de 24 h est purgé.
       security: [{ jetonSupabase: [] }]
       requestBody:
         required: true
@@ -268,21 +269,16 @@ paths:
   /api/medias/{id}:
     get:
       tags: ["Médias"]
-      summary: "🖼️ Le fichier d'un média"
+      summary: "🖼️ Le fichier d'un média (redirection)"
       description: >
-        Public, comme l'annonce qui le montre : c'est l'adresse `url` du
-        schéma Media. Le bucket R2 n'a pas d'accès public, le Worker sert le
-        fichier. Un identifiant désigne toujours le même fichier : la réponse
-        se met en cache indéfiniment.
+        Public. Les fichiers sont servis directement par Supabase Storage,
+        bucket public en lecture : l'`url` du schéma Media y pointe déjà.
+        Cette route ne fait que rediriger, pour les liens construits à partir
+        du seul identifiant.
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
-        "200":
-          description: "Le fichier"
-          content:
-            image/jpeg: { schema: { type: string, format: binary } }
-            image/png: { schema: { type: string, format: binary } }
-            image/webp: { schema: { type: string, format: binary } }
-        "404": { $ref: "#/components/responses/Introuvable" }
+        "302":
+          description: "Redirection vers le fichier dans Supabase Storage"
     delete:
       tags: ["Médias"]
       summary: "🗑️ Supprimer un média non rattaché"

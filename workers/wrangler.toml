@@ -26,10 +26,8 @@ binding = "DB_SESSIONS"
 database_name = "doneo-sessions"
 database_id = "83153df8-eded-4ac6-b35b-749f7efe3a9c"
 
-# Bucket R2 (fichiers / photos) — cree le 16/09/2026.
-[[r2_buckets]]
-binding = "BUCKET_FICHIERS"
-bucket_name = "doneo-fichiers"
+# Les photos sont dans Supabase Storage (bucket `medias`, region UE) depuis le
+# 25/10/2026 : le bucket R2 `doneo-fichiers` n'est plus utilise.
 
 # Secrets a definir via `wrangler secret put` (JAMAIS en clair ici) :
 #   SUPABASE_SECRET_KEY        -> cle secrete (sb_secret_...) du projet Supabase
