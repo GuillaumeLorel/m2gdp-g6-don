@@ -158,3 +158,6 @@ export async function retirerFichiers(bucket, noms) {
     if (!reponse.ok) throw new Error(`Supabase Storage ${reponse.status} : ${await reponse.text()}`);
   }
 }
+
+/** Appel brut a l'API REST (PostgREST), pour les requetes filtrees. */
+export const requete = (chemin, options) => appeler(chemin, options);
