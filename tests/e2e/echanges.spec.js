@@ -188,6 +188,10 @@ test.describe('Réservation', () => {
     // Page de paiement Stripe (mode test) : carte de test officielle.
     await page.waitForURL(/checkout\.stripe\.com/, { timeout: 30_000 });
     await page.getByLabel(/E-mail|Email/i).fill('fatou.test@example.org').catch(() => {});
+    // Stripe propose plusieurs moyens de paiement : on deplie « Carte ». Le
+    // bouton est hors de la zone visible pour Playwright : clic par le DOM.
+    const carte = page.locator('[data-testid="card-accordion-item-button"]');
+    if (await carte.count()) await carte.evaluate((e) => e.click());
     await page.locator('#cardNumber').fill('4242 4242 4242 4242');
     await page.locator('#cardExpiry').fill('12 / 34');
     await page.locator('#cardCvc').fill('123');

@@ -5,7 +5,8 @@
 import { expect, test } from '@playwright/test';
 import { PROFILS, attendrePasDeDefilementHorizontal, ouvrirConnecte } from './outils.js';
 
-const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link');
+// Cartes d'annonce seulement (la section « En cours » de l'accueil a aussi des liens en liste).
+const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link').filter({ hasText: 'participation' });
 const champ = (page) => page.getByRole('searchbox', { name: 'Rechercher un objet' });
 const compteur = (page) => page.getByText(/\d+ pépites? (pour|à donner)/);
 

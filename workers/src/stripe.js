@@ -34,7 +34,8 @@ export function creerSessionPaiement(env, { montant, libelle, description, reser
   return appelerStripe(env, 'checkout/sessions', {
     mode: 'payment',
     locale: 'fr',
-    'payment_method_types[0]': 'card',
+    // Pas de payment_method_types : Stripe le refuse desormais, les moyens de
+    // paiement se reglent dans le tableau de bord (la carte y est active).
     'line_items[0][quantity]': '1',
     'line_items[0][price_data][currency]': 'eur',
     'line_items[0][price_data][unit_amount]': String(centimes),

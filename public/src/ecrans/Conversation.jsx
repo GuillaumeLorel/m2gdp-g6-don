@@ -274,7 +274,8 @@ export default function Conversation({ profil }) {
 
   async function envoyer(evenement) {
     evenement.preventDefault();
-    if (!texte.trim()) return;
+    // Entree pressee deux fois sur un reseau lent : un seul envoi.
+    if (envoi || !texte.trim()) return;
     setEnvoi(true);
     setErreurEnvoi(null);
     try {
@@ -377,7 +378,9 @@ export default function Conversation({ profil }) {
           value={texte}
           onChange={(e) => setTexte(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) envoyer(e);
+            // Pas pendant une composition (clavier de telephone, accents) :
+            // l'Entree y valide le mot, pas le message.
+            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) envoyer(e);
           }}
           className="max-h-32 min-h-12 flex-1 resize-none rounded-[1.25rem] border-[1.5px] border-primary/20 bg-white px-4 py-3 text-base leading-6 outline-none focus-visible:border-primary"
         />

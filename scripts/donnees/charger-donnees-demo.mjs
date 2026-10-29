@@ -51,14 +51,38 @@ const photoDe = new Map(photos.map((p) => [p.annonceId, p]));
  * tard. Un objet deja remis garde son creneau, passe par nature.
  */
 const SEMAINE = 7 * 24 * 3600 * 1000;
+
+/** Ecart (en ms) entre l'heure de Paris et l'heure UTC, a un instant donne. */
+function ecartParis(instant) {
+  const v = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Paris', hourCycle: 'h23', year: 'numeric', month: '2-digit',
+      day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit',
+    }).formatToParts(instant).map((p) => [p.type, p.value]),
+  );
+  return Date.UTC(v.year, v.month - 1, v.day, v.hour, v.minute, v.second) - instant.getTime();
+}
+
+/**
+ * Avance de `semaines` en gardant la meme heure A PARIS : ajouter 7 x 24 h
+ * en UTC decalerait d'une heure tout creneau qui franchit un changement
+ * d'heure (18 h en septembre deviendrait 17 h en novembre).
+ */
+function plusSemaines(iso, semaines) {
+  const instant = new Date(iso);
+  const murale = new Date(instant.getTime() + ecartParis(instant)); // l'heure de Paris, lue en UTC
+  murale.setUTCDate(murale.getUTCDate() + 7 * semaines);
+  const essai = murale.getTime() - ecartParis(new Date(murale.getTime()));
+  return new Date(murale.getTime() - ecartParis(new Date(essai))).toISOString();
+}
+
 function creneauAVenir(annonce) {
   if (annonce.statut === 'remis') return annonce.creneauRetrait;
   const debut = Date.parse(annonce.creneauRetrait.debut);
-  const fin = Date.parse(annonce.creneauRetrait.fin);
   const semaines = Math.max(0, Math.ceil((Date.now() + 2 * 24 * 3600 * 1000 - debut) / SEMAINE));
   return {
-    debut: new Date(debut + semaines * SEMAINE).toISOString(),
-    fin: new Date(fin + semaines * SEMAINE).toISOString(),
+    debut: plusSemaines(annonce.creneauRetrait.debut, semaines),
+    fin: plusSemaines(annonce.creneauRetrait.fin, semaines),
   };
 }
 
@@ -174,6 +198,12 @@ if (simulation) {
     aGarder.has(a.id) && statutsEnBase.has(a.id) ? { ...a, statut: statutsEnBase.get(a.id) } : a,
   );
 
+  // Pas d'echange de demo sur une annonce tenue par un vrai membre : elle
+  // aurait deux detenteurs.
+  const libres = (x) => !aGarder.has(x.annonceId);
+  const conversationsLibres = conversations.filter(libres);
+  const gardees = new Set(conversationsLibres.map((c) => c.id));
+
   await requete('conversations?fictif=is.true', { method: 'DELETE' });
   await ecrireLot('associations', associations);
   await ecrireLot('utilisateurs', utilisateurs);
@@ -182,9 +212,9 @@ if (simulation) {
     await ecrireLot('medias', [media]);
   }
   await ecrireLot('annonces', annoncesAEcrire);
-  await ecrireLot('conversations', conversations);
-  await ecrireLot('reservations', reservations);
-  await ecrireLot('messages', messages);
+  await ecrireLot('conversations', conversationsLibres);
+  await ecrireLot('reservations', reservations.filter(libres));
+  await ecrireLot('messages', messages.filter((m) => gardees.has(m.conversationId)));
 
   // Ce qui n'est plus dans les JSON disparait (annonces, puis profils).
   const liste = (ids) => encodeURIComponent(ids.map((id) => `"${id}"`).join(','));
