@@ -6,7 +6,7 @@ import Champ, { CLASSES_CHAMP } from "@/components/Champ.jsx";
 import { EtatVide } from "@/components/Etats.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import PhotosAnnonce from "@/components/PhotosAnnonce.jsx";
-import { chargerAssociations, chargerCategories, enregistrerProfil, publierAnnonce } from "@/lib/api.js";
+import { chargerAssociations, chargerCategories, enregistrerProfil, modifierAnnonce, publierAnnonce } from "@/lib/api.js";
 import { LIBELLES_ETAT, formaterCreneau, formaterParticipation } from "@/lib/format.js";
 import { cn } from "@/lib/utils.js";
 
@@ -18,6 +18,15 @@ function jourLocal(decalageJours = 0) {
   const d = new Date();
   d.setDate(d.getDate() + decalageJours);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** Jour et heures locaux d'un creneau, pour les champs date et heure. */
+function champsCreneau(creneau) {
+  const debut = new Date(creneau.debut);
+  const fin = new Date(creneau.fin);
+  const hm = (d) => `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  const j = `${debut.getFullYear()}-${String(debut.getMonth() + 1).padStart(2, "0")}-${String(debut.getDate()).padStart(2, "0")}`;
+  return { date: j, heureDebut: hm(debut), heureFin: hm(fin) };
 }
 
 /** « 2,50 » ou « 2.5 » -> 2.5 ; NaN si ce n'est pas un montant. */
@@ -65,36 +74,59 @@ const ErreurChamp = ({ children }) => (
  * La saisie vit dans cet ecran : revenir a l'etape 1 ne perd rien, quitter
  * l'ecran perd tout (pas de brouillon, hors perimetre). Le serveur revalide
  * tout et renvoie toutes ses objections d'un coup.
+ *
+ * Avec `edition` (la fiche complete de GET /api/annonces/{id}/edition), le
+ * meme ecran sert a modifier une annonce (US-11, #39) : prerempli, avec les
+ * champs figes par une reservation en cours grises.
  */
-export default function CreerAnnonce({ profil, surProfil }) {
+export default function CreerAnnonce({ profil, surProfil, edition = null }) {
   const naviguer = useNavigate();
   const id = useId();
   const [etape, setEtape] = useState(1);
   const [categories, setCategories] = useState([]);
   const [associations, setAssociations] = useState([]);
-  const [photos, setPhotos] = useState([]);
+  const [photos, setPhotos] = useState(() => (edition?.medias || []).map((m) => ({ id: m.id, url: m.url })));
+  const figes = new Set(edition?.champsFiges || []);
   const [touches, setTouches] = useState({});
   const [envoi, setEnvoi] = useState(false);
   const [erreurs, setErreurs] = useState(null);
-  const [champs, setChamps] = useState({
-    titre: "",
-    categorieId: "",
-    sousCategorieId: "",
-    etat: "",
-    description: "",
-    participation: "",
-    associationId: "",
-    date: jourLocal(1),
-    heureDebut: "18:00",
-    heureFin: "20:00",
-    // US-8 : le lieu de retrait part de l'adresse du profil, modifiable ici
-    // sans toucher au profil.
-    numeroRue: profil.numeroRue || "",
-    rue: profil.rue || "",
-    complementAdresse: profil.complementAdresse || "",
-    codePostal: profil.codePostal || "",
-    ville: profil.ville || "",
-  });
+  const [champs, setChamps] = useState(() =>
+    edition
+      ? {
+          titre: edition.titre,
+          categorieId: edition.categorieId,
+          sousCategorieId: edition.sousCategorieId,
+          etat: edition.etat,
+          description: edition.description || "",
+          participation: String(edition.participation).replace(".", ","),
+          associationId: edition.associationId,
+          ...champsCreneau(edition.creneauRetrait),
+          numeroRue: edition.numeroRue,
+          rue: edition.rue,
+          complementAdresse: edition.complementAdresse || "",
+          codePostal: edition.codePostal,
+          ville: edition.ville,
+        }
+      : {
+          titre: "",
+          categorieId: "",
+          sousCategorieId: "",
+          etat: "",
+          description: "",
+          participation: "",
+          associationId: "",
+          date: jourLocal(1),
+          heureDebut: "18:00",
+          heureFin: "20:00",
+          // US-8 : le lieu de retrait part de l'adresse du profil, modifiable ici
+          // sans toucher au profil.
+          numeroRue: profil.numeroRue || "",
+          rue: profil.rue || "",
+          complementAdresse: profil.complementAdresse || "",
+          codePostal: profil.codePostal || "",
+          ville: profil.ville || "",
+        },
+  );
 
   useEffect(() => {
     chargerCategories().then(setCategories).catch(() => {});
@@ -124,9 +156,13 @@ export default function CreerAnnonce({ profil, surProfil }) {
   const debut = new Date(`${champs.date}T${champs.heureDebut}`);
   const fin = new Date(`${champs.date}T${champs.heureFin}`);
   const creneauSaisi = champs.date && champs.heureDebut && champs.heureFin;
+  // En modification, un creneau inchange n'a pas a etre dans le futur : on
+  // corrige une description sans devoir reporter le rendez-vous.
+  const creneauInchange =
+    edition && debut.getTime() === Date.parse(edition.creneauRetrait.debut) && fin.getTime() === Date.parse(edition.creneauRetrait.fin);
   const erreurCreneau = !creneauSaisi
     ? null
-    : debut <= new Date()
+    : debut <= new Date() && !creneauInchange
       ? "Le créneau doit commencer dans le futur."
       : fin <= debut
         ? "L’heure de fin doit suivre l’heure de début."
@@ -140,7 +176,8 @@ export default function CreerAnnonce({ profil, surProfil }) {
     setErreurs(null);
     setEnvoi(true);
     try {
-      const annonce = await publierAnnonce({
+      const envoyer = edition ? (champsAnnonce) => modifierAnnonce(edition.id, champsAnnonce) : publierAnnonce;
+      const annonce = await envoyer({
         titre: champs.titre.trim(),
         description: champs.description.trim(),
         categorieId: champs.categorieId,
@@ -157,7 +194,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
         mediaIds: photos.map((p) => p.id),
       });
       // replace : « Retour » depuis la fiche ne rouvre pas le formulaire vide.
-      naviguer(`/annonces/${annonce.id}`, { replace: true, state: { publiee: true } });
+      naviguer(`/annonces/${annonce.id}`, { replace: true, state: edition ? { modifiee: true } : { publiee: true } });
     } catch (e) {
       setErreurs(e.erreurs || [e.message]);
       setEnvoi(false);
@@ -185,7 +222,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
           </div>
           <span className="text-xs font-semibold text-muted-foreground">Étape {etape} sur 2</span>
         </div>
-        <h1 className="doneo-titre mt-5 text-[2rem] leading-tight">Créer une annonce</h1>
+        <h1 className="doneo-titre mt-5 text-[2rem] leading-tight">{edition ? "Modifier l’annonce" : "Créer une annonce"}</h1>
         <p className="mt-1.5 text-sm leading-6 text-muted-foreground text-pretty">
           {etape === 1
             ? "Présentez l’objet que vous donnez."
@@ -201,7 +238,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
             e.preventDefault();
             if (etape1Complete) setEtape(2);
           }}>
-          <PhotosAnnonce photos={photos} surChangement={setPhotos} />
+          <PhotosAnnonce photos={photos} surChangement={setPhotos} publiees={(edition?.medias || []).map((m) => m.id)} />
 
           <div className="space-y-2">
             <Champ
@@ -281,8 +318,18 @@ export default function CreerAnnonce({ profil, surProfil }) {
         </form>
       ) : (
         <form className="mt-6 space-y-5" noValidate onSubmit={publier}>
+          {figes.size > 0 && (
+            <p className="flex gap-2.5 rounded-2xl bg-citron/60 p-3.5 text-xs leading-5 text-ardoise">
+              <Lock className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              <span>
+                Une demande est en cours : la participation et l’association ne changent plus
+                {figes.has("numeroRue") ? ", ni l’adresse, déjà communiquée au demandeur" : ""}. Le créneau, lui,
+                reste modifiable : le demandeur sera prévenu.
+              </span>
+            </p>
+          )}
           {/* US-7 : participation fixee par l'offrant, versee a l'association. */}
-          <div className="space-y-2">
+          <fieldset className="space-y-2" disabled={figes.has("participation")}>
             <Champ
               id={`${id}-participation`}
               etiquette="Participation solidaire (€)"
@@ -311,7 +358,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
             {touches.participation && !participationValide && (
               <ErreurChamp>Indiquez une participation supérieure à 0 €, par exemple 2.</ErreurChamp>
             )}
-          </div>
+          </fieldset>
 
           {/* US-7 : un creneau ponctuel, a venir. */}
           <fieldset className="space-y-3">
@@ -341,6 +388,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
             id={`${id}-association`}
             etiquette="Association soutenue"
             value={champs.associationId}
+            disabled={figes.has("associationId")}
             onChange={modifier("associationId")}
             aide="C’est elle qui recevra la participation du demandeur.">
             <option value="" disabled>
@@ -354,7 +402,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
           </ChampListe>
 
           {/* US-8 : adresse preremplie depuis le profil. */}
-          <fieldset className="space-y-3">
+          <fieldset className="space-y-3" disabled={figes.has("numeroRue")}>
             <legend className="doneo-etiquette">Lieu de retrait</legend>
             <div className="grid grid-cols-[6rem_1fr] gap-3">
               <Champ
@@ -397,7 +445,9 @@ export default function CreerAnnonce({ profil, surProfil }) {
 
           {erreurs && (
             <div role="alert" className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">
-              <p className="font-semibold">Votre annonce n’a pas pu être publiée :</p>
+              <p className="font-semibold">
+                {edition ? "Vos modifications n’ont pas pu être enregistrées :" : "Votre annonce n’a pas pu être publiée :"}
+              </p>
               <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
                 {erreurs.map((e) => (
                   <li key={e}>{e}</li>
@@ -412,7 +462,7 @@ export default function CreerAnnonce({ profil, surProfil }) {
             ) : (
               <Heart className="size-5 fill-current" aria-hidden="true" />
             )}
-            {envoi ? "Publication…" : "Publier l’annonce"}
+            {envoi ? "Enregistrement…" : edition ? "Enregistrer les modifications" : "Publier l’annonce"}
           </Button>
         </form>
       )}
