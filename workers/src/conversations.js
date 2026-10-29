@@ -96,23 +96,27 @@ export async function contacter(env, utilisateurId, annonceId, contenu) {
  * Forme publique de conversations, vues par `utilisateurId` : l'annonce, son
  * role, l'interlocuteur, le dernier message et la reservation la plus recente.
  */
-async function versConversations(env, conversations, utilisateurId) {
+async function versConversations(env, conversations, utilisateurId, deja = {}) {
   if (conversations.length === 0) return [];
   const ids = conversations.map((c) => c.id);
+  // `deja` : messages et reservations deja lus par l'appelant, pour ne pas
+  // les relire. L'ordre n'importe pas : on prend les plus recents ci-dessous.
   const [annoncesBrutes, membres, messages, reservations] = await Promise.all([
     lireLignes(env, 'annonces', conversations.map((c) => c.annonceId)),
     lireLignes(env, 'utilisateurs', conversations.flatMap((c) => [c.offrantId, c.demandeurId])),
-    chercherLignes(env, 'messages', { conversationId: ids }, { ordre: 'creeLe.desc' }),
-    chercherLignes(env, 'reservations', { conversationId: ids }, { ordre: 'creeLe.desc' }),
+    deja.messages || chercherLignes(env, 'messages', { conversationId: ids }, { ordre: 'creeLe.desc' }),
+    deja.reservations || chercherLignes(env, 'reservations', { conversationId: ids }, { ordre: 'creeLe.desc' }),
   ]);
+  const plusRecent = (liste, id) =>
+    liste.filter((x) => x.conversationId === id).reduce((a, b) => (!a || b.creeLe > a.creeLe ? b : a), null);
   const annonces = new Map(
     (await versAnnoncesPubliques(env, [...annoncesBrutes.values()])).map((a) => [a.id, a]),
   );
   return conversations
     .map((c) => {
       const monRole = c.offrantId === utilisateurId ? 'offrant' : 'demandeur';
-      const dernier = messages.find((m) => m.conversationId === c.id);
-      const reservation = reservations.find((r) => r.conversationId === c.id);
+      const dernier = plusRecent(messages, c.id);
+      const reservation = plusRecent(reservations, c.id);
       const annonce = annonces.get(c.annonceId);
       return {
         id: c.id,
@@ -155,11 +159,11 @@ export async function lireConversation(env, utilisateurId, conversationId) {
   if (![conversation.offrantId, conversation.demandeurId].includes(utilisateurId)) {
     return { statut: 403, corps: { erreur: 'Cette conversation ne vous concerne pas.' } };
   }
-  const [[resume], messages, reservations] = await Promise.all([
-    versConversations(env, [conversation], utilisateurId),
+  const [messages, reservations] = await Promise.all([
     chercherLignes(env, 'messages', { conversationId }, { ordre: 'creeLe.asc' }),
     chercherLignes(env, 'reservations', { conversationId }, { ordre: 'creeLe.desc' }),
   ]);
+  const [resume] = await versConversations(env, [conversation], utilisateurId, { messages, reservations });
   // La reservation qui commande les actions : celle en cours, sinon la derniere.
   const enCours = reservations.find((r) => r.statut !== 'annulee') || reservations[0];
   const annonce = enCours && enCours.statut === 'confirmee' ? await lireLigne(env, 'annonces', enCours.annonceId) : null;

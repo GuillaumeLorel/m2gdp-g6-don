@@ -16,14 +16,21 @@
  * L'adresse exacte de retrait n'est donnee qu'au demandeur, et seulement une
  * fois la participation payee (statutPaiement = paye).
  */
-import { chercherLignes, insererLigne, lireLigne, mettreAJour } from './base.js';
+import { chercherLignes, insererLigne, lireLigne, lireLignes, mettreAJour } from './base.js';
 import { versAnnoncesPubliques } from './annonces.js';
 import { ajouterMessage, conversationPour, erreurContenu } from './conversations.js';
 import { associations } from './referentiels.js';
 import { creerSessionPaiement, lireSessionPaiement, paiementDisponible } from './stripe.js';
 
-/** Statuts d'une reservation encore en cours. */
-const EN_COURS = ['demandee', 'liste_attente', 'proposee', 'confirmee'];
+/** Statuts d'une reservation encore en cours (partages avec edition.js). */
+export const EN_COURS = ['demandee', 'liste_attente', 'proposee', 'confirmee'];
+/**
+ * Plafond de demandes simultanees. Il ne compte que ce qui attend une
+ * reponse (demande, objet propose) : une reservation payee attend la remise,
+ * qui n'existe qu'en J5 — la compter bloquerait pour de bon un demandeur qui
+ * a deja paye trois objets.
+ */
+const EN_ATTENTE = ['demandee', 'liste_attente', 'proposee'];
 const MAX_EN_COURS = 3;
 
 const maintenant = () => new Date().toISOString();
@@ -94,7 +101,7 @@ export async function demander(env, utilisateurId, annonceId, message) {
 
   const enCours = await chercherLignes(env, 'reservations', { demandeurId: utilisateurId, statut: EN_COURS });
   if (enCours.some((r) => r.annonceId === annonceId)) return refus(409, 'Vous avez déjà une demande en cours pour cet objet.');
-  if (enCours.length >= MAX_EN_COURS) {
+  if (enCours.filter((r) => EN_ATTENTE.includes(r.statut)).length >= MAX_EN_COURS) {
     return refus(409, `Vous avez déjà ${MAX_EN_COURS} demandes en cours : attendez qu’une se termine.`);
   }
 
@@ -197,6 +204,13 @@ export async function payer(env, utilisateurId, id, origineFront) {
   if (erreur) return erreur;
   if (r.statut !== 'proposee') return refus(409, 'Cet objet ne vous est pas (ou plus) proposé.');
   if (!paiementDisponible(env)) return refus(503, 'Le paiement de test n’est pas encore configuré.');
+  // Une session deja ouverte (second clic, second onglet) est reprise : en
+  // creer une nouvelle ferait ignorer un paiement fait dans la premiere.
+  if (r.sessionPaiement) {
+    const existante = await lireSessionPaiement(env, r.sessionPaiement).catch(() => null);
+    if (existante?.payment_status === 'paid') return confirmerPaiement(env, utilisateurId, id);
+    if (existante?.status === 'open' && existante.url) return { statut: 200, corps: { urlPaiement: existante.url } };
+  }
   const annonce = await lireLigne(env, 'annonces', r.annonceId);
   const association = (await associations(env)).find((a) => a.id === annonce.associationId);
   const retour = `${origineFront}/messages/${r.conversationId}?reservation=${r.id}`;
@@ -207,7 +221,11 @@ export async function payer(env, utilisateurId, id, origineFront) {
     reservationId: r.id,
     urlSucces: `${retour}&paiement=ok`,
     urlAnnulation: `${retour}&paiement=annule`,
+  }).catch((e) => {
+    console.error(e);
+    return null;
   });
+  if (!session) return refus(502, 'Le service de paiement ne répond pas. Réessayez dans un instant.');
   await mettreAJour(env, 'reservations', { id }, { sessionPaiement: session.id, misAJourLe: maintenant() });
   return { statut: 200, corps: { urlPaiement: session.url } };
 }
@@ -224,7 +242,11 @@ export async function confirmerPaiement(env, utilisateurId, id) {
   if (r.statut === 'confirmee') return { statut: 200, corps: versReservation(r, utilisateurId, annonce) };
   if (r.statut !== 'proposee' || !r.sessionPaiement) return refus(409, 'Aucun paiement en cours pour cette réservation.');
 
-  const session = await lireSessionPaiement(env, r.sessionPaiement);
+  const session = await lireSessionPaiement(env, r.sessionPaiement).catch((e) => {
+    console.error(e);
+    return null;
+  });
+  if (!session) return refus(502, 'Le service de paiement ne répond pas. Réessayez dans un instant.');
   if (session.payment_status !== 'paid') return refus(402, 'Le paiement n’a pas abouti. Vous pouvez réessayer.');
   const [confirmee] = await mettreAJour(env, 'reservations', { id, statut: 'proposee' }, {
     statut: 'confirmee',
@@ -238,6 +260,14 @@ export async function confirmerPaiement(env, utilisateurId, id) {
   }
   await messageSysteme(env, confirmee, 'paiement_valide',
     `Participation de ${euros(confirmee.participationDemandee)} validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.`);
+  // L'objet est attribue : les autres demandes sur cette annonce sont closes,
+  // sinon elles resteraient ouvertes pour toujours (et occuperaient le plafond).
+  const autres = await mettreAJour(env, 'reservations', { annonceId: r.annonceId, statut: ['demandee', 'liste_attente'] }, {
+    statut: 'annulee', motifAnnulation: 'attribuee_a_autrui', misAJourLe: maintenant(),
+  });
+  for (const autre of autres) {
+    await messageSysteme(env, autre, 'attribuee_a_autrui', 'L’objet a été attribué à une autre personne : votre demande est close.');
+  }
   return { statut: 200, corps: versReservation(confirmee, utilisateurId, annonce) };
 }
 
@@ -256,14 +286,7 @@ export async function lireReservation(env, utilisateurId, id) {
 export async function listerReservations(env, utilisateurId, role) {
   const champ = role === 'offrant' ? 'offrantId' : 'demandeurId';
   const reservations = await chercherLignes(env, 'reservations', { [champ]: utilisateurId }, { ordre: 'creeLe.desc' });
-  const annonces = new Map(
-    (await versAnnoncesPubliques(env, await lireAnnonces(env, reservations))).map((a) => [a.id, a]),
-  );
+  const brutes = await lireLignes(env, 'annonces', reservations.map((r) => r.annonceId));
+  const annonces = new Map((await versAnnoncesPubliques(env, [...brutes.values()])).map((a) => [a.id, a]));
   return reservations.map((r) => ({ ...versReservation(r, utilisateurId), annonce: annonces.get(r.annonceId) || null }));
-}
-
-async function lireAnnonces(env, reservations) {
-  const ids = [...new Set(reservations.map((r) => r.annonceId))];
-  if (ids.length === 0) return [];
-  return chercherLignes(env, 'annonces', { id: ids });
 }
