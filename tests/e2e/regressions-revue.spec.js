@@ -10,7 +10,8 @@ const annoncesDemo = JSON.parse(
   readFileSync(new URL('../../specs/donnees/demo/annonces.json', import.meta.url), 'utf8'),
 );
 const API = process.env.DONEO_API || 'http://localhost:8787';
-const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link');
+// Cartes d'annonce seulement (la section « En cours » de l'accueil a aussi des liens en liste).
+const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link').filter({ hasText: 'participation' });
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Toute erreur JavaScript non rattrapee fait echouer le test.

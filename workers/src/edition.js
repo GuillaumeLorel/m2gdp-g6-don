@@ -12,8 +12,8 @@ import { adresseNettoyee, positionApprochee } from './adresse.js';
 import { versAnnoncesPubliques } from './annonces.js';
 import { ajouterMessage } from './conversations.js';
 import { localiser, validerChamps, validerMedias } from './publication.js';
+import { EN_COURS } from './reservations.js';
 
-const EN_COURS = ['demandee', 'liste_attente', 'proposee', 'confirmee'];
 const CHAMPS_ADRESSE = ['numeroRue', 'rue', 'complementAdresse', 'codePostal', 'ville'];
 const maintenant = () => new Date().toISOString();
 const refus = (statut, erreur) => ({ statut, corps: { erreur } });
@@ -80,12 +80,16 @@ export async function modifierAnnonce(env, utilisateurId, id, corps) {
       Date.parse(corps.creneauRetrait?.fin) !== Date.parse(annonce.creneauRetrait?.fin));
   const erreurs = await validerChamps(env, fusion, { exigerCreneauFutur: creneauChange });
   if ('mediaIds' in corps) {
-    // Les photos deja publiees restent citables ; les nouvelles doivent etre de l'offrant.
-    const nouvelles = (corps.mediaIds || []).filter((m) => !(annonce.mediaIds || []).includes(m));
-    const medias = await validerMedias(env, nouvelles, utilisateurId);
-    if (medias.interdit) return medias.interdit;
-    erreurs.push(...medias.erreurs);
-    if ((corps.mediaIds || []).length > 8) erreurs.push('Une annonce compte 8 photos au plus.');
+    const ids = corps.mediaIds;
+    if (!Array.isArray(ids) || ids.length > 8 || new Set(ids).size !== ids.length) {
+      erreurs.push('Une annonce compte 8 photos au plus, sans doublon.');
+    } else {
+      // Les photos deja publiees restent citables ; les nouvelles doivent etre de l'offrant.
+      const nouvelles = ids.filter((m) => !(annonce.mediaIds || []).includes(m));
+      const medias = await validerMedias(env, nouvelles, utilisateurId);
+      if (medias.interdit) return medias.interdit;
+      erreurs.push(...medias.erreurs);
+    }
   }
   if (erreurs.length) return { statut: 422, corps: { erreurs } };
 

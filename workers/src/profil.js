@@ -6,6 +6,7 @@
 import { chercherLignes } from './base.js';
 import { versAnnoncesPubliques } from './annonces.js';
 
+// Payees : la participation est versee, meme si l'objet n'est pas encore remis.
 const VERSEES = ['confirmee', 'remise'];
 
 export async function resumeProfil(env, utilisateurId) {
@@ -24,9 +25,13 @@ export async function resumeProfil(env, utilisateurId) {
     remises.filter((a) => !dejaComptees.has(a.id)).reduce((t, a) => t + Number(a.participation), 0) +
     commeDemandeur.reduce((t, r) => t + Number(r.participationDemandee || 0), 0);
   return {
+    // Un objet ne compte comme donne ou recu qu'une fois remis.
     statistiques: {
-      objetsDonnes: new Set([...remises.map((a) => a.id), ...commeOffrant.map((r) => r.annonceId)]).size,
-      objetsRecus: commeDemandeur.length,
+      objetsDonnes: new Set([
+        ...remises.map((a) => a.id),
+        ...commeOffrant.filter((r) => r.statut === 'remise').map((r) => r.annonceId),
+      ]).size,
+      objetsRecus: commeDemandeur.filter((r) => r.statut === 'remise').length,
       montantReverse: Math.round(montant * 100) / 100,
     },
     annonces: await versAnnoncesPubliques(env, visibles),
