@@ -1,11 +1,12 @@
 import { Link, NavLink } from "react-router";
-import { Heart, Home, Plus, Search } from "lucide-react";
+import { Heart, Home, MessageCircle, Plus, Search } from "lucide-react";
 import { Marque } from "@/components/Logo.jsx";
 
 const LIENS = [
   { vers: "/", libelle: "Accueil", Icone: Home, exact: true },
   { vers: "/recherche", libelle: "Recherche", Icone: Search },
   { vers: "/favoris", libelle: "Favoris", Icone: Heart },
+  { vers: "/messages", libelle: "Messages", Icone: MessageCircle },
 ];
 
 /**

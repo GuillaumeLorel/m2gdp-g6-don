@@ -84,6 +84,54 @@ export async function supprimerLigne(env, table, id) {
   await appeler(env, `${table}?${filtreIds([id])}`, { method: 'DELETE', headers: { prefer: 'return=minimal' } });
 }
 
+/**
+ * Filtre PostgREST a partir d'un objet : { statut: 'proposee', annonceId: 'x' }
+ * donne `statut=eq.proposee&annonceId=eq.x`. Une liste donne un `in.(...)`.
+ */
+function filtre(criteres) {
+  return Object.entries(criteres)
+    .map(([champ, valeur]) =>
+      Array.isArray(valeur)
+        ? `${champ}=in.(${encodeURIComponent(valeur.map((v) => `"${String(v).replace(/"/g, '')}"`).join(','))})`
+        : `${champ}=eq.${encodeURIComponent(valeur)}`,
+    )
+    .join('&');
+}
+
+/** Lignes qui satisfont tous les criteres, dans l'ordre demande (ex. « creeLe.desc »). */
+export function chercherLignes(env, table, criteres, { ordre, limite = 2000 } = {}) {
+  return appeler(env, `${table}?${filtre(criteres)}&select=*${ordre ? `&order=${ordre}` : ''}&limit=${limite}`);
+}
+
+/** Insere une ligne ; renvoie la ligne enregistree. Echoue si elle existe deja. */
+export async function insererLigne(env, table, donnees) {
+  const [ligne] = await appeler(env, table, {
+    method: 'POST',
+    headers: { prefer: 'return=representation' },
+    body: JSON.stringify(donnees),
+  });
+  return ligne;
+}
+
+/**
+ * Met a jour les lignes qui satisfont `criteres`, et renvoie celles modifiees.
+ * C'est la garde contre les doubles clics et les courses : « passer a
+ * `proposee` la reservation X SI elle est encore `demandee` » ne modifie rien
+ * — et renvoie une liste vide — si quelqu'un est passe avant.
+ */
+export function mettreAJour(env, table, criteres, champs) {
+  return appeler(env, `${table}?${filtre(criteres)}`, {
+    method: 'PATCH',
+    headers: { prefer: 'return=representation' },
+    body: JSON.stringify(champs),
+  });
+}
+
+/** Supprime les lignes qui satisfont `criteres`. */
+export async function supprimerLignes(env, table, criteres) {
+  await appeler(env, `${table}?${filtre(criteres)}`, { method: 'DELETE', headers: { prefer: 'return=minimal' } });
+}
+
 /* --- Supabase Storage ------------------------------------------------------ */
 
 const urlStockage = (env, chemin) => `${env.SUPABASE_URL}/storage/v1/${chemin}`;

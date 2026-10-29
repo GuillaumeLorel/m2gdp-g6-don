@@ -57,10 +57,11 @@ test('Ouvrir une fiche depuis l’accueil, puis revenir', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Derniers objets ajoutés' })).toBeVisible();
 });
 
-test('Annonce réservée : la liste d’attente est signalée', async ({ page }) => {
+test('Annonce réservée : signalée, mais la demande reste possible', async ({ page }) => {
   await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${reservee.id}`);
   await expect(page.getByText('Cet objet est déjà réservé.', { exact: false })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Rejoindre la liste d’attente' })).toBeVisible();
+  // Si la personne renonce, l'offrant pourra proposer l'objet a quelqu'un d'autre.
+  await expect(page.getByRole('button', { name: /Réserver pour/ })).toBeEnabled();
 });
 
 test('Annonce déjà remise', async ({ page }) => {

@@ -146,3 +146,67 @@ export async function publierAnnonce(annonce) {
   erreur.erreurs = donnees.erreurs || [donnees.erreur || 'Publication impossible. Réessayez dans un instant.'];
   throw erreur;
 }
+
+/* --- Echanges entre membres (J4) ------------------------------------------ */
+
+/**
+ * Appel authentifie qui renvoie le corps, ou leve une erreur lisible : le
+ * message du serveur, ou la liste de ses objections jointes.
+ */
+async function appelConnecte(chemin, options = {}, messageParDefaut = 'L’opération n’a pas abouti.') {
+  const { ok, statut, donnees } = await appeler(chemin, { ...options, authentifie: true });
+  if (ok) return donnees;
+  const erreur = new Error(donnees.erreurs?.join(' ') || donnees.erreur || messageParDefaut);
+  erreur.statut = statut;
+  throw erreur;
+}
+
+/** Favoris : la liste, l'ajout, le retrait. */
+export const chargerFavoris = () =>
+  appelConnecte('/api/favoris', {}, 'Chargement des favoris impossible.').then((d) => d.annonces);
+export const ajouterFavori = (annonceId) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/favori`, { method: 'PUT' });
+export const retirerFavori = (annonceId) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/favori`, { method: 'DELETE' });
+
+/** Messagerie. */
+export const chargerConversations = () =>
+  appelConnecte('/api/conversations', {}, 'Chargement des conversations impossible.').then((d) => d.conversations);
+export const chargerConversation = (id) =>
+  appelConnecte(`/api/conversations/${encodeURIComponent(id)}/messages`, {}, 'Chargement de la conversation impossible.');
+export const envoyerMessage = (id, contenu) =>
+  appelConnecte(`/api/conversations/${encodeURIComponent(id)}/messages`, { method: 'POST', body: { contenu } }, 'Envoi impossible.');
+/** Ouvre (ou retrouve) la conversation avec l'offrant ; renvoie son identifiant. */
+export const contacterOffrant = (annonceId, contenu) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/conversation`, { method: 'POST', body: contenu ? { contenu } : {} })
+    .then((d) => d.id);
+
+/** Reservations. */
+export const demanderObjet = (annonceId, message) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/reservations`, { method: 'POST', body: message ? { message } : {} }, 'Demande impossible.');
+export const chargerMesReservations = (role) =>
+  appelConnecte(`/api/reservations?role=${role}`, {}, 'Chargement des réservations impossible.').then((d) => d.reservations);
+const actionReservation = (id, action) =>
+  appelConnecte(`/api/reservations/${encodeURIComponent(id)}/${action}`, { method: 'POST' });
+export const validerDemande = (id) => actionReservation(id, 'validation');
+export const declinerDemande = (id) => actionReservation(id, 'declin');
+export const renoncerReservation = (id) => actionReservation(id, 'renonciation');
+/** Ouvre le tunnel de paiement de test ; renvoie l'adresse de la page Stripe. */
+export const ouvrirPaiement = (id) => actionReservation(id, 'paiement').then((d) => d.urlPaiement);
+export const confirmerPaiement = (id) => actionReservation(id, 'paiement/confirmation');
+
+/** Modifier ou retirer son annonce. */
+export const chargerEdition = (id) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(id)}/edition`, {}, 'Chargement de l’annonce impossible.');
+export async function modifierAnnonce(id, champs) {
+  const { ok, donnees } = await appeler(`/api/annonces/${encodeURIComponent(id)}`, { method: 'PATCH', authentifie: true, body: champs });
+  if (ok) return donnees;
+  const erreur = new Error('Modification refusée.');
+  erreur.erreurs = donnees.erreurs || [donnees.erreur || 'Modification impossible. Réessayez dans un instant.'];
+  throw erreur;
+}
+export const retirerAnnonce = (id) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(id)}`, { method: 'DELETE' }, 'Retrait impossible.');
+
+/** Profil : statistiques et toutes mes annonces. */
+export const chargerResumeProfil = () => appelConnecte('/api/profil/resume', {}, 'Chargement du profil impossible.');

@@ -15,8 +15,13 @@ import { associations, categoriesAPlat } from './referentiels.js';
 const texte = (v) => (typeof v === 'string' ? v.trim() : '');
 const MEDIAS_MAX = 8;
 
-/** Erreurs de saisie des champs de l'annonce (hors medias), vide si tout va bien. */
-async function validerChamps(env, corps) {
+/**
+ * Erreurs de saisie des champs de l'annonce (hors medias), vide si tout va
+ * bien. `exigerCreneauFutur` : a la creation, et a la modification si le
+ * creneau change ; sinon, une annonce dont le retrait a commence ne pourrait
+ * plus corriger sa description.
+ */
+export async function validerChamps(env, corps, { exigerCreneauFutur = true } = {}) {
   const erreurs = [];
 
   if (!texte(corps.titre)) erreurs.push('Le titre est obligatoire.');
@@ -54,12 +59,46 @@ async function validerChamps(env, corps) {
   if (Number.isNaN(debut) || Number.isNaN(fin)) {
     erreurs.push('Le créneau de retrait est obligatoire.');
   } else {
-    if (debut <= Date.now()) erreurs.push('Le créneau de retrait doit commencer dans le futur.');
+    if (exigerCreneauFutur && debut <= Date.now()) erreurs.push('Le créneau de retrait doit commencer dans le futur.');
     if (fin <= debut) erreurs.push("L'heure de fin doit suivre l'heure de début.");
   }
 
   erreurs.push(...validerAdresse(corps));
   return erreurs;
+}
+
+/**
+ * Verifie les photos citees : 8 au plus, sans doublon, toutes de l'auteur.
+ * Renvoie { erreurs } (422), ou { interdit } (403) si une photo est d'autrui.
+ */
+export async function validerMedias(env, mediaIds, utilisateurId) {
+  if (!Array.isArray(mediaIds) || mediaIds.length > MEDIAS_MAX || new Set(mediaIds).size !== mediaIds.length) {
+    return { erreurs: [`Une annonce compte ${MEDIAS_MAX} photos au plus.`] };
+  }
+  const auteurs = await Promise.all(mediaIds.map((id) => proprietaire(env, String(id))));
+  if (auteurs.some((a) => a === null)) return { erreurs: ['Une photo est introuvable : retirez-la et ajoutez-la de nouveau.'] };
+  if (auteurs.some((a) => a !== utilisateurId)) {
+    return { erreurs: [], interdit: { statut: 403, corps: { erreur: 'Une photo citée appartient à un autre membre.' } } };
+  }
+  return { erreurs: [] };
+}
+
+/**
+ * Geocode l'adresse de retrait. Renvoie { position }, ou { refus } : 422 si
+ * l'adresse est introuvable, 503 si le service ne repond pas.
+ */
+export async function localiser(adresse) {
+  let position;
+  try {
+    position = await geocoder(adresse);
+  } catch (e) {
+    console.error(e);
+    return { refus: { statut: 503, corps: { erreur: 'Le service de localisation des adresses ne répond pas. Réessayez dans un instant.' } } };
+  }
+  if (!position) {
+    return { refus: { statut: 422, corps: { erreurs: ['Adresse de retrait introuvable : vérifiez le numéro, la rue et le code postal.'] } } };
+  }
+  return { position };
 }
 
 /**
@@ -73,36 +112,15 @@ export async function publierAnnonce(env, corps, utilisateurId) {
   }
 
   const erreurs = await validerChamps(env, corps);
-
-  const mediaIds = corps.mediaIds ?? [];
-  if (!Array.isArray(mediaIds) || mediaIds.length > MEDIAS_MAX || new Set(mediaIds).size !== mediaIds.length) {
-    erreurs.push(`Une annonce compte ${MEDIAS_MAX} photos au plus.`);
-  } else {
-    const auteurs = await Promise.all(mediaIds.map((id) => proprietaire(env, String(id))));
-    if (auteurs.some((a) => a === null)) erreurs.push('Une photo est introuvable : retirez-la et ajoutez-la de nouveau.');
-    else if (auteurs.some((a) => a !== utilisateurId)) {
-      return { statut: 403, corps: { erreur: "Une photo citée appartient à un autre membre." } };
-    }
-  }
+  const medias = await validerMedias(env, corps.mediaIds ?? [], utilisateurId);
+  if (medias.interdit) return medias.interdit;
+  erreurs.push(...medias.erreurs);
   if (erreurs.length) return { statut: 422, corps: { erreurs } };
 
   const adresse = adresseNettoyee(corps);
-  let position;
-  try {
-    position = await geocoder(adresse);
-  } catch (e) {
-    console.error(e);
-    return {
-      statut: 503,
-      corps: { erreur: 'Le service de localisation des adresses ne répond pas. Réessayez dans un instant.' },
-    };
-  }
-  if (!position) {
-    return {
-      statut: 422,
-      corps: { erreurs: ['Adresse de retrait introuvable : vérifiez le numéro, la rue et le code postal.'] },
-    };
-  }
+  const { position, refus } = await localiser(adresse);
+  if (refus) return refus;
+  const mediaIds = corps.mediaIds ?? [];
 
   const maintenant = new Date().toISOString();
   const annonce = await ecrireLigne(env, 'annonces', crypto.randomUUID(), {

@@ -10,12 +10,16 @@ import CreerAnnonce from "@/ecrans/CreerAnnonce.jsx";
 import Inscription from "@/ecrans/Inscription.jsx";
 import Accueil from "@/ecrans/Accueil.jsx";
 import Annuaire from "@/ecrans/Annuaire.jsx";
-import Bientot from "@/ecrans/Bientot.jsx";
+import Conversation from "@/ecrans/Conversation.jsx";
 import FicheAnnonce from "@/ecrans/FicheAnnonce.jsx";
+import Favoris from "@/ecrans/Favoris.jsx";
+import Messages from "@/ecrans/Messages.jsx";
+import ModifierAnnonce from "@/ecrans/ModifierAnnonce.jsx";
 import LienInvalide from "@/ecrans/LienInvalide.jsx";
 import Profil from "@/ecrans/Profil.jsx";
 import Recherche from "@/ecrans/Recherche.jsx";
 import { chargerProfil } from "@/lib/api.js";
+import { oublierFavoris } from "@/lib/favoris.js";
 import {
   estRetourDeLien,
   finaliserConnexion,
@@ -110,6 +114,7 @@ export default function App() {
     if (utilisateur === undefined) return;
     if (utilisateur === null) {
       setProfil(undefined);
+      oublierFavoris();
       return;
     }
     chargerProfil()
@@ -140,20 +145,17 @@ export default function App() {
           <Route index element={<Accueil profil={profil} />} />
           <Route path="recherche" element={<Recherche />} />
           <Route path="creer" element={<CreerAnnonce profil={profil} surProfil={setProfil} />} />
-          <Route
-            path="favoris"
-            element={
-              <Bientot titre="Favoris" illustration="/illustrations/objet-coeur.svg">
-                Vous pourrez bientôt garder de côté les objets qui vous plaisent.
-              </Bientot>
-            }
-          />
+          <Route path="favoris" element={<Favoris />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="annonces/:id/modifier" element={<ModifierAnnonce profil={profil} surProfil={setProfil} />} />
           <Route path="profil" element={<Profil profil={profil} />} />
+          <Route path="profil/modifier" element={<Inscription profil={profil} email={profil.email} surTermine={setProfil} />} />
           <Route path="membres" element={<Annuaire profil={profil} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
         <Route element={<CoquePleinCadre profil={profil} />}>
           <Route path="annonces/:id" element={<FicheAnnonce profil={profil} />} />
+          <Route path="messages/:id" element={<Conversation profil={profil} />} />
         </Route>
       </Routes>
     );

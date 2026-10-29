@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { Heart, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import Champ from "@/components/Champ.jsx";
@@ -25,22 +26,27 @@ const ROLES = [
 /**
  * Ecran 3 des maquettes : « Finalisez votre profil ».
  *
- * L'email n'est pas saisi ici : il est deja prouve par le lien magique, et le
+ * L'email n'est pas saisi ici : il est deja prouve par la connexion, et le
  * Worker le reprend du jeton verifie. Le laisser modifiable ouvrirait la porte
  * a une usurpation d'adresse.
+ *
+ * Avec `profil`, le meme formulaire sert a modifier son profil (US-36, #68),
+ * roles compris : on passe d'offrant a demandeur, ou on cumule les deux, a
+ * tout moment.
  */
-export default function Inscription({ email, surTermine }) {
-  const [champs, setChamps] = useState({
-    nom: "",
-    prenom: "",
-    dateNaissance: "",
-    roles: [],
-    numeroRue: "",
-    rue: "",
-    complementAdresse: "",
-    codePostal: "",
-    ville: "",
-  });
+export default function Inscription({ email, surTermine, profil = null }) {
+  const naviguer = useNavigate();
+  const [champs, setChamps] = useState(() => ({
+    nom: profil?.nom || "",
+    prenom: profil?.prenom || "",
+    dateNaissance: profil?.dateNaissance?.slice(0, 10) || "",
+    roles: profil?.roles || [],
+    numeroRue: profil?.numeroRue || "",
+    rue: profil?.rue || "",
+    complementAdresse: profil?.complementAdresse || "",
+    codePostal: profil?.codePostal || "",
+    ville: profil?.ville || "",
+  }));
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
 
@@ -72,7 +78,8 @@ export default function Inscription({ email, surTermine }) {
     setErreur(null);
     setEnvoi(true);
     try {
-      surTermine(await enregistrerProfil(champs));
+      surTermine(await enregistrerProfil({ ...champs, photoUrl: profil?.photoUrl || "" }));
+      if (profil) naviguer("/profil", { replace: true, state: { profilModifie: true } });
     } catch (e) {
       setErreur(e.message);
       setEnvoi(false);
@@ -83,7 +90,8 @@ export default function Inscription({ email, surTermine }) {
     <section className="pb-2">
       <header>
         {/* Progression : l'inscription est la 2e des 3 etapes du parcours
-            (lien magique, profil, accueil). */}
+            (connexion, profil, accueil). Pas en modification. */}
+        {!profil && (
         <div className="flex items-center gap-3.5">
           <div
             className="h-1.5 flex-1 overflow-hidden rounded-full bg-primary/15"
@@ -94,15 +102,17 @@ export default function Inscription({ email, surTermine }) {
             Étape 2 sur 3
           </span>
         </div>
+        )}
 
-        <h1 className="doneo-titre mt-5 text-[2rem] leading-tight text-pretty">
-          Finalisez votre profil
+        <h1 className={`doneo-titre text-[2rem] leading-tight text-pretty ${profil ? "" : "mt-5"}`}>
+          {profil ? "Modifier mon profil" : "Finalisez votre profil"}
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground text-pretty">
-          Vous êtes identifié·e comme{" "}
+          {profil ? "Compte" : "Vous êtes identifié·e comme"}{" "}
           <strong className="font-semibold text-foreground">{email}</strong>.
-          Encore quelques informations et vous pourrez donner ou demander vos
-          premiers objets.
+          {profil
+            ? " Vos rôles se changent à tout moment : vous pouvez donner, demander, ou les deux."
+            : " Encore quelques informations et vous pourrez donner ou demander vos premiers objets."}
         </p>
       </header>
 
@@ -227,7 +237,7 @@ export default function Inscription({ email, surTermine }) {
         </p>
 
         <fieldset className="space-y-3 pt-2">
-          <legend className="doneo-etiquette">Je m’inscris en tant que</legend>
+          <legend className="doneo-etiquette">{profil ? "Mes rôles" : "Je m’inscris en tant que"}</legend>
           <p className="text-xs leading-5 text-muted-foreground text-pretty">
             Les deux sont possibles : on peut donner ce dont on n’a plus l’usage
             et chercher autre chose.
@@ -278,7 +288,7 @@ export default function Inscription({ email, surTermine }) {
 
         {/* Le bouton colle au bas de l'ecran pendant le defilement : le
             formulaire est long, on ne veut pas obliger a redescendre. */}
-        <div className="sticky bottom-0 -mx-6 bg-linear-to-t from-background from-65% to-transparent px-6 pt-4 pb-5 sm:-mx-8 sm:px-8">
+        <div className={profil ? "pt-2" : "sticky bottom-0 -mx-6 bg-linear-to-t from-background from-65% to-transparent px-6 pt-4 pb-5 sm:-mx-8 sm:px-8"}>
           <Button
             type="submit"
             variant="doneo"
@@ -290,7 +300,7 @@ export default function Inscription({ email, surTermine }) {
             ) : (
               <Heart className="size-5 fill-current" aria-hidden="true" />
             )}
-            {envoi ? "Enregistrement…" : "Créer mon compte"}
+            {envoi ? "Enregistrement…" : profil ? "Enregistrer" : "Créer mon compte"}
           </Button>
         </div>
       </form>

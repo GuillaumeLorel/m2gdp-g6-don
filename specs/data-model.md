@@ -333,6 +333,14 @@ classDiagram
 
 ## Réservation et liste d'attente
 
+> **Parcours retenu le 29/10/2026 (J4).** Une demande naît `demandee` :
+> l'**offrant** la valide — l'objet est alors `proposee` au demandeur et
+> l'annonce passe à `reserve` — ou la décline (`annulee`, motif
+> `declinee`). Le demandeur paie ensuite en mode test (Stripe), ce qui
+> confirme la réservation et révèle l'adresse exacte. Plusieurs personnes
+> peuvent demander le même objet ; l'offrant choisit. La file ordonnée
+> ci-dessous (`liste_attente`, promotion automatique) vient en J5.
+
 Une annonce est « tenue » par au plus **une** réservation à la fois — proposée
 ou confirmée. Les demandes suivantes s'inscrivent en **liste d'attente**, dans
 l'ordre d'arrivée. Quand le détenteur se désiste ou refuse, l'objet est
@@ -348,8 +356,10 @@ redevient `disponible` quand plus personne ne le tient ni ne l'attend.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> proposee : demande sur une annonce disponible
-    [*] --> liste_attente : demande sur une annonce déjà tenue
+    [*] --> demandee : demande (J4)
+    demandee --> proposee : l'offrant valide
+    demandee --> annulee : l'offrant décline, ou le demandeur annule
+    [*] --> liste_attente : demande sur une annonce déjà tenue (J5)
 
     liste_attente --> proposee : place libérée, en tête de file
     liste_attente --> annulee : désistement, objet remis à autrui, annonce retirée
@@ -366,13 +376,14 @@ stateDiagram-v2
 
 | `statut`        | Sens                                                               | Adresse exacte visible ? |
 | --------------- | ------------------------------------------------------------------ | ------------------------ |
+| `demandee`      | En attente de la réponse de l'offrant (J4)                         | Non                      |
 | `liste_attente` | Inscrit derrière le détenteur actuel ; `position` calculée          | Non                      |
 | `proposee`      | L'objet vous est proposé : payer pour accepter, ou refuser          | Non                      |
 | `confirmee`     | Participation validée, retrait attendu                              | **Oui**, au demandeur |
 | `remise`        | L'objet a changé de mains ; les avis s'ouvrent                     | Non                      |
 | `annulee`       | Fin sans remise ; la raison est dans `motifAnnulation`             | Non                      |
 
-`motifAnnulation` : `desistement`, `refus`, `sans_reponse`,
+`motifAnnulation` : `desistement`, `refus`, `declinee` (par l'offrant), `sans_reponse`,
 `attribuee_a_autrui`, `annonce_retiree`. On garde **un seul** état terminal
 d'échec plutôt que trois : la raison change le message affiché, pas ce qu'on
 peut faire ensuite.

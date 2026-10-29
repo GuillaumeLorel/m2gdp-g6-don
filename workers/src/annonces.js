@@ -72,7 +72,7 @@ export async function chargerAnnonce(env, id) {
  * Ce qu'on montre d'un membre a cote de son annonce : prenom et initiale du
  * nom (« Claire M. »), comme sur les maquettes. Jamais l'adresse ni l'e-mail.
  */
-function versProfilResume(utilisateur) {
+export function versProfilResume(utilisateur) {
   if (!utilisateur) return { id: '', prenom: 'Membre' };
   return {
     id: utilisateur.id,
