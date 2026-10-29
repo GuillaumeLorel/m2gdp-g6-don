@@ -5,9 +5,12 @@
  * navigateurs tournent en parallele, un nettoyage anticipe retirerait la
  * photo d'un test encore en cours.
  */
-import { PROFILS, supprimerPhotosDe } from './e2e/outils.js';
+import { PROFILS, remettreEnEtatLesProfilsDeTest, supprimerPhotosDe } from './e2e/outils.js';
 
 export default async function nettoyer() {
+  // Conversations, reservations et favoris des profils de test ; statut des
+  // annonces de Bastien.
+  await remettreEnEtatLesProfilsDeTest();
   const depuis = process.env.DONEO_DEBUT_TESTS;
   if (!depuis) return;
   for (const idLisible of Object.values(PROFILS)) await supprimerPhotosDe(idLisible, depuis);

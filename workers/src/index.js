@@ -19,13 +19,37 @@
  *   GET  /api/medias/{id}         redirige vers le fichier (Supabase Storage)
  *   DELETE /api/medias/{id}       supprimer une de ses photos
  *   GET  /api/health              healthcheck
+ *
+ * Connecte (J4) :
+ *   GET|PATCH|DELETE /api/annonces/{id}/edition|{id}  modifier, retirer son annonce
+ *   PUT|DELETE /api/annonces/{id}/favori, GET /api/favoris
+ *   POST /api/annonces/{id}/conversation, GET /api/conversations,
+ *   GET|POST /api/conversations/{id}/messages
+ *   POST /api/annonces/{id}/reservations, GET /api/reservations?role=,
+ *   GET /api/reservations/{id}, POST /api/reservations/{id}/(validation|
+ *   declin|renonciation|paiement|paiement/confirmation)
+ *   GET /api/profil/resume
  */
 
 import { ecrireLigne, lireLigne, listerTable, profilExistePourEmail, utilisateurDuJeton } from './base.js';
 import { validerAdresse } from './adresse.js';
 import { chargerAnnonce, rechercherAnnonces } from './annonces.js';
+import { contacter, envoyerMessage, lireConversation, listerConversations } from './conversations.js';
+import { lireEdition, modifierAnnonce, retirerAnnonce } from './edition.js';
+import { ajouterFavori, listerFavoris, retirerFavori } from './favoris.js';
 import { supprimer, televerser, urlMedia } from './medias.js';
+import { resumeProfil } from './profil.js';
 import { publierAnnonce } from './publication.js';
+import {
+  confirmerPaiement,
+  decliner,
+  demander,
+  lireReservation,
+  listerReservations,
+  payer,
+  renoncer,
+  valider,
+} from './reservations.js';
 import { arbreCategories, associations, versAssociation } from './referentiels.js';
 import { correspond } from './texte.js';
 
@@ -58,7 +82,7 @@ function entetesCors(request, env) {
   return {
     // Pas de joker : on renvoie l'origine seulement si elle est autorisee.
     ...(origine ? { 'Access-Control-Allow-Origin': origine } : {}),
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
@@ -117,6 +141,81 @@ function validerProfil(corps) {
   }
 
   return erreurs;
+}
+
+/**
+ * Routes des echanges entre membres : favoris, messagerie, reservations,
+ * modification d'annonce, profil. Renvoie null si le chemin n'en fait pas
+ * partie. Les modules renvoient { statut, corps } ; ici, on ne fait que
+ * l'aiguillage et l'authentification.
+ */
+async function routerEchanges(request, env, pathname, cors) {
+  const m = (motif) => motif.exec(pathname);
+  const methode = request.method;
+  const routes = [
+    [/^\/api\/annonces\/([\w-]{1,64})\/favori$/, ['PUT', 'DELETE']],
+    [/^\/api\/favoris$/, ['GET']],
+    [/^\/api\/annonces\/([\w-]{1,64})\/edition$/, ['GET']],
+    [/^\/api\/annonces\/([\w-]{1,64})$/, ['PATCH', 'DELETE']],
+    [/^\/api\/annonces\/([\w-]{1,64})\/conversation$/, ['POST']],
+    [/^\/api\/conversations$/, ['GET']],
+    [/^\/api\/conversations\/([\w-]{1,64})\/messages$/, ['GET', 'POST']],
+    [/^\/api\/annonces\/([\w-]{1,64})\/reservations$/, ['POST']],
+    [/^\/api\/reservations$/, ['GET']],
+    [/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|paiement|paiement\/confirmation))?$/, ['GET', 'POST']],
+    [/^\/api\/profil\/resume$/, ['GET']],
+  ];
+  if (!routes.some(([motif, methodes]) => motif.test(pathname) && methodes.includes(methode))) return null;
+
+  const utilisateur = await utilisateurConnecte(request, env);
+  if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
+  const uid = utilisateur.id;
+  const corps = ['POST', 'PUT', 'PATCH'].includes(methode) ? await request.json().catch(() => ({})) : {};
+  const repondre = ({ statut, corps: reponse }) =>
+    statut === 204 ? new Response(null, { status: 204, headers: cors }) : json(reponse, statut, cors);
+
+  let r;
+  if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/favori$/))) {
+    if (methode === 'DELETE') {
+      await retirerFavori(env, uid, r[1]);
+      return repondre({ statut: 204 });
+    }
+    const statut = await ajouterFavori(env, uid, r[1]);
+    return statut === 204 ? repondre({ statut }) : json({ erreur: 'Cette annonce n’existe pas ou a été retirée.' }, 404, cors);
+  }
+  if (pathname === '/api/favoris') {
+    const annonces = await listerFavoris(env, uid);
+    return json({ total: annonces.length, page: 1, parPage: annonces.length, annonces }, 200, cors);
+  }
+  if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/edition$/))) return repondre(await lireEdition(env, uid, r[1]));
+  if ((r = m(/^\/api\/annonces\/([\w-]{1,64})$/))) {
+    return repondre(methode === 'DELETE' ? await retirerAnnonce(env, uid, r[1]) : await modifierAnnonce(env, uid, r[1], corps));
+  }
+  if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/conversation$/))) return repondre(await contacter(env, uid, r[1], corps.contenu));
+  if (pathname === '/api/conversations') return json({ conversations: await listerConversations(env, uid) }, 200, cors);
+  if ((r = m(/^\/api\/conversations\/([\w-]{1,64})\/messages$/))) {
+    return repondre(methode === 'GET' ? await lireConversation(env, uid, r[1]) : await envoyerMessage(env, uid, r[1], corps.contenu));
+  }
+  if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/reservations$/))) return repondre(await demander(env, uid, r[1], corps.message));
+  if (pathname === '/api/reservations') {
+    const role = new URL(request.url).searchParams.get('role');
+    if (!['demandeur', 'offrant'].includes(role)) return json({ erreurs: ['« role » doit valoir demandeur ou offrant.'] }, 422, cors);
+    return json({ reservations: await listerReservations(env, uid, role) }, 200, cors);
+  }
+  if ((r = m(/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|paiement|paiement\/confirmation))?$/))) {
+    const [, id, action] = r;
+    if (!action) return methode === 'GET' ? repondre(await lireReservation(env, uid, id)) : null;
+    if (methode !== 'POST') return null;
+    if (action === 'validation') return repondre(await valider(env, uid, id));
+    if (action === 'declin') return repondre(await decliner(env, uid, id));
+    if (action === 'renonciation') return repondre(await renoncer(env, uid, id));
+    if (action === 'paiement/confirmation') return repondre(await confirmerPaiement(env, uid, id));
+    // Retour du tunnel de paiement sur le front qui l'a ouvert.
+    const origine = origineAutorisee(request.headers.get('Origin'), env) || 'https://doneo-app.vercel.app';
+    return repondre(await payer(env, uid, id, origine));
+  }
+  if (pathname === '/api/profil/resume') return json(await resumeProfil(env, uid), 200, cors);
+  return null;
 }
 
 export default {
@@ -274,6 +373,10 @@ export default {
           ? json(annonce, 200, cors)
           : json({ erreur: 'Cette annonce n’existe pas ou a été retirée.' }, 404, cors);
       }
+
+      /* --- Echanges entre membres (J4) : tout exige d'etre connecte ------ */
+      const echanges = await routerEchanges(request, env, pathname, cors);
+      if (echanges) return echanges;
 
       /* --- Medias (photos des annonces) --------------------------------- */
       if (pathname === '/api/medias' && request.method === 'POST') {

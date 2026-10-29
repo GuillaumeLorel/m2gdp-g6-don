@@ -113,6 +113,35 @@ paths:
         "401": { $ref: "#/components/responses/NonAuthentifie" }
         "422": { $ref: "#/components/responses/Invalide" }
 
+  /api/profil/resume:
+    get:
+      tags: ["Profils"]
+      summary: "📊 Mes statistiques et toutes mes annonces"
+      description: >
+        Pour l'écran Profil : objets donnés, objets reçus, montant reversé aux
+        associations, et toutes les annonces du membre — y compris celles
+        remises, que la recherche publique ne renvoie plus.
+      security: [{ jetonSupabase: [] }]
+      responses:
+        "200":
+          description: "Résumé"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [statistiques, annonces]
+                properties:
+                  statistiques:
+                    type: object
+                    properties:
+                      objetsDonnes: { type: integer }
+                      objetsRecus: { type: integer }
+                      montantReverse: { type: number }
+                  annonces:
+                    type: array
+                    items: { $ref: "#/components/schemas/AnnoncePublique" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
   /api/utilisateurs:
     get:
       tags: ["Profils"]
@@ -886,25 +915,23 @@ paths:
         Réservé au rôle `demandeur`, et pas sur sa propre annonce.
 
 
-        - Annonce **disponible** : la réservation naît `proposee` et l'annonce
-        passe **aussitôt** à `reserve`. L'objet vous est mis de côté : payez
-        pour confirmer, ou refusez. Une seconde demande arrivant entre-temps
-        s'inscrit donc en liste d'attente : deux personnes ne tiennent jamais le
-        même objet.
-
-        - Annonce **reserve** : la réservation naît `liste_attente`, avec sa
-        `position` dans la file.
+        Parcours retenu le 29/10/2026 : la réservation naît `demandee`.
+        L'**offrant** la valide (`/validation`, l'objet est alors proposé et
+        l'annonce passe à `reserve`) ou la décline (`/declin`). Le
+        demandeur paie ensuite (`/paiement`). Plusieurs personnes peuvent
+        demander le même objet : l'offrant en choisit une, et ne peut pas le
+        proposer à une seconde tant que la première le tient.
 
 
-        Dans les deux cas, la conversation (annonce, demandeur) est créée si
-        besoin et reçoit un message système. Aucun paiement à ce stade. La
-        vérification de l'état de l'annonce et l'écriture de la réservation se
-        font dans une même transaction.
+        La conversation (annonce, demandeur) est créée si besoin et reçoit un
+        message système `demande_recue` ; `message` (facultatif, dans le
+        corps) y est ajouté. Aucun paiement à ce stade. La liste d'attente
+        ordonnée (`liste_attente`) vient en J5.
       security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "201":
-          description: "Réservation `proposee` ou `liste_attente`"
+          description: "Réservation `demandee`"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Reservation" }
@@ -996,42 +1023,58 @@ paths:
         "403": { $ref: "#/components/responses/Interdit" }
         "404": { $ref: "#/components/responses/Introuvable" }
 
-  /api/reservations/{id}/paiement:
+  /api/reservations/{id}/validation:
     post:
       tags: ["Réservations"]
-      summary: "💳 Accepter l'objet proposé en versant la participation (mode test)"
+      summary: "✅ Valider une demande (offrant)"
       description: >
-        Uniquement sur une réservation `proposee`, par son demandeur. Le
-        paiement passe par un vrai prestataire, mais en mode test : il est
-        réellement validé et porte une référence de transaction, alors que
-        `montantDebite` vaut 0. La réservation passe à `confirmee` — l'annonce
-        est déjà `reserve` depuis la proposition — et la réponse contient
-        l'adresse exacte.
+        Sur une réservation `demandee`, par l'offrant. Elle passe à `proposee`,
+        `participationDemandee` est figée, et l'annonce passe à `reserve` —
+        si elle est encore disponible : l'offrant ne propose pas le même objet
+        à deux personnes. Message système `objet_propose`.
       security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
         "200":
-          description: "Réservation confirmée ; `adresseRetrait` renseignée"
+          description: "Réservation proposée au demandeur"
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Reservation" }
         "401": { $ref: "#/components/responses/NonAuthentifie" }
-        "402": { description: "Paiement refusé par le prestataire (`echoue`)" }
         "403": { $ref: "#/components/responses/Interdit" }
-        "404": { $ref: "#/components/responses/Introuvable" }
         "409":
           description: >
-            La réservation n'est pas `proposee` — par exemple parce que
-            l'offrant est passé au suivant faute de réponse.
+            La demande a déjà reçu une réponse, l'objet est déjà proposé à
+            quelqu'un, ou le créneau est passé.
 
-  /api/reservations/{id}/refus:
+  /api/reservations/{id}/declin:
     post:
       tags: ["Réservations"]
-      summary: "🙅 Décliner l'objet proposé"
+      summary: "✋ Décliner une demande (offrant)"
       description: >
-        Sur une réservation `proposee`, par son demandeur. Elle passe à
-        `annulee` (`refus`) et l'objet est proposé au suivant de la file. Si la
-        file est vide, l'annonce redevient `disponible`.
+        Sur une réservation `demandee`, par l'offrant. Elle passe à `annulee`
+        (`declinee`). Message système `demande_declinee`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Demande déclinée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "La demande a déjà reçu une réponse"
+
+  /api/reservations/{id}/renonciation:
+    post:
+      tags: ["Réservations"]
+      summary: "🙅 Annuler sa demande, ou refuser l'objet proposé (demandeur)"
+      description: >
+        Sur une réservation `demandee` (motif `desistement`) ou `proposee`
+        (motif `refus` : l'annonce redevient `disponible`), par son
+        demandeur. Une réservation déjà payée relève du désistement (J5).
       security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
@@ -1043,7 +1086,61 @@ paths:
         "401": { $ref: "#/components/responses/NonAuthentifie" }
         "403": { $ref: "#/components/responses/Interdit" }
         "409":
-          description: "La réservation n'est pas `proposee`"
+          description: "Réservation déjà payée, ou déjà close"
+
+  /api/reservations/{id}/paiement:
+    post:
+      tags: ["Réservations"]
+      summary: "💳 Ouvrir le tunnel de paiement de test (Stripe)"
+      description: >
+        Uniquement sur une réservation `proposee`, par son demandeur. Ouvre une
+        session Stripe Checkout **en mode test** (carte 4242 4242 4242 4242)
+        au montant de `participationDemandee` — 0,50 € au moins, minimum de
+        Stripe — et renvoie l'adresse de la page de paiement. Aucun euro ne
+        change de main : `montantDebite` reste à 0. Au retour, le front
+        appelle `/paiement/confirmation`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Adresse de la page de paiement"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [urlPaiement]
+                properties:
+                  urlPaiement: { type: string, format: uri }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "La réservation n'est pas (ou plus) `proposee`"
+        "503":
+          description: "Clé Stripe de test absente du Worker"
+
+  /api/reservations/{id}/paiement/confirmation:
+    post:
+      tags: ["Réservations"]
+      summary: "🔓 Confirmer le paiement et révéler l'adresse exacte"
+      description: >
+        Au retour du tunnel. Le Worker demande à Stripe si la session est
+        payée ; si oui, la réservation passe à `confirmee`
+        (`statutPaiement` = `paye`, `referencePaiement` = identifiant de la
+        transaction de test), avec un message système `paiement_valide`, et
+        la réponse contient `adresseRetrait`. Idempotent.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Réservation confirmée ; `adresseRetrait` renseignée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "402": { description: "Paiement non abouti : réessayer" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "Aucun paiement en cours pour cette réservation"
 
   /api/reservations/{id}/desistement:
     post:
@@ -1289,7 +1386,11 @@ components:
 
     StatutReservation:
       type: string
-      enum: [liste_attente, proposee, confirmee, remise, annulee]
+      enum: [demandee, liste_attente, proposee, confirmee, remise, annulee]
+      description: >
+        `demandee` : en attente de la réponse de l'offrant. `proposee` :
+        validée par l'offrant, le demandeur doit payer. `confirmee` : payée,
+        l'adresse exacte est donnée. `liste_attente` et `remise` : J5.
 
     ProfilResume:
       type: object
@@ -1776,14 +1877,29 @@ components:
 
     Conversation:
       type: object
-      required: [id, annonceId, offrantId, demandeurId, creeLe]
+      required: [id, monRole, creeLe]
       properties:
         id: { type: string, readOnly: true }
-        annonceId: { type: string, readOnly: true }
-        annonceTitre: { type: string, readOnly: true }
-        offrantId: { type: string, readOnly: true }
-        demandeurId: { type: string, readOnly: true }
+        monRole:
+          type: string
+          enum: [offrant, demandeur]
+          description: "Le rôle du lecteur dans cette conversation"
+        annonce:
+          type: object
+          description: "Résumé de l'annonce : titre, statut, participation, créneau, visuel"
+          properties:
+            id: { type: string }
+            titre: { type: string }
+            statut: { $ref: "#/components/schemas/StatutAnnonce" }
+            participation: { type: number }
+            creneauRetrait: { $ref: "#/components/schemas/Creneau" }
         interlocuteur: { $ref: "#/components/schemas/ProfilResume" }
+        reservation:
+          allOf:
+            - $ref: "#/components/schemas/Reservation"
+          description: >
+            La réservation qui commande les actions : celle en cours, sinon la
+            dernière. **Absente** s'il n'y en a jamais eu.
         dernierMessage:
           allOf:
             - $ref: "#/components/schemas/Message"
@@ -1901,6 +2017,7 @@ components:
             [
               desistement,
               refus,
+              declinee,
               sans_reponse,
               attribuee_a_autrui,
               annonce_retiree,

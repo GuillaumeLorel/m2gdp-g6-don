@@ -31,14 +31,20 @@ node donnees/charger-categories.mjs
 | Script | Ce qu'il fait |
 | --- | --- |
 | `generer-donnees-demo.mjs` | Produit `specs/donnees/demo/utilisateurs.json` (110 profils) et `annonces.json` (149 annonces, une par objet de `catalogue-objets.mjs`). Déterministe : graine fixe. Chaque adresse est validée par le géocodage de la Géoplateforme |
-| `charger-donnees-demo.mjs` | Charge les associations (`specs/donnees/associations.json`), les profils et les annonces. `--supprimer` retire uniquement la démo |
+| `generer-echanges-demo.mjs` | Produit `specs/donnees/demo/echanges.json` : 68 conversations, 50 réservations dans tous les états, 298 messages (#75), cohérents avec le statut des annonces. Dates relatives. Déterministe |
+| `charger-donnees-demo.mjs` | Charge les associations (`specs/donnees/associations.json`), les profils, les annonces, leurs photos et les échanges. Met à jour sur place : les favoris, conversations et demandes de **vrais** membres sur les annonces de démo sont conservés. `--supprimer` retire uniquement la démo |
 
 ```bash
 node donnees/generer-donnees-demo.mjs        # seulement pour regenerer les JSON
+node donnees/generer-echanges-demo.mjs       # idem pour les echanges
 node donnees/charger-donnees-demo.mjs --simulation
 node donnees/charger-donnees-demo.mjs
 node donnees/charger-donnees-demo.mjs --supprimer
 ```
+
+Avant une démo, relancer le chargement : les créneaux des annonces en ligne
+avancent de semaines entières jusqu’à être à venir (même jour, même heure),
+et les échanges sont datés par rapport à l’instant du chargement.
 
 Les profils et annonces de démo portent `fictif: true`. 44 annonces ont une
 photo (`specs/donnees/demo/photos.json`, crédits dans `CREDITS-PHOTOS.md`),

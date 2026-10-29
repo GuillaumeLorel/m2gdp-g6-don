@@ -35,7 +35,7 @@ async function reduire(fichier) {
  * setter d'etat React (il recoit une fonction de mise a jour). Un refus (format,
  * poids) s'affiche sous la grille sans rien perdre de la saisie.
  */
-export default function PhotosAnnonce({ photos, surChangement }) {
+export default function PhotosAnnonce({ photos, surChangement, publiees = [] }) {
   const idChamp = useId();
   const entree = useRef(null);
   const [enCours, setEnCours] = useState([]); // apercus locaux pendant l'envoi
@@ -78,7 +78,8 @@ export default function PhotosAnnonce({ photos, surChangement }) {
 
   function retirer(photo) {
     surChangement((liste) => liste.filter((p) => p.id !== photo.id));
-    supprimerPhoto(photo.id);
+    // Une photo deja publiee reste citee par l'annonce jusqu'a l'enregistrement.
+    if (!publiees.includes(photo.id)) supprimerPhoto(photo.id);
   }
 
   return (

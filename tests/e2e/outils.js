@@ -179,6 +179,43 @@ export async function supprimerPhotosDe(idLisible, depuis) {
   await fetch(`${URL_SUPABASE}/rest/v1/medias?${filtre}`, { method: 'DELETE', headers: entetes });
 }
 
+/**
+ * Remet en etat les profils de test apres la suite : leurs conversations
+ * (reservations et messages suivent en cascade) et leurs favoris disparaissent,
+ * et les annonces de Bastien retrouvent le statut et le titre des donnees de
+ * demo — un test interrompu a pu les laisser « reservees » ou renommees.
+ */
+export async function remettreEnEtatLesProfilsDeTest() {
+  const cle = cleSecrete();
+  const entetes = { apikey: cle, authorization: `Bearer ${cle}`, 'content-type': 'application/json' };
+  const ids = Object.values(PROFILS).map(idUtilisateurDemo);
+  const liste = encodeURIComponent(ids.map((id) => `"${id}"`).join(','));
+  for (const champ of ['demandeurId', 'offrantId']) {
+    await fetch(`${URL_SUPABASE}/rest/v1/conversations?fictif=is.false&${champ}=in.(${liste})`, { method: 'DELETE', headers: entetes });
+  }
+  await fetch(`${URL_SUPABASE}/rest/v1/favoris?utilisateurId=in.(${liste})`, { method: 'DELETE', headers: entetes });
+  const annonces = JSON.parse(readFileSync(path.join(RACINE, 'specs/donnees/demo/annonces.json'), 'utf8'));
+  for (const a of annonces.filter((x) => x.offrantId === PROFILS.offrantEtDemandeur)) {
+    await fetch(`${URL_SUPABASE}/rest/v1/annonces?id=eq.${a.id}`, {
+      method: 'PATCH',
+      headers: entetes,
+      body: JSON.stringify({ statut: a.statut, titre: a.titre }),
+    });
+  }
+}
+
+/** Appel authentifie au Worker local, sous un profil de test. */
+export async function appelApi(idLisible, chemin, { methode = 'GET', corps } = {}) {
+  const { access_token: jeton } = await sessionDeTest(idLisible);
+  const reponse = await fetch(`${process.env.DONEO_API || 'http://localhost:8787'}${chemin}`, {
+    method: methode,
+    headers: { authorization: `Bearer ${jeton}`, 'content-type': 'application/json' },
+    body: corps ? JSON.stringify(corps) : undefined,
+  });
+  const texte = await reponse.text();
+  return { statut: reponse.status, corps: texte ? JSON.parse(texte) : null };
+}
+
 /** Aucune barre de defilement horizontale (critere « affichage sur mobile »). */
 export async function attendrePasDeDefilementHorizontal(page) {
   const debord = await page.evaluate(

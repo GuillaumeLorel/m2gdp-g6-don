@@ -2,16 +2,26 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { CalendarDays, Plus, Search } from "lucide-react";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
-import { chercherAnnonces } from "@/lib/api.js";
+import { chargerMesReservations, chercherAnnonces } from "@/lib/api.js";
 import { creneauPasse, formaterCreneau, formaterParticipation } from "@/lib/format.js";
 
-/** Pastille de statut d'un don, du point de vue de son offrant. */
-function Statut({ annonce }) {
-  const [libelle, couleur] = creneauPasse(annonce.creneauRetrait)
+/** Statut d'un don, du point de vue de son offrant. */
+const statutDon = (annonce) =>
+  creneauPasse(annonce.creneauRetrait)
     ? ["Créneau passé", "bg-destructive/10 text-destructive"]
     : annonce.statut === "reserve"
       ? ["Réservé", "bg-citron"]
       : ["Disponible", "bg-menthe"];
+
+/** Statut d'une demande, du point de vue du demandeur : ce qu'il a a faire. */
+const STATUTS_DEMANDE = {
+  demandee: ["En attente de l’offrant", "bg-pervenche"],
+  proposee: ["À payer", "bg-citron"],
+  confirmee: ["Confirmée", "bg-menthe"],
+};
+
+function Statut({ valeur }) {
+  const [libelle, couleur] = valeur;
   return (
     <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise ${couleur}`}>
       {libelle}
@@ -19,11 +29,11 @@ function Statut({ annonce }) {
   );
 }
 
-/** Ligne compacte d'un don : vignette, titre, statut, participation et creneau. */
-function CarteDon({ annonce }) {
+/** Ligne compacte d'un objet : vignette, titre, statut, participation et creneau. */
+function CarteDon({ annonce, vers = `/annonces/${annonce.id}`, statut = statutDon(annonce) }) {
   return (
     <Link
-      to={`/annonces/${annonce.id}`}
+      to={vers}
       className="doneo-carte flex w-[min(18rem,82vw)] shrink-0 items-center gap-3 p-2.5 focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:outline-none lg:w-full">
       <ImageAnnonce annonce={annonce} className="size-16 shrink-0 rounded-xl" />
       {/* Le statut a sa propre ligne : a cote du titre, il le tronquait. */}
@@ -39,7 +49,7 @@ function CarteDon({ annonce }) {
               <span className="truncate">{formaterCreneau(annonce.creneauRetrait, { court: true })}</span>
             </p>
           )}
-          <Statut annonce={annonce} />
+          <Statut valeur={statut} />
         </div>
       </div>
     </Link>
@@ -66,14 +76,22 @@ function Vide({ children, lien, libelle, Icone }) {
  * en ligne, et les demandes du demandeur. Chaque bloc n'apparait que pour le
  * role correspondant ; un compte qui cumule les deux voit les deux.
  *
- * Les demandes (reservations) arrivent avec l’issue #52 : en attendant, le bloc
- * dit simplement qu'il n'y en a pas, et oriente vers la recherche.
+ * Une demande mene a sa conversation, la ou l'on paie et ou l'on retrouve
+ * l'adresse ; sa pastille dit ce qu'il reste a faire.
  */
 export default function EnCours({ profil }) {
   const offrant = profil.roles?.includes("offrant");
   const demandeur = profil.roles?.includes("demandeur");
   const [dons, setDons] = useState(null);
+  const [demandes, setDemandes] = useState(null);
   const [erreur, setErreur] = useState(false);
+
+  useEffect(() => {
+    if (!demandeur) return;
+    chargerMesReservations("demandeur")
+      .then((liste) => setDemandes(liste.filter((r) => STATUTS_DEMANDE[r.statut] && r.annonce)))
+      .catch(() => setDemandes([]));
+  }, [demandeur]);
 
   const charger = useCallback(() => {
     if (!offrant) return;
@@ -130,11 +148,25 @@ export default function EnCours({ profil }) {
 
       {demandeur && (
         <div className="mt-3">
-          <h3 className="doneo-etiquette">Mes demandes</h3>
+          <h3 className="doneo-etiquette">
+            Mes demandes{demandes?.length ? ` (${demandes.length})` : ""}
+          </h3>
           <div className="mt-2">
-            <Vide lien="/recherche" libelle="Chercher" Icone={Search}>
-              Aucune demande en cours. Les objets que vous demanderez apparaîtront ici.
-            </Vide>
+            {demandes === null ? (
+              <div className="h-[5.25rem] w-[min(18rem,82vw)] animate-pulse rounded-3xl bg-lavande" aria-label="Chargement de vos demandes" />
+            ) : demandes.length === 0 ? (
+              <Vide lien="/recherche" libelle="Chercher" Icone={Search}>
+                Aucune demande en cours. Les objets que vous demanderez apparaîtront ici.
+              </Vide>
+            ) : (
+              <ul className="-mx-5 flex gap-3 overflow-x-auto px-5 pt-1 pb-3 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
+                {demandes.map((r) => (
+                  <li key={r.id} className="flex">
+                    <CarteDon annonce={r.annonce} vers={`/messages/${r.conversationId}`} statut={STATUTS_DEMANDE[r.statut]} />
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       )}

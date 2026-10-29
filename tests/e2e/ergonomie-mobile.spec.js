@@ -5,7 +5,9 @@
 import { expect, test } from '@playwright/test';
 import { PROFILS, ouvrirConnecte } from './outils.js';
 
-const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link');
+// Cartes d'annonce seulement : la section « En cours » de l'accueil a aussi
+// des liens en liste (dons, demandes).
+const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link').filter({ hasText: 'participation' });
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 
 test('Accueil : la recherche et les catégories restent en haut', async ({ page }) => {

@@ -1,0 +1,3846 @@
+{
+ "conversations": [
+  {
+   "id": "demo-c-001",
+   "annonceId": "demo-a-009",
+   "demandeurId": "demo-u-089",
+   "ilYaMinutes": 20160
+  },
+  {
+   "id": "demo-c-002",
+   "annonceId": "demo-a-013",
+   "demandeurId": "demo-u-025",
+   "ilYaMinutes": 28800
+  },
+  {
+   "id": "demo-c-003",
+   "annonceId": "demo-a-019",
+   "demandeurId": "demo-u-018",
+   "ilYaMinutes": 31680
+  },
+  {
+   "id": "demo-c-004",
+   "annonceId": "demo-a-058",
+   "demandeurId": "demo-u-045",
+   "ilYaMinutes": 12960
+  },
+  {
+   "id": "demo-c-005",
+   "annonceId": "demo-a-069",
+   "demandeurId": "demo-u-023",
+   "ilYaMinutes": 23040
+  },
+  {
+   "id": "demo-c-006",
+   "annonceId": "demo-a-110",
+   "demandeurId": "demo-u-090",
+   "ilYaMinutes": 24480
+  },
+  {
+   "id": "demo-c-007",
+   "annonceId": "demo-a-118",
+   "demandeurId": "demo-u-049",
+   "ilYaMinutes": 36000
+  },
+  {
+   "id": "demo-c-008",
+   "annonceId": "demo-a-123",
+   "demandeurId": "demo-u-069",
+   "ilYaMinutes": 30240
+  },
+  {
+   "id": "demo-c-009",
+   "annonceId": "demo-a-137",
+   "demandeurId": "demo-u-030",
+   "ilYaMinutes": 17280
+  },
+  {
+   "id": "demo-c-010",
+   "annonceId": "demo-a-006",
+   "demandeurId": "demo-u-068",
+   "ilYaMinutes": 5760
+  },
+  {
+   "id": "demo-c-011",
+   "annonceId": "demo-a-006",
+   "demandeurId": "demo-u-095",
+   "ilYaMinutes": 1080
+  },
+  {
+   "id": "demo-c-012",
+   "annonceId": "demo-a-016",
+   "demandeurId": "demo-u-069",
+   "ilYaMinutes": 2340
+  },
+  {
+   "id": "demo-c-013",
+   "annonceId": "demo-a-030",
+   "demandeurId": "demo-u-076",
+   "ilYaMinutes": 7200
+  },
+  {
+   "id": "demo-c-014",
+   "annonceId": "demo-a-045",
+   "demandeurId": "demo-u-064",
+   "ilYaMinutes": 1680
+  },
+  {
+   "id": "demo-c-015",
+   "annonceId": "demo-a-045",
+   "demandeurId": "demo-u-018",
+   "ilYaMinutes": 960
+  },
+  {
+   "id": "demo-c-016",
+   "annonceId": "demo-a-092",
+   "demandeurId": "demo-u-003",
+   "ilYaMinutes": 4320
+  },
+  {
+   "id": "demo-c-017",
+   "annonceId": "demo-a-093",
+   "demandeurId": "demo-u-008",
+   "ilYaMinutes": 2220
+  },
+  {
+   "id": "demo-c-018",
+   "annonceId": "demo-a-102",
+   "demandeurId": "demo-u-087",
+   "ilYaMinutes": 4320
+  },
+  {
+   "id": "demo-c-019",
+   "annonceId": "demo-a-102",
+   "demandeurId": "demo-u-083",
+   "ilYaMinutes": 1080
+  },
+  {
+   "id": "demo-c-020",
+   "annonceId": "demo-a-124",
+   "demandeurId": "demo-u-025",
+   "ilYaMinutes": 2160
+  },
+  {
+   "id": "demo-c-021",
+   "annonceId": "demo-a-140",
+   "demandeurId": "demo-u-057",
+   "ilYaMinutes": 1440
+  },
+  {
+   "id": "demo-c-022",
+   "annonceId": "demo-a-145",
+   "demandeurId": "demo-u-023",
+   "ilYaMinutes": 2220
+  },
+  {
+   "id": "demo-c-023",
+   "annonceId": "demo-a-145",
+   "demandeurId": "demo-u-030",
+   "ilYaMinutes": 1140
+  },
+  {
+   "id": "demo-c-024",
+   "annonceId": "demo-a-007",
+   "demandeurId": "demo-u-094",
+   "ilYaMinutes": 3310
+  },
+  {
+   "id": "demo-c-025",
+   "annonceId": "demo-a-021",
+   "demandeurId": "demo-u-034",
+   "ilYaMinutes": 3653
+  },
+  {
+   "id": "demo-c-026",
+   "annonceId": "demo-a-025",
+   "demandeurId": "demo-u-069",
+   "ilYaMinutes": 3084
+  },
+  {
+   "id": "demo-c-027",
+   "annonceId": "demo-a-119",
+   "demandeurId": "demo-u-046",
+   "ilYaMinutes": 2880
+  },
+  {
+   "id": "demo-c-028",
+   "annonceId": "demo-a-029",
+   "demandeurId": "demo-u-018",
+   "ilYaMinutes": 2318
+  },
+  {
+   "id": "demo-c-029",
+   "annonceId": "demo-a-054",
+   "demandeurId": "demo-u-014",
+   "ilYaMinutes": 3820
+  },
+  {
+   "id": "demo-c-030",
+   "annonceId": "demo-a-048",
+   "demandeurId": "demo-u-088",
+   "ilYaMinutes": 3481
+  },
+  {
+   "id": "demo-c-031",
+   "annonceId": "demo-a-122",
+   "demandeurId": "demo-u-108",
+   "ilYaMinutes": 3092
+  },
+  {
+   "id": "demo-c-032",
+   "annonceId": "demo-a-076",
+   "demandeurId": "demo-u-103",
+   "ilYaMinutes": 1104
+  },
+  {
+   "id": "demo-c-033",
+   "annonceId": "demo-a-026",
+   "demandeurId": "demo-u-056",
+   "ilYaMinutes": 2944
+  },
+  {
+   "id": "demo-c-034",
+   "annonceId": "demo-a-002",
+   "demandeurId": "demo-u-018",
+   "ilYaMinutes": 3166
+  },
+  {
+   "id": "demo-c-035",
+   "annonceId": "demo-a-080",
+   "demandeurId": "demo-u-066",
+   "ilYaMinutes": 4179
+  },
+  {
+   "id": "demo-c-036",
+   "annonceId": "demo-a-066",
+   "demandeurId": "demo-u-046",
+   "ilYaMinutes": 1497
+  },
+  {
+   "id": "demo-c-037",
+   "annonceId": "demo-a-018",
+   "demandeurId": "demo-u-058",
+   "ilYaMinutes": 2007
+  },
+  {
+   "id": "demo-c-038",
+   "annonceId": "demo-a-064",
+   "demandeurId": "demo-u-023",
+   "ilYaMinutes": 8640
+  },
+  {
+   "id": "demo-c-039",
+   "annonceId": "demo-a-097",
+   "demandeurId": "demo-u-028",
+   "ilYaMinutes": 11520
+  },
+  {
+   "id": "demo-c-040",
+   "annonceId": "demo-a-028",
+   "demandeurId": "demo-u-017",
+   "ilYaMinutes": 4320
+  },
+  {
+   "id": "demo-c-041",
+   "annonceId": "demo-a-023",
+   "demandeurId": "demo-u-018",
+   "ilYaMinutes": 10080
+  },
+  {
+   "id": "demo-c-042",
+   "annonceId": "demo-a-147",
+   "demandeurId": "demo-u-071",
+   "ilYaMinutes": 10080
+  },
+  {
+   "id": "demo-c-043",
+   "annonceId": "demo-a-044",
+   "demandeurId": "demo-u-094",
+   "ilYaMinutes": 11520
+  },
+  {
+   "id": "demo-c-044",
+   "annonceId": "demo-a-012",
+   "demandeurId": "demo-u-018",
+   "ilYaMinutes": 7200
+  },
+  {
+   "id": "demo-c-045",
+   "annonceId": "demo-a-128",
+   "demandeurId": "demo-u-043",
+   "ilYaMinutes": 14400
+  },
+  {
+   "id": "demo-c-046",
+   "annonceId": "demo-a-035",
+   "demandeurId": "demo-u-028",
+   "ilYaMinutes": 5760
+  },
+  {
+   "id": "demo-c-047",
+   "annonceId": "demo-a-143",
+   "demandeurId": "demo-u-070",
+   "ilYaMinutes": 10080
+  },
+  {
+   "id": "demo-c-048",
+   "annonceId": "demo-a-085",
+   "demandeurId": "demo-u-074",
+   "ilYaMinutes": 2880
+  },
+  {
+   "id": "demo-c-049",
+   "annonceId": "demo-a-027",
+   "demandeurId": "demo-u-033",
+   "ilYaMinutes": 15840
+  },
+  {
+   "id": "demo-c-050",
+   "annonceId": "demo-a-005",
+   "demandeurId": "demo-u-095",
+   "ilYaMinutes": 15840
+  },
+  {
+   "id": "demo-c-051",
+   "annonceId": "demo-a-096",
+   "demandeurId": "demo-u-064",
+   "ilYaMinutes": 1905
+  },
+  {
+   "id": "demo-c-052",
+   "annonceId": "demo-a-125",
+   "demandeurId": "demo-u-008",
+   "ilYaMinutes": 9950
+  },
+  {
+   "id": "demo-c-053",
+   "annonceId": "demo-a-047",
+   "demandeurId": "demo-u-012",
+   "ilYaMinutes": 12817
+  },
+  {
+   "id": "demo-c-054",
+   "annonceId": "demo-a-062",
+   "demandeurId": "demo-u-025",
+   "ilYaMinutes": 10903
+  },
+  {
+   "id": "demo-c-055",
+   "annonceId": "demo-a-082",
+   "demandeurId": "demo-u-077",
+   "ilYaMinutes": 4847
+  },
+  {
+   "id": "demo-c-056",
+   "annonceId": "demo-a-136",
+   "demandeurId": "demo-u-003",
+   "ilYaMinutes": 6217
+  },
+  {
+   "id": "demo-c-057",
+   "annonceId": "demo-a-098",
+   "demandeurId": "demo-u-012",
+   "ilYaMinutes": 4566
+  },
+  {
+   "id": "demo-c-058",
+   "annonceId": "demo-a-039",
+   "demandeurId": "demo-u-048",
+   "ilYaMinutes": 734
+  },
+  {
+   "id": "demo-c-059",
+   "annonceId": "demo-a-043",
+   "demandeurId": "demo-u-057",
+   "ilYaMinutes": 8681
+  },
+  {
+   "id": "demo-c-060",
+   "annonceId": "demo-a-104",
+   "demandeurId": "demo-u-074",
+   "ilYaMinutes": 5801
+  },
+  {
+   "id": "demo-c-061",
+   "annonceId": "demo-a-071",
+   "demandeurId": "demo-u-103",
+   "ilYaMinutes": 3070
+  },
+  {
+   "id": "demo-c-062",
+   "annonceId": "demo-a-094",
+   "demandeurId": "demo-u-074",
+   "ilYaMinutes": 3941
+  },
+  {
+   "id": "demo-c-063",
+   "annonceId": "demo-a-003",
+   "demandeurId": "demo-u-066",
+   "ilYaMinutes": 2179
+  },
+  {
+   "id": "demo-c-064",
+   "annonceId": "demo-a-127",
+   "demandeurId": "demo-u-088",
+   "ilYaMinutes": 11273
+  },
+  {
+   "id": "demo-c-065",
+   "annonceId": "demo-a-022",
+   "demandeurId": "demo-u-087",
+   "ilYaMinutes": 7356
+  },
+  {
+   "id": "demo-c-066",
+   "annonceId": "demo-a-112",
+   "demandeurId": "demo-u-066",
+   "ilYaMinutes": 9239
+  },
+  {
+   "id": "demo-c-067",
+   "annonceId": "demo-a-109",
+   "demandeurId": "demo-u-089",
+   "ilYaMinutes": 2435
+  },
+  {
+   "id": "demo-c-068",
+   "annonceId": "demo-a-052",
+   "demandeurId": "demo-u-025",
+   "ilYaMinutes": 31
+  }
+ ],
+ "reservations": [
+  {
+   "id": "demo-r-001",
+   "annonceId": "demo-a-009",
+   "demandeurId": "demo-u-089",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3Demo9ZQ1wWJheJdertes8w6K",
+   "participationDemandee": 6,
+   "conversationId": "demo-c-001"
+  },
+  {
+   "id": "demo-r-002",
+   "annonceId": "demo-a-013",
+   "demandeurId": "demo-u-025",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3Demoo2HjDu7cprSfNHcFtDPK",
+   "participationDemandee": 15,
+   "conversationId": "demo-c-002"
+  },
+  {
+   "id": "demo-r-003",
+   "annonceId": "demo-a-019",
+   "demandeurId": "demo-u-018",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3Demo68KKfkSpULobGVZ5GPPV",
+   "participationDemandee": 3,
+   "conversationId": "demo-c-003"
+  },
+  {
+   "id": "demo-r-004",
+   "annonceId": "demo-a-058",
+   "demandeurId": "demo-u-045",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemoGYMTJXrwjGJfe1jGVNN5",
+   "participationDemandee": 6,
+   "conversationId": "demo-c-004"
+  },
+  {
+   "id": "demo-r-005",
+   "annonceId": "demo-a-069",
+   "demandeurId": "demo-u-023",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemoJpyZC8V9XexnjUGp4itY",
+   "participationDemandee": 12,
+   "conversationId": "demo-c-005"
+  },
+  {
+   "id": "demo-r-006",
+   "annonceId": "demo-a-110",
+   "demandeurId": "demo-u-090",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemoykV5CQX5fYbtVrKt5xCH",
+   "participationDemandee": 10,
+   "conversationId": "demo-c-006"
+  },
+  {
+   "id": "demo-r-007",
+   "annonceId": "demo-a-118",
+   "demandeurId": "demo-u-049",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3Demo5W40vA8i6TkRqmtZQfbQ",
+   "participationDemandee": 4,
+   "conversationId": "demo-c-007"
+  },
+  {
+   "id": "demo-r-008",
+   "annonceId": "demo-a-123",
+   "demandeurId": "demo-u-069",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3Demo79pCNP5PvDg9miKndNMH",
+   "participationDemandee": 2,
+   "conversationId": "demo-c-008"
+  },
+  {
+   "id": "demo-r-009",
+   "annonceId": "demo-a-137",
+   "demandeurId": "demo-u-030",
+   "statut": "remise",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemowN9RjW5W8fEbqynrcUAG",
+   "participationDemandee": 2,
+   "conversationId": "demo-c-009"
+  },
+  {
+   "id": "demo-r-010",
+   "annonceId": "demo-a-006",
+   "demandeurId": "demo-u-068",
+   "statut": "confirmee",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemoTef3owd5UDCBh2j2vGCS",
+   "participationDemandee": 3,
+   "conversationId": "demo-c-010"
+  },
+  {
+   "id": "demo-r-011",
+   "annonceId": "demo-a-006",
+   "demandeurId": "demo-u-095",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-011"
+  },
+  {
+   "id": "demo-r-012",
+   "annonceId": "demo-a-016",
+   "demandeurId": "demo-u-069",
+   "statut": "proposee",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 1,
+   "conversationId": "demo-c-012"
+  },
+  {
+   "id": "demo-r-013",
+   "annonceId": "demo-a-030",
+   "demandeurId": "demo-u-076",
+   "statut": "confirmee",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemoPaNfwLgTvPqCACpwt8xJ",
+   "participationDemandee": 3,
+   "conversationId": "demo-c-013"
+  },
+  {
+   "id": "demo-r-014",
+   "annonceId": "demo-a-045",
+   "demandeurId": "demo-u-064",
+   "statut": "proposee",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 1,
+   "conversationId": "demo-c-014"
+  },
+  {
+   "id": "demo-r-015",
+   "annonceId": "demo-a-045",
+   "demandeurId": "demo-u-018",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-015"
+  },
+  {
+   "id": "demo-r-016",
+   "annonceId": "demo-a-092",
+   "demandeurId": "demo-u-003",
+   "statut": "confirmee",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemoYNiU92v6tVp95kb6jZNo",
+   "participationDemandee": 12,
+   "conversationId": "demo-c-016"
+  },
+  {
+   "id": "demo-r-017",
+   "annonceId": "demo-a-093",
+   "demandeurId": "demo-u-008",
+   "statut": "proposee",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 2,
+   "conversationId": "demo-c-017"
+  },
+  {
+   "id": "demo-r-018",
+   "annonceId": "demo-a-102",
+   "demandeurId": "demo-u-087",
+   "statut": "confirmee",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3Demo2FvZ8vygoKL2gZbJjVTa",
+   "participationDemandee": 6,
+   "conversationId": "demo-c-018"
+  },
+  {
+   "id": "demo-r-019",
+   "annonceId": "demo-a-102",
+   "demandeurId": "demo-u-083",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-019"
+  },
+  {
+   "id": "demo-r-020",
+   "annonceId": "demo-a-124",
+   "demandeurId": "demo-u-025",
+   "statut": "proposee",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 6,
+   "conversationId": "demo-c-020"
+  },
+  {
+   "id": "demo-r-021",
+   "annonceId": "demo-a-140",
+   "demandeurId": "demo-u-057",
+   "statut": "confirmee",
+   "statutPaiement": "paye",
+   "referencePaiement": "pi_3DemoT5j2BRaDx47D7C4W68BK",
+   "participationDemandee": 8,
+   "conversationId": "demo-c-021"
+  },
+  {
+   "id": "demo-r-022",
+   "annonceId": "demo-a-145",
+   "demandeurId": "demo-u-023",
+   "statut": "proposee",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 2,
+   "conversationId": "demo-c-022"
+  },
+  {
+   "id": "demo-r-023",
+   "annonceId": "demo-a-145",
+   "demandeurId": "demo-u-030",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-023"
+  },
+  {
+   "id": "demo-r-024",
+   "annonceId": "demo-a-007",
+   "demandeurId": "demo-u-094",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-024"
+  },
+  {
+   "id": "demo-r-025",
+   "annonceId": "demo-a-021",
+   "demandeurId": "demo-u-034",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-025"
+  },
+  {
+   "id": "demo-r-026",
+   "annonceId": "demo-a-025",
+   "demandeurId": "demo-u-069",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-026"
+  },
+  {
+   "id": "demo-r-027",
+   "annonceId": "demo-a-119",
+   "demandeurId": "demo-u-046",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-027"
+  },
+  {
+   "id": "demo-r-028",
+   "annonceId": "demo-a-029",
+   "demandeurId": "demo-u-018",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-028"
+  },
+  {
+   "id": "demo-r-029",
+   "annonceId": "demo-a-054",
+   "demandeurId": "demo-u-014",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-029"
+  },
+  {
+   "id": "demo-r-030",
+   "annonceId": "demo-a-048",
+   "demandeurId": "demo-u-088",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-030"
+  },
+  {
+   "id": "demo-r-031",
+   "annonceId": "demo-a-122",
+   "demandeurId": "demo-u-108",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-031"
+  },
+  {
+   "id": "demo-r-032",
+   "annonceId": "demo-a-076",
+   "demandeurId": "demo-u-103",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-032"
+  },
+  {
+   "id": "demo-r-033",
+   "annonceId": "demo-a-026",
+   "demandeurId": "demo-u-056",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-033"
+  },
+  {
+   "id": "demo-r-034",
+   "annonceId": "demo-a-002",
+   "demandeurId": "demo-u-018",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-034"
+  },
+  {
+   "id": "demo-r-035",
+   "annonceId": "demo-a-080",
+   "demandeurId": "demo-u-066",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-035"
+  },
+  {
+   "id": "demo-r-036",
+   "annonceId": "demo-a-066",
+   "demandeurId": "demo-u-046",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-036"
+  },
+  {
+   "id": "demo-r-037",
+   "annonceId": "demo-a-018",
+   "demandeurId": "demo-u-058",
+   "statut": "demandee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-037"
+  },
+  {
+   "id": "demo-r-038",
+   "annonceId": "demo-a-064",
+   "demandeurId": "demo-u-023",
+   "statut": "annulee",
+   "motifAnnulation": "declinee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-038"
+  },
+  {
+   "id": "demo-r-039",
+   "annonceId": "demo-a-097",
+   "demandeurId": "demo-u-028",
+   "statut": "annulee",
+   "motifAnnulation": "declinee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-039"
+  },
+  {
+   "id": "demo-r-040",
+   "annonceId": "demo-a-028",
+   "demandeurId": "demo-u-017",
+   "statut": "annulee",
+   "motifAnnulation": "declinee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-040"
+  },
+  {
+   "id": "demo-r-041",
+   "annonceId": "demo-a-023",
+   "demandeurId": "demo-u-018",
+   "statut": "annulee",
+   "motifAnnulation": "declinee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-041"
+  },
+  {
+   "id": "demo-r-042",
+   "annonceId": "demo-a-147",
+   "demandeurId": "demo-u-071",
+   "statut": "annulee",
+   "motifAnnulation": "declinee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-042"
+  },
+  {
+   "id": "demo-r-043",
+   "annonceId": "demo-a-044",
+   "demandeurId": "demo-u-094",
+   "statut": "annulee",
+   "motifAnnulation": "declinee",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-043"
+  },
+  {
+   "id": "demo-r-044",
+   "annonceId": "demo-a-012",
+   "demandeurId": "demo-u-018",
+   "statut": "annulee",
+   "motifAnnulation": "refus",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 6,
+   "conversationId": "demo-c-044"
+  },
+  {
+   "id": "demo-r-045",
+   "annonceId": "demo-a-128",
+   "demandeurId": "demo-u-043",
+   "statut": "annulee",
+   "motifAnnulation": "refus",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 4,
+   "conversationId": "demo-c-045"
+  },
+  {
+   "id": "demo-r-046",
+   "annonceId": "demo-a-035",
+   "demandeurId": "demo-u-028",
+   "statut": "annulee",
+   "motifAnnulation": "refus",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 4,
+   "conversationId": "demo-c-046"
+  },
+  {
+   "id": "demo-r-047",
+   "annonceId": "demo-a-143",
+   "demandeurId": "demo-u-070",
+   "statut": "annulee",
+   "motifAnnulation": "refus",
+   "statutPaiement": "en_attente",
+   "participationDemandee": 5,
+   "conversationId": "demo-c-047"
+  },
+  {
+   "id": "demo-r-048",
+   "annonceId": "demo-a-085",
+   "demandeurId": "demo-u-074",
+   "statut": "annulee",
+   "motifAnnulation": "desistement",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-048"
+  },
+  {
+   "id": "demo-r-049",
+   "annonceId": "demo-a-027",
+   "demandeurId": "demo-u-033",
+   "statut": "annulee",
+   "motifAnnulation": "desistement",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-049"
+  },
+  {
+   "id": "demo-r-050",
+   "annonceId": "demo-a-005",
+   "demandeurId": "demo-u-095",
+   "statut": "annulee",
+   "motifAnnulation": "desistement",
+   "statutPaiement": "en_attente",
+   "conversationId": "demo-c-050"
+  }
+ ],
+ "messages": [
+  {
+   "id": "demo-m-0001",
+   "conversationId": "demo-c-001",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis intéressé. Vous êtes souple sur l’horaire ?",
+   "ilYaMinutes": 20160
+  },
+  {
+   "id": "demo-m-0002",
+   "conversationId": "demo-c-001",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 19704
+  },
+  {
+   "id": "demo-m-0003",
+   "conversationId": "demo-c-001",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-001",
+   "evenement": "demande_recue",
+   "contenu": "Nour souhaite récupérer cet objet.",
+   "ilYaMinutes": 19185
+  },
+  {
+   "id": "demo-m-0004",
+   "conversationId": "demo-c-001",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 19181
+  },
+  {
+   "id": "demo-m-0005",
+   "conversationId": "demo-c-001",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-001",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 6 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 19011
+  },
+  {
+   "id": "demo-m-0006",
+   "conversationId": "demo-c-001",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-001",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 6 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 18785
+  },
+  {
+   "id": "demo-m-0007",
+   "conversationId": "demo-c-001",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Voilà, c’est fait. Je serai à l’heure.",
+   "ilYaMinutes": 18469
+  },
+  {
+   "id": "demo-m-0008",
+   "conversationId": "demo-c-001",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci ! Je vous attends en bas de l’immeuble.",
+   "ilYaMinutes": 18402
+  },
+  {
+   "id": "demo-m-0009",
+   "conversationId": "demo-c-001",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-001",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 18379
+  },
+  {
+   "id": "demo-m-0010",
+   "conversationId": "demo-c-001",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci encore, il est parfait.",
+   "ilYaMinutes": 17842
+  },
+  {
+   "id": "demo-m-0011",
+   "conversationId": "demo-c-001",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ravi qu’il serve à nouveau. Bonne journée !",
+   "ilYaMinutes": 17297
+  },
+  {
+   "id": "demo-m-0012",
+   "conversationId": "demo-c-002",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis intéressé. Vous êtes souple sur l’horaire ?",
+   "ilYaMinutes": 28800
+  },
+  {
+   "id": "demo-m-0013",
+   "conversationId": "demo-c-002",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 28683
+  },
+  {
+   "id": "demo-m-0014",
+   "conversationId": "demo-c-002",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-002",
+   "evenement": "demande_recue",
+   "contenu": "Louise souhaite récupérer cet objet.",
+   "ilYaMinutes": 28109
+  },
+  {
+   "id": "demo-m-0015",
+   "conversationId": "demo-c-002",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 27704
+  },
+  {
+   "id": "demo-m-0016",
+   "conversationId": "demo-c-002",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-002",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 15 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 27257
+  },
+  {
+   "id": "demo-m-0017",
+   "conversationId": "demo-c-002",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-002",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 15 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 26692
+  },
+  {
+   "id": "demo-m-0018",
+   "conversationId": "demo-c-002",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Participation versée, merci !",
+   "ilYaMinutes": 26244
+  },
+  {
+   "id": "demo-m-0019",
+   "conversationId": "demo-c-002",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Super, à tout à l’heure alors.",
+   "ilYaMinutes": 25808
+  },
+  {
+   "id": "demo-m-0020",
+   "conversationId": "demo-c-002",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-002",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 25382
+  },
+  {
+   "id": "demo-m-0021",
+   "conversationId": "demo-c-002",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci encore, il est parfait.",
+   "ilYaMinutes": 25230
+  },
+  {
+   "id": "demo-m-0022",
+   "conversationId": "demo-c-002",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ravi qu’il serve à nouveau. Bonne journée !",
+   "ilYaMinutes": 25090
+  },
+  {
+   "id": "demo-m-0023",
+   "conversationId": "demo-c-003",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-003",
+   "evenement": "demande_recue",
+   "contenu": "Claire souhaite récupérer cet objet.",
+   "ilYaMinutes": 31680
+  },
+  {
+   "id": "demo-m-0024",
+   "conversationId": "demo-c-003",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-003",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 3 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 31554
+  },
+  {
+   "id": "demo-m-0025",
+   "conversationId": "demo-c-003",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-003",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 3 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 31315
+  },
+  {
+   "id": "demo-m-0026",
+   "conversationId": "demo-c-003",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "C’est réglé, à bientôt !",
+   "ilYaMinutes": 30802
+  },
+  {
+   "id": "demo-m-0027",
+   "conversationId": "demo-c-003",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Parfait, sonnez à l’interphone en arrivant.",
+   "ilYaMinutes": 30635
+  },
+  {
+   "id": "demo-m-0028",
+   "conversationId": "demo-c-003",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-003",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 30374
+  },
+  {
+   "id": "demo-m-0029",
+   "conversationId": "demo-c-003",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Tout est nickel, merci pour le don à l’association !",
+   "ilYaMinutes": 29951
+  },
+  {
+   "id": "demo-m-0030",
+   "conversationId": "demo-c-003",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci à vous, bonne installation !",
+   "ilYaMinutes": 29580
+  },
+  {
+   "id": "demo-m-0031",
+   "conversationId": "demo-c-004",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que ça rentre dans une petite voiture ?",
+   "ilYaMinutes": 12960
+  },
+  {
+   "id": "demo-m-0032",
+   "conversationId": "demo-c-004",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 12593
+  },
+  {
+   "id": "demo-m-0033",
+   "conversationId": "demo-c-004",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-004",
+   "evenement": "demande_recue",
+   "contenu": "Nour souhaite récupérer cet objet.",
+   "ilYaMinutes": 12485
+  },
+  {
+   "id": "demo-m-0034",
+   "conversationId": "demo-c-004",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 12275
+  },
+  {
+   "id": "demo-m-0035",
+   "conversationId": "demo-c-004",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-004",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 6 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 11813
+  },
+  {
+   "id": "demo-m-0036",
+   "conversationId": "demo-c-004",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-004",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 6 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 11759
+  },
+  {
+   "id": "demo-m-0037",
+   "conversationId": "demo-c-004",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Participation versée, merci !",
+   "ilYaMinutes": 11195
+  },
+  {
+   "id": "demo-m-0038",
+   "conversationId": "demo-c-004",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Super, à tout à l’heure alors.",
+   "ilYaMinutes": 10788
+  },
+  {
+   "id": "demo-m-0039",
+   "conversationId": "demo-c-004",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-004",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 10286
+  },
+  {
+   "id": "demo-m-0040",
+   "conversationId": "demo-c-004",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Objet bien récupéré, merci beaucoup !",
+   "ilYaMinutes": 9821
+  },
+  {
+   "id": "demo-m-0041",
+   "conversationId": "demo-c-004",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, bonne continuation !",
+   "ilYaMinutes": 9535
+  },
+  {
+   "id": "demo-m-0042",
+   "conversationId": "demo-c-005",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que l’objet est toujours disponible ?",
+   "ilYaMinutes": 23040
+  },
+  {
+   "id": "demo-m-0043",
+   "conversationId": "demo-c-005",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bien sûr, passez au créneau indiqué, je serai là.",
+   "ilYaMinutes": 22767
+  },
+  {
+   "id": "demo-m-0044",
+   "conversationId": "demo-c-005",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-005",
+   "evenement": "demande_recue",
+   "contenu": "Amira souhaite récupérer cet objet.",
+   "ilYaMinutes": 22513
+  },
+  {
+   "id": "demo-m-0045",
+   "conversationId": "demo-c-005",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-005",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 12 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 22114
+  },
+  {
+   "id": "demo-m-0046",
+   "conversationId": "demo-c-005",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-005",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 12 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 22021
+  },
+  {
+   "id": "demo-m-0047",
+   "conversationId": "demo-c-005",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "C’est réglé, à bientôt !",
+   "ilYaMinutes": 21945
+  },
+  {
+   "id": "demo-m-0048",
+   "conversationId": "demo-c-005",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Parfait, sonnez à l’interphone en arrivant.",
+   "ilYaMinutes": 21429
+  },
+  {
+   "id": "demo-m-0049",
+   "conversationId": "demo-c-005",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-005",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 21214
+  },
+  {
+   "id": "demo-m-0050",
+   "conversationId": "demo-c-005",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci encore, il est parfait.",
+   "ilYaMinutes": 21147
+  },
+  {
+   "id": "demo-m-0051",
+   "conversationId": "demo-c-005",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ravi qu’il serve à nouveau. Bonne journée !",
+   "ilYaMinutes": 20896
+  },
+  {
+   "id": "demo-m-0052",
+   "conversationId": "demo-c-006",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour ! Il est bien en bon état comme indiqué ?",
+   "ilYaMinutes": 24480
+  },
+  {
+   "id": "demo-m-0053",
+   "conversationId": "demo-c-006",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 24012
+  },
+  {
+   "id": "demo-m-0054",
+   "conversationId": "demo-c-006",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-006",
+   "evenement": "demande_recue",
+   "contenu": "Louise souhaite récupérer cet objet.",
+   "ilYaMinutes": 23466
+  },
+  {
+   "id": "demo-m-0055",
+   "conversationId": "demo-c-006",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 22959
+  },
+  {
+   "id": "demo-m-0056",
+   "conversationId": "demo-c-006",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-006",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 10 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 22795
+  },
+  {
+   "id": "demo-m-0057",
+   "conversationId": "demo-c-006",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-006",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 10 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 22626
+  },
+  {
+   "id": "demo-m-0058",
+   "conversationId": "demo-c-006",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Voilà, c’est fait. Je serai à l’heure.",
+   "ilYaMinutes": 22244
+  },
+  {
+   "id": "demo-m-0059",
+   "conversationId": "demo-c-006",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci ! Je vous attends en bas de l’immeuble.",
+   "ilYaMinutes": 21842
+  },
+  {
+   "id": "demo-m-0060",
+   "conversationId": "demo-c-006",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-006",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 21418
+  },
+  {
+   "id": "demo-m-0061",
+   "conversationId": "demo-c-006",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Tout est nickel, merci pour le don à l’association !",
+   "ilYaMinutes": 20869
+  },
+  {
+   "id": "demo-m-0062",
+   "conversationId": "demo-c-006",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci à vous, bonne installation !",
+   "ilYaMinutes": 20628
+  },
+  {
+   "id": "demo-m-0063",
+   "conversationId": "demo-c-007",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-007",
+   "evenement": "demande_recue",
+   "contenu": "Florian souhaite récupérer cet objet.",
+   "ilYaMinutes": 36000
+  },
+  {
+   "id": "demo-m-0064",
+   "conversationId": "demo-c-007",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 35689
+  },
+  {
+   "id": "demo-m-0065",
+   "conversationId": "demo-c-007",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-007",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 4 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 35544
+  },
+  {
+   "id": "demo-m-0066",
+   "conversationId": "demo-c-007",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-007",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 4 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 35304
+  },
+  {
+   "id": "demo-m-0067",
+   "conversationId": "demo-c-007",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "C’est réglé, à bientôt !",
+   "ilYaMinutes": 34780
+  },
+  {
+   "id": "demo-m-0068",
+   "conversationId": "demo-c-007",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Parfait, sonnez à l’interphone en arrivant.",
+   "ilYaMinutes": 34603
+  },
+  {
+   "id": "demo-m-0069",
+   "conversationId": "demo-c-007",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-007",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 34312
+  },
+  {
+   "id": "demo-m-0070",
+   "conversationId": "demo-c-007",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci encore, il est parfait.",
+   "ilYaMinutes": 33809
+  },
+  {
+   "id": "demo-m-0071",
+   "conversationId": "demo-c-007",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ravi qu’il serve à nouveau. Bonne journée !",
+   "ilYaMinutes": 33257
+  },
+  {
+   "id": "demo-m-0072",
+   "conversationId": "demo-c-008",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, quelles sont les dimensions exactes ?",
+   "ilYaMinutes": 30240
+  },
+  {
+   "id": "demo-m-0073",
+   "conversationId": "demo-c-008",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, tout est complet, je vous montrerai sur place.",
+   "ilYaMinutes": 30188
+  },
+  {
+   "id": "demo-m-0074",
+   "conversationId": "demo-c-008",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-008",
+   "evenement": "demande_recue",
+   "contenu": "Inès souhaite récupérer cet objet.",
+   "ilYaMinutes": 29865
+  },
+  {
+   "id": "demo-m-0075",
+   "conversationId": "demo-c-008",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-008",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 2 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 29682
+  },
+  {
+   "id": "demo-m-0076",
+   "conversationId": "demo-c-008",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-008",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 2 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 29312
+  },
+  {
+   "id": "demo-m-0077",
+   "conversationId": "demo-c-008",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Voilà, c’est fait. Je serai à l’heure.",
+   "ilYaMinutes": 29082
+  },
+  {
+   "id": "demo-m-0078",
+   "conversationId": "demo-c-008",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci ! Je vous attends en bas de l’immeuble.",
+   "ilYaMinutes": 28733
+  },
+  {
+   "id": "demo-m-0079",
+   "conversationId": "demo-c-008",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-008",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 28197
+  },
+  {
+   "id": "demo-m-0080",
+   "conversationId": "demo-c-008",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Tout est nickel, merci pour le don à l’association !",
+   "ilYaMinutes": 27889
+  },
+  {
+   "id": "demo-m-0081",
+   "conversationId": "demo-c-008",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci à vous, bonne installation !",
+   "ilYaMinutes": 27617
+  },
+  {
+   "id": "demo-m-0082",
+   "conversationId": "demo-c-009",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis intéressé. Vous êtes souple sur l’horaire ?",
+   "ilYaMinutes": 17280
+  },
+  {
+   "id": "demo-m-0083",
+   "conversationId": "demo-c-009",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 16963
+  },
+  {
+   "id": "demo-m-0084",
+   "conversationId": "demo-c-009",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-009",
+   "evenement": "demande_recue",
+   "contenu": "Emma souhaite récupérer cet objet.",
+   "ilYaMinutes": 16957
+  },
+  {
+   "id": "demo-m-0085",
+   "conversationId": "demo-c-009",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 16807
+  },
+  {
+   "id": "demo-m-0086",
+   "conversationId": "demo-c-009",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-009",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 2 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 16745
+  },
+  {
+   "id": "demo-m-0087",
+   "conversationId": "demo-c-009",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-009",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 2 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 16735
+  },
+  {
+   "id": "demo-m-0088",
+   "conversationId": "demo-c-009",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Voilà, c’est fait. Je serai à l’heure.",
+   "ilYaMinutes": 16404
+  },
+  {
+   "id": "demo-m-0089",
+   "conversationId": "demo-c-009",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci ! Je vous attends en bas de l’immeuble.",
+   "ilYaMinutes": 15865
+  },
+  {
+   "id": "demo-m-0090",
+   "conversationId": "demo-c-009",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-009",
+   "evenement": "objet_remis",
+   "contenu": "L’objet a été remis. Merci pour l’association !",
+   "ilYaMinutes": 15465
+  },
+  {
+   "id": "demo-m-0091",
+   "conversationId": "demo-c-009",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci encore, il est parfait.",
+   "ilYaMinutes": 15118
+  },
+  {
+   "id": "demo-m-0092",
+   "conversationId": "demo-c-009",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ravi qu’il serve à nouveau. Bonne journée !",
+   "ilYaMinutes": 14858
+  },
+  {
+   "id": "demo-m-0093",
+   "conversationId": "demo-c-010",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, c’est à quel étage ? Il y a un ascenseur ?",
+   "ilYaMinutes": 5760
+  },
+  {
+   "id": "demo-m-0094",
+   "conversationId": "demo-c-010",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 5434
+  },
+  {
+   "id": "demo-m-0095",
+   "conversationId": "demo-c-010",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-010",
+   "evenement": "demande_recue",
+   "contenu": "Sofia souhaite récupérer cet objet.",
+   "ilYaMinutes": 4881
+  },
+  {
+   "id": "demo-m-0096",
+   "conversationId": "demo-c-010",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 4326
+  },
+  {
+   "id": "demo-m-0097",
+   "conversationId": "demo-c-010",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-010",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 3 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 4133
+  },
+  {
+   "id": "demo-m-0098",
+   "conversationId": "demo-c-010",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-010",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 3 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 3700
+  },
+  {
+   "id": "demo-m-0099",
+   "conversationId": "demo-c-010",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Voilà, c’est fait. Je serai à l’heure.",
+   "ilYaMinutes": 3689
+  },
+  {
+   "id": "demo-m-0100",
+   "conversationId": "demo-c-010",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci ! Je vous attends en bas de l’immeuble.",
+   "ilYaMinutes": 3159
+  },
+  {
+   "id": "demo-m-0101",
+   "conversationId": "demo-c-011",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonsoir, l’objet est-il complet ?",
+   "ilYaMinutes": 1080
+  },
+  {
+   "id": "demo-m-0102",
+   "conversationId": "demo-c-011",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 923
+  },
+  {
+   "id": "demo-m-0103",
+   "conversationId": "demo-c-011",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-011",
+   "evenement": "demande_recue",
+   "contenu": "Yasmine souhaite récupérer cet objet.",
+   "ilYaMinutes": 918
+  },
+  {
+   "id": "demo-m-0104",
+   "conversationId": "demo-c-011",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 891
+  },
+  {
+   "id": "demo-m-0105",
+   "conversationId": "demo-c-012",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-012",
+   "evenement": "demande_recue",
+   "contenu": "Inès souhaite récupérer cet objet.",
+   "ilYaMinutes": 2340
+  },
+  {
+   "id": "demo-m-0106",
+   "conversationId": "demo-c-012",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-012",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 1 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 1933
+  },
+  {
+   "id": "demo-m-0107",
+   "conversationId": "demo-c-013",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Hello ! Je peux venir avec un ami pour le porter ?",
+   "ilYaMinutes": 7200
+  },
+  {
+   "id": "demo-m-0108",
+   "conversationId": "demo-c-013",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 6900
+  },
+  {
+   "id": "demo-m-0109",
+   "conversationId": "demo-c-013",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-013",
+   "evenement": "demande_recue",
+   "contenu": "Samuel souhaite récupérer cet objet.",
+   "ilYaMinutes": 6865
+  },
+  {
+   "id": "demo-m-0110",
+   "conversationId": "demo-c-013",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-013",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 3 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 6289
+  },
+  {
+   "id": "demo-m-0111",
+   "conversationId": "demo-c-013",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-013",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 3 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 5975
+  },
+  {
+   "id": "demo-m-0112",
+   "conversationId": "demo-c-013",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "C’est réglé, à bientôt !",
+   "ilYaMinutes": 5384
+  },
+  {
+   "id": "demo-m-0113",
+   "conversationId": "demo-c-013",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Parfait, sonnez à l’interphone en arrivant.",
+   "ilYaMinutes": 5240
+  },
+  {
+   "id": "demo-m-0114",
+   "conversationId": "demo-c-014",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-014",
+   "evenement": "demande_recue",
+   "contenu": "Ethan souhaite récupérer cet objet.",
+   "ilYaMinutes": 1680
+  },
+  {
+   "id": "demo-m-0115",
+   "conversationId": "demo-c-014",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 1457
+  },
+  {
+   "id": "demo-m-0116",
+   "conversationId": "demo-c-014",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-014",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 1 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 1149
+  },
+  {
+   "id": "demo-m-0117",
+   "conversationId": "demo-c-015",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis étudiante, est-ce que je peux passer au créneau prévu ?",
+   "ilYaMinutes": 960
+  },
+  {
+   "id": "demo-m-0118",
+   "conversationId": "demo-c-015",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, oui il est toujours disponible !",
+   "ilYaMinutes": 845
+  },
+  {
+   "id": "demo-m-0119",
+   "conversationId": "demo-c-015",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-015",
+   "evenement": "demande_recue",
+   "contenu": "Claire souhaite récupérer cet objet.",
+   "ilYaMinutes": 673
+  },
+  {
+   "id": "demo-m-0120",
+   "conversationId": "demo-c-016",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-016",
+   "evenement": "demande_recue",
+   "contenu": "Lina souhaite récupérer cet objet.",
+   "ilYaMinutes": 4320
+  },
+  {
+   "id": "demo-m-0121",
+   "conversationId": "demo-c-016",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 3756
+  },
+  {
+   "id": "demo-m-0122",
+   "conversationId": "demo-c-016",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-016",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 12 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 3387
+  },
+  {
+   "id": "demo-m-0123",
+   "conversationId": "demo-c-016",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-016",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 12 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 2976
+  },
+  {
+   "id": "demo-m-0124",
+   "conversationId": "demo-c-016",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Participation versée, merci !",
+   "ilYaMinutes": 2381
+  },
+  {
+   "id": "demo-m-0125",
+   "conversationId": "demo-c-016",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Super, à tout à l’heure alors.",
+   "ilYaMinutes": 1909
+  },
+  {
+   "id": "demo-m-0126",
+   "conversationId": "demo-c-017",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-017",
+   "evenement": "demande_recue",
+   "contenu": "Nicolas souhaite récupérer cet objet.",
+   "ilYaMinutes": 2220
+  },
+  {
+   "id": "demo-m-0127",
+   "conversationId": "demo-c-017",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 1784
+  },
+  {
+   "id": "demo-m-0128",
+   "conversationId": "demo-c-017",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-017",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 2 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 1586
+  },
+  {
+   "id": "demo-m-0129",
+   "conversationId": "demo-c-018",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-018",
+   "evenement": "demande_recue",
+   "contenu": "Louise souhaite récupérer cet objet.",
+   "ilYaMinutes": 4320
+  },
+  {
+   "id": "demo-m-0130",
+   "conversationId": "demo-c-018",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-018",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 6 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 3725
+  },
+  {
+   "id": "demo-m-0131",
+   "conversationId": "demo-c-018",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-018",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 6 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 3497
+  },
+  {
+   "id": "demo-m-0132",
+   "conversationId": "demo-c-018",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "C’est réglé, à bientôt !",
+   "ilYaMinutes": 3384
+  },
+  {
+   "id": "demo-m-0133",
+   "conversationId": "demo-c-018",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Parfait, sonnez à l’interphone en arrivant.",
+   "ilYaMinutes": 2794
+  },
+  {
+   "id": "demo-m-0134",
+   "conversationId": "demo-c-019",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour ! Il est bien en bon état comme indiqué ?",
+   "ilYaMinutes": 1080
+  },
+  {
+   "id": "demo-m-0135",
+   "conversationId": "demo-c-019",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Pas de souci, c’est au 2e avec ascenseur.",
+   "ilYaMinutes": 1027
+  },
+  {
+   "id": "demo-m-0136",
+   "conversationId": "demo-c-019",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-019",
+   "evenement": "demande_recue",
+   "contenu": "Lucas souhaite récupérer cet objet.",
+   "ilYaMinutes": 1015
+  },
+  {
+   "id": "demo-m-0137",
+   "conversationId": "demo-c-019",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 814
+  },
+  {
+   "id": "demo-m-0138",
+   "conversationId": "demo-c-020",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonsoir, l’objet est-il complet ?",
+   "ilYaMinutes": 2160
+  },
+  {
+   "id": "demo-m-0139",
+   "conversationId": "demo-c-020",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, oui il est toujours disponible !",
+   "ilYaMinutes": 1851
+  },
+  {
+   "id": "demo-m-0140",
+   "conversationId": "demo-c-020",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-020",
+   "evenement": "demande_recue",
+   "contenu": "Louise souhaite récupérer cet objet.",
+   "ilYaMinutes": 1840
+  },
+  {
+   "id": "demo-m-0141",
+   "conversationId": "demo-c-020",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 1682
+  },
+  {
+   "id": "demo-m-0142",
+   "conversationId": "demo-c-020",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-020",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 6 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 1642
+  },
+  {
+   "id": "demo-m-0143",
+   "conversationId": "demo-c-021",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, c’est à quel étage ? Il y a un ascenseur ?",
+   "ilYaMinutes": 1440
+  },
+  {
+   "id": "demo-m-0144",
+   "conversationId": "demo-c-021",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 1379
+  },
+  {
+   "id": "demo-m-0145",
+   "conversationId": "demo-c-021",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-021",
+   "evenement": "demande_recue",
+   "contenu": "Nathan souhaite récupérer cet objet.",
+   "ilYaMinutes": 1277
+  },
+  {
+   "id": "demo-m-0146",
+   "conversationId": "demo-c-021",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 1139
+  },
+  {
+   "id": "demo-m-0147",
+   "conversationId": "demo-c-021",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-021",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 8 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 1073
+  },
+  {
+   "id": "demo-m-0148",
+   "conversationId": "demo-c-021",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-021",
+   "evenement": "paiement_valide",
+   "contenu": "Participation de 8 € validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.",
+   "ilYaMinutes": 913
+  },
+  {
+   "id": "demo-m-0149",
+   "conversationId": "demo-c-021",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Participation versée, merci !",
+   "ilYaMinutes": 853
+  },
+  {
+   "id": "demo-m-0150",
+   "conversationId": "demo-c-021",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Super, à tout à l’heure alors.",
+   "ilYaMinutes": 775
+  },
+  {
+   "id": "demo-m-0151",
+   "conversationId": "demo-c-022",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-022",
+   "evenement": "demande_recue",
+   "contenu": "Amira souhaite récupérer cet objet.",
+   "ilYaMinutes": 2220
+  },
+  {
+   "id": "demo-m-0152",
+   "conversationId": "demo-c-022",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-022",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 2 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 1953
+  },
+  {
+   "id": "demo-m-0153",
+   "conversationId": "demo-c-023",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonsoir, l’objet est-il complet ?",
+   "ilYaMinutes": 1140
+  },
+  {
+   "id": "demo-m-0154",
+   "conversationId": "demo-c-023",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 1045
+  },
+  {
+   "id": "demo-m-0155",
+   "conversationId": "demo-c-023",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-023",
+   "evenement": "demande_recue",
+   "contenu": "Emma souhaite récupérer cet objet.",
+   "ilYaMinutes": 1035
+  },
+  {
+   "id": "demo-m-0156",
+   "conversationId": "demo-c-023",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 823
+  },
+  {
+   "id": "demo-m-0157",
+   "conversationId": "demo-c-024",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-024",
+   "evenement": "demande_recue",
+   "contenu": "Antoine souhaite récupérer cet objet.",
+   "ilYaMinutes": 3310
+  },
+  {
+   "id": "demo-m-0158",
+   "conversationId": "demo-c-025",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que l’objet est toujours disponible ?",
+   "ilYaMinutes": 3653
+  },
+  {
+   "id": "demo-m-0159",
+   "conversationId": "demo-c-025",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, tout est complet, je vous montrerai sur place.",
+   "ilYaMinutes": 3492
+  },
+  {
+   "id": "demo-m-0160",
+   "conversationId": "demo-c-025",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-025",
+   "evenement": "demande_recue",
+   "contenu": "Mei souhaite récupérer cet objet.",
+   "ilYaMinutes": 3209
+  },
+  {
+   "id": "demo-m-0161",
+   "conversationId": "demo-c-026",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Hello ! Je peux venir avec un ami pour le porter ?",
+   "ilYaMinutes": 3084
+  },
+  {
+   "id": "demo-m-0162",
+   "conversationId": "demo-c-026",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, il fonctionne parfaitement, je l’ai testé hier.",
+   "ilYaMinutes": 2587
+  },
+  {
+   "id": "demo-m-0163",
+   "conversationId": "demo-c-026",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-026",
+   "evenement": "demande_recue",
+   "contenu": "Inès souhaite récupérer cet objet.",
+   "ilYaMinutes": 2076
+  },
+  {
+   "id": "demo-m-0164",
+   "conversationId": "demo-c-026",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 2069
+  },
+  {
+   "id": "demo-m-0165",
+   "conversationId": "demo-c-027",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, c’est à quel étage ? Il y a un ascenseur ?",
+   "ilYaMinutes": 2880
+  },
+  {
+   "id": "demo-m-0166",
+   "conversationId": "demo-c-027",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, il fonctionne parfaitement, je l’ai testé hier.",
+   "ilYaMinutes": 2465
+  },
+  {
+   "id": "demo-m-0167",
+   "conversationId": "demo-c-027",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-027",
+   "evenement": "demande_recue",
+   "contenu": "Samuel souhaite récupérer cet objet.",
+   "ilYaMinutes": 2083
+  },
+  {
+   "id": "demo-m-0168",
+   "conversationId": "demo-c-027",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 2051
+  },
+  {
+   "id": "demo-m-0169",
+   "conversationId": "demo-c-028",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, quelles sont les dimensions exactes ?",
+   "ilYaMinutes": 2318
+  },
+  {
+   "id": "demo-m-0170",
+   "conversationId": "demo-c-028",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 2260
+  },
+  {
+   "id": "demo-m-0171",
+   "conversationId": "demo-c-028",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-028",
+   "evenement": "demande_recue",
+   "contenu": "Claire souhaite récupérer cet objet.",
+   "ilYaMinutes": 2137
+  },
+  {
+   "id": "demo-m-0172",
+   "conversationId": "demo-c-029",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis étudiante, est-ce que je peux passer au créneau prévu ?",
+   "ilYaMinutes": 3820
+  },
+  {
+   "id": "demo-m-0173",
+   "conversationId": "demo-c-029",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, tout est complet, je vous montrerai sur place.",
+   "ilYaMinutes": 3495
+  },
+  {
+   "id": "demo-m-0174",
+   "conversationId": "demo-c-029",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-029",
+   "evenement": "demande_recue",
+   "contenu": "Hugo souhaite récupérer cet objet.",
+   "ilYaMinutes": 3483
+  },
+  {
+   "id": "demo-m-0175",
+   "conversationId": "demo-c-029",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 3257
+  },
+  {
+   "id": "demo-m-0176",
+   "conversationId": "demo-c-030",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, il fonctionne bien ? Je viens d’emménager et il me manque justement ça.",
+   "ilYaMinutes": 3481
+  },
+  {
+   "id": "demo-m-0177",
+   "conversationId": "demo-c-030",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, oui il est toujours disponible !",
+   "ilYaMinutes": 3198
+  },
+  {
+   "id": "demo-m-0178",
+   "conversationId": "demo-c-030",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-030",
+   "evenement": "demande_recue",
+   "contenu": "Gabriel souhaite récupérer cet objet.",
+   "ilYaMinutes": 2654
+  },
+  {
+   "id": "demo-m-0179",
+   "conversationId": "demo-c-031",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-031",
+   "evenement": "demande_recue",
+   "contenu": "Marie souhaite récupérer cet objet.",
+   "ilYaMinutes": 3092
+  },
+  {
+   "id": "demo-m-0180",
+   "conversationId": "demo-c-031",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 2726
+  },
+  {
+   "id": "demo-m-0181",
+   "conversationId": "demo-c-032",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-032",
+   "evenement": "demande_recue",
+   "contenu": "Manon souhaite récupérer cet objet.",
+   "ilYaMinutes": 1104
+  },
+  {
+   "id": "demo-m-0182",
+   "conversationId": "demo-c-032",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 783
+  },
+  {
+   "id": "demo-m-0183",
+   "conversationId": "demo-c-033",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonsoir, l’objet est-il complet ?",
+   "ilYaMinutes": 2944
+  },
+  {
+   "id": "demo-m-0184",
+   "conversationId": "demo-c-033",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, oui il est toujours disponible !",
+   "ilYaMinutes": 2405
+  },
+  {
+   "id": "demo-m-0185",
+   "conversationId": "demo-c-033",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-033",
+   "evenement": "demande_recue",
+   "contenu": "Arthur souhaite récupérer cet objet.",
+   "ilYaMinutes": 1936
+  },
+  {
+   "id": "demo-m-0186",
+   "conversationId": "demo-c-033",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 1515
+  },
+  {
+   "id": "demo-m-0187",
+   "conversationId": "demo-c-034",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que ça rentre dans une petite voiture ?",
+   "ilYaMinutes": 3166
+  },
+  {
+   "id": "demo-m-0188",
+   "conversationId": "demo-c-034",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, venez à deux sans problème.",
+   "ilYaMinutes": 3060
+  },
+  {
+   "id": "demo-m-0189",
+   "conversationId": "demo-c-034",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-034",
+   "evenement": "demande_recue",
+   "contenu": "Claire souhaite récupérer cet objet.",
+   "ilYaMinutes": 2683
+  },
+  {
+   "id": "demo-m-0190",
+   "conversationId": "demo-c-035",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour ! Il est bien en bon état comme indiqué ?",
+   "ilYaMinutes": 4179
+  },
+  {
+   "id": "demo-m-0191",
+   "conversationId": "demo-c-035",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, il fonctionne parfaitement, je l’ai testé hier.",
+   "ilYaMinutes": 3989
+  },
+  {
+   "id": "demo-m-0192",
+   "conversationId": "demo-c-035",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-035",
+   "evenement": "demande_recue",
+   "contenu": "Juliette souhaite récupérer cet objet.",
+   "ilYaMinutes": 3424
+  },
+  {
+   "id": "demo-m-0193",
+   "conversationId": "demo-c-035",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 3096
+  },
+  {
+   "id": "demo-m-0194",
+   "conversationId": "demo-c-036",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Hello ! Je peux venir avec un ami pour le porter ?",
+   "ilYaMinutes": 1497
+  },
+  {
+   "id": "demo-m-0195",
+   "conversationId": "demo-c-036",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bien sûr, passez au créneau indiqué, je serai là.",
+   "ilYaMinutes": 1454
+  },
+  {
+   "id": "demo-m-0196",
+   "conversationId": "demo-c-036",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-036",
+   "evenement": "demande_recue",
+   "contenu": "Samuel souhaite récupérer cet objet.",
+   "ilYaMinutes": 1417
+  },
+  {
+   "id": "demo-m-0197",
+   "conversationId": "demo-c-036",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 1166
+  },
+  {
+   "id": "demo-m-0198",
+   "conversationId": "demo-c-037",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis intéressé. Vous êtes souple sur l’horaire ?",
+   "ilYaMinutes": 2007
+  },
+  {
+   "id": "demo-m-0199",
+   "conversationId": "demo-c-037",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bien sûr, passez au créneau indiqué, je serai là.",
+   "ilYaMinutes": 1626
+  },
+  {
+   "id": "demo-m-0200",
+   "conversationId": "demo-c-037",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-037",
+   "evenement": "demande_recue",
+   "contenu": "Marie souhaite récupérer cet objet.",
+   "ilYaMinutes": 1428
+  },
+  {
+   "id": "demo-m-0201",
+   "conversationId": "demo-c-037",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 1142
+  },
+  {
+   "id": "demo-m-0202",
+   "conversationId": "demo-c-038",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis intéressé. Vous êtes souple sur l’horaire ?",
+   "ilYaMinutes": 8640
+  },
+  {
+   "id": "demo-m-0203",
+   "conversationId": "demo-c-038",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, oui il est toujours disponible !",
+   "ilYaMinutes": 8458
+  },
+  {
+   "id": "demo-m-0204",
+   "conversationId": "demo-c-038",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-038",
+   "evenement": "demande_recue",
+   "contenu": "Amira souhaite récupérer cet objet.",
+   "ilYaMinutes": 7991
+  },
+  {
+   "id": "demo-m-0205",
+   "conversationId": "demo-c-038",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 7711
+  },
+  {
+   "id": "demo-m-0206",
+   "conversationId": "demo-c-038",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je préfère le garder encore un peu, désolé pour le dérangement.",
+   "ilYaMinutes": 7690
+  },
+  {
+   "id": "demo-m-0207",
+   "conversationId": "demo-c-038",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-038",
+   "evenement": "demande_declinee",
+   "contenu": "L’offrant a décliné cette demande.",
+   "ilYaMinutes": 7094
+  },
+  {
+   "id": "demo-m-0208",
+   "conversationId": "demo-c-039",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, quelles sont les dimensions exactes ?",
+   "ilYaMinutes": 11520
+  },
+  {
+   "id": "demo-m-0209",
+   "conversationId": "demo-c-039",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Pas de souci, c’est au 2e avec ascenseur.",
+   "ilYaMinutes": 11282
+  },
+  {
+   "id": "demo-m-0210",
+   "conversationId": "demo-c-039",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-039",
+   "evenement": "demande_recue",
+   "contenu": "Anaïs souhaite récupérer cet objet.",
+   "ilYaMinutes": 10765
+  },
+  {
+   "id": "demo-m-0211",
+   "conversationId": "demo-c-039",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je préfère le garder encore un peu, désolé pour le dérangement.",
+   "ilYaMinutes": 10189
+  },
+  {
+   "id": "demo-m-0212",
+   "conversationId": "demo-c-039",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-039",
+   "evenement": "demande_declinee",
+   "contenu": "L’offrant a décliné cette demande.",
+   "ilYaMinutes": 10093
+  },
+  {
+   "id": "demo-m-0213",
+   "conversationId": "demo-c-040",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que l’objet est toujours disponible ?",
+   "ilYaMinutes": 4320
+  },
+  {
+   "id": "demo-m-0214",
+   "conversationId": "demo-c-040",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, venez à deux sans problème.",
+   "ilYaMinutes": 4112
+  },
+  {
+   "id": "demo-m-0215",
+   "conversationId": "demo-c-040",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-040",
+   "evenement": "demande_recue",
+   "contenu": "Karim souhaite récupérer cet objet.",
+   "ilYaMinutes": 4030
+  },
+  {
+   "id": "demo-m-0216",
+   "conversationId": "demo-c-040",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Désolé, une autre personne l’avait demandé avant vous.",
+   "ilYaMinutes": 3984
+  },
+  {
+   "id": "demo-m-0217",
+   "conversationId": "demo-c-040",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-040",
+   "evenement": "demande_declinee",
+   "contenu": "L’offrant a décliné cette demande.",
+   "ilYaMinutes": 3590
+  },
+  {
+   "id": "demo-m-0218",
+   "conversationId": "demo-c-041",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis étudiante, est-ce que je peux passer au créneau prévu ?",
+   "ilYaMinutes": 10080
+  },
+  {
+   "id": "demo-m-0219",
+   "conversationId": "demo-c-041",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, oui il est toujours disponible !",
+   "ilYaMinutes": 9494
+  },
+  {
+   "id": "demo-m-0220",
+   "conversationId": "demo-c-041",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-041",
+   "evenement": "demande_recue",
+   "contenu": "Claire souhaite récupérer cet objet.",
+   "ilYaMinutes": 9319
+  },
+  {
+   "id": "demo-m-0221",
+   "conversationId": "demo-c-041",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Désolé, je l’ai finalement promis à quelqu’un de mon entourage.",
+   "ilYaMinutes": 8948
+  },
+  {
+   "id": "demo-m-0222",
+   "conversationId": "demo-c-041",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-041",
+   "evenement": "demande_declinee",
+   "contenu": "L’offrant a décliné cette demande.",
+   "ilYaMinutes": 8458
+  },
+  {
+   "id": "demo-m-0223",
+   "conversationId": "demo-c-042",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, c’est à quel étage ? Il y a un ascenseur ?",
+   "ilYaMinutes": 10080
+  },
+  {
+   "id": "demo-m-0224",
+   "conversationId": "demo-c-042",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Pas de souci, c’est au 2e avec ascenseur.",
+   "ilYaMinutes": 9962
+  },
+  {
+   "id": "demo-m-0225",
+   "conversationId": "demo-c-042",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-042",
+   "evenement": "demande_recue",
+   "contenu": "Kevin souhaite récupérer cet objet.",
+   "ilYaMinutes": 9529
+  },
+  {
+   "id": "demo-m-0226",
+   "conversationId": "demo-c-042",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je préfère le garder encore un peu, désolé pour le dérangement.",
+   "ilYaMinutes": 9321
+  },
+  {
+   "id": "demo-m-0227",
+   "conversationId": "demo-c-042",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-042",
+   "evenement": "demande_declinee",
+   "contenu": "L’offrant a décliné cette demande.",
+   "ilYaMinutes": 8972
+  },
+  {
+   "id": "demo-m-0228",
+   "conversationId": "demo-c-043",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-043",
+   "evenement": "demande_recue",
+   "contenu": "Antoine souhaite récupérer cet objet.",
+   "ilYaMinutes": 11520
+  },
+  {
+   "id": "demo-m-0229",
+   "conversationId": "demo-c-043",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 11412
+  },
+  {
+   "id": "demo-m-0230",
+   "conversationId": "demo-c-043",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je préfère le garder encore un peu, désolé pour le dérangement.",
+   "ilYaMinutes": 11361
+  },
+  {
+   "id": "demo-m-0231",
+   "conversationId": "demo-c-043",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-043",
+   "evenement": "demande_declinee",
+   "contenu": "L’offrant a décliné cette demande.",
+   "ilYaMinutes": 11302
+  },
+  {
+   "id": "demo-m-0232",
+   "conversationId": "demo-c-044",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis étudiante, est-ce que je peux passer au créneau prévu ?",
+   "ilYaMinutes": 7200
+  },
+  {
+   "id": "demo-m-0233",
+   "conversationId": "demo-c-044",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, tout est complet, je vous montrerai sur place.",
+   "ilYaMinutes": 7057
+  },
+  {
+   "id": "demo-m-0234",
+   "conversationId": "demo-c-044",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-044",
+   "evenement": "demande_recue",
+   "contenu": "Claire souhaite récupérer cet objet.",
+   "ilYaMinutes": 6816
+  },
+  {
+   "id": "demo-m-0235",
+   "conversationId": "demo-c-044",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 6218
+  },
+  {
+   "id": "demo-m-0236",
+   "conversationId": "demo-c-044",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-044",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 6 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 5901
+  },
+  {
+   "id": "demo-m-0237",
+   "conversationId": "demo-c-044",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "J’ai trouvé une autre solution entre-temps, merci quand même.",
+   "ilYaMinutes": 5401
+  },
+  {
+   "id": "demo-m-0238",
+   "conversationId": "demo-c-044",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-044",
+   "evenement": "proposition_refusee",
+   "contenu": "Le demandeur a renoncé à l’objet : il est de nouveau disponible.",
+   "ilYaMinutes": 5341
+  },
+  {
+   "id": "demo-m-0239",
+   "conversationId": "demo-c-045",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Hello ! Je peux venir avec un ami pour le porter ?",
+   "ilYaMinutes": 14400
+  },
+  {
+   "id": "demo-m-0240",
+   "conversationId": "demo-c-045",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, venez à deux sans problème.",
+   "ilYaMinutes": 14153
+  },
+  {
+   "id": "demo-m-0241",
+   "conversationId": "demo-c-045",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-045",
+   "evenement": "demande_recue",
+   "contenu": "Jade souhaite récupérer cet objet.",
+   "ilYaMinutes": 13932
+  },
+  {
+   "id": "demo-m-0242",
+   "conversationId": "demo-c-045",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 13805
+  },
+  {
+   "id": "demo-m-0243",
+   "conversationId": "demo-c-045",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-045",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 4 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 13416
+  },
+  {
+   "id": "demo-m-0244",
+   "conversationId": "demo-c-045",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Finalement je n’en ai plus besoin, désolé !",
+   "ilYaMinutes": 12955
+  },
+  {
+   "id": "demo-m-0245",
+   "conversationId": "demo-c-045",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-045",
+   "evenement": "proposition_refusee",
+   "contenu": "Le demandeur a renoncé à l’objet : il est de nouveau disponible.",
+   "ilYaMinutes": 12705
+  },
+  {
+   "id": "demo-m-0246",
+   "conversationId": "demo-c-046",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-046",
+   "evenement": "demande_recue",
+   "contenu": "Anaïs souhaite récupérer cet objet.",
+   "ilYaMinutes": 5760
+  },
+  {
+   "id": "demo-m-0247",
+   "conversationId": "demo-c-046",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 5666
+  },
+  {
+   "id": "demo-m-0248",
+   "conversationId": "demo-c-046",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-046",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 4 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 5359
+  },
+  {
+   "id": "demo-m-0249",
+   "conversationId": "demo-c-046",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "J’ai trouvé une autre solution entre-temps, merci quand même.",
+   "ilYaMinutes": 5035
+  },
+  {
+   "id": "demo-m-0250",
+   "conversationId": "demo-c-046",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-046",
+   "evenement": "proposition_refusee",
+   "contenu": "Le demandeur a renoncé à l’objet : il est de nouveau disponible.",
+   "ilYaMinutes": 4552
+  },
+  {
+   "id": "demo-m-0251",
+   "conversationId": "demo-c-047",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-047",
+   "evenement": "demande_recue",
+   "contenu": "Yasmine souhaite récupérer cet objet.",
+   "ilYaMinutes": 10080
+  },
+  {
+   "id": "demo-m-0252",
+   "conversationId": "demo-c-047",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Merci d’avance, ça m’aiderait vraiment.",
+   "ilYaMinutes": 9758
+  },
+  {
+   "id": "demo-m-0253",
+   "conversationId": "demo-c-047",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-047",
+   "evenement": "objet_propose",
+   "contenu": "Demande acceptée : l’objet vous est réservé. Versez la participation de 5 € pour confirmer et recevoir l’adresse exacte.",
+   "ilYaMinutes": 9174
+  },
+  {
+   "id": "demo-m-0254",
+   "conversationId": "demo-c-047",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Finalement je n’en ai plus besoin, désolé !",
+   "ilYaMinutes": 8968
+  },
+  {
+   "id": "demo-m-0255",
+   "conversationId": "demo-c-047",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-047",
+   "evenement": "proposition_refusee",
+   "contenu": "Le demandeur a renoncé à l’objet : il est de nouveau disponible.",
+   "ilYaMinutes": 8775
+  },
+  {
+   "id": "demo-m-0256",
+   "conversationId": "demo-c-048",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis intéressé. Vous êtes souple sur l’horaire ?",
+   "ilYaMinutes": 2880
+  },
+  {
+   "id": "demo-m-0257",
+   "conversationId": "demo-c-048",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bien sûr, passez au créneau indiqué, je serai là.",
+   "ilYaMinutes": 2506
+  },
+  {
+   "id": "demo-m-0258",
+   "conversationId": "demo-c-048",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-048",
+   "evenement": "demande_recue",
+   "contenu": "Yacine souhaite récupérer cet objet.",
+   "ilYaMinutes": 2480
+  },
+  {
+   "id": "demo-m-0259",
+   "conversationId": "demo-c-048",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux passer au créneau, merci beaucoup !",
+   "ilYaMinutes": 2116
+  },
+  {
+   "id": "demo-m-0260",
+   "conversationId": "demo-c-048",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-048",
+   "evenement": "demande_annulee",
+   "contenu": "Le demandeur a annulé sa demande.",
+   "ilYaMinutes": 1878
+  },
+  {
+   "id": "demo-m-0261",
+   "conversationId": "demo-c-049",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-049",
+   "evenement": "demande_recue",
+   "contenu": "Victor souhaite récupérer cet objet.",
+   "ilYaMinutes": 15840
+  },
+  {
+   "id": "demo-m-0262",
+   "conversationId": "demo-c-049",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Ce serait parfait pour mon studio, merci !",
+   "ilYaMinutes": 15637
+  },
+  {
+   "id": "demo-m-0263",
+   "conversationId": "demo-c-049",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-049",
+   "evenement": "demande_annulee",
+   "contenu": "Le demandeur a annulé sa demande.",
+   "ilYaMinutes": 15300
+  },
+  {
+   "id": "demo-m-0264",
+   "conversationId": "demo-c-050",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que ça rentre dans une petite voiture ?",
+   "ilYaMinutes": 15840
+  },
+  {
+   "id": "demo-m-0265",
+   "conversationId": "demo-c-050",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, venez à deux sans problème.",
+   "ilYaMinutes": 15619
+  },
+  {
+   "id": "demo-m-0266",
+   "conversationId": "demo-c-050",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-050",
+   "evenement": "demande_recue",
+   "contenu": "Yasmine souhaite récupérer cet objet.",
+   "ilYaMinutes": 15082
+  },
+  {
+   "id": "demo-m-0267",
+   "conversationId": "demo-c-050",
+   "type": "systeme",
+   "auteur": null,
+   "reservationId": "demo-r-050",
+   "evenement": "demande_annulee",
+   "contenu": "Le demandeur a annulé sa demande.",
+   "ilYaMinutes": 15015
+  },
+  {
+   "id": "demo-m-0268",
+   "conversationId": "demo-c-051",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, il fonctionne bien ? Je viens d’emménager et il me manque justement ça.",
+   "ilYaMinutes": 1905
+  },
+  {
+   "id": "demo-m-0269",
+   "conversationId": "demo-c-052",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, quelles sont les dimensions exactes ?",
+   "ilYaMinutes": 9950
+  },
+  {
+   "id": "demo-m-0270",
+   "conversationId": "demo-c-052",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, oui il est toujours disponible !",
+   "ilYaMinutes": 9412
+  },
+  {
+   "id": "demo-m-0271",
+   "conversationId": "demo-c-053",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour ! Il est bien en bon état comme indiqué ?",
+   "ilYaMinutes": 12817
+  },
+  {
+   "id": "demo-m-0272",
+   "conversationId": "demo-c-053",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, venez à deux sans problème.",
+   "ilYaMinutes": 12221
+  },
+  {
+   "id": "demo-m-0273",
+   "conversationId": "demo-c-054",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, c’est à quel étage ? Il y a un ascenseur ?",
+   "ilYaMinutes": 10903
+  },
+  {
+   "id": "demo-m-0274",
+   "conversationId": "demo-c-054",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 10888
+  },
+  {
+   "id": "demo-m-0275",
+   "conversationId": "demo-c-055",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que ça rentre dans une petite voiture ?",
+   "ilYaMinutes": 4847
+  },
+  {
+   "id": "demo-m-0276",
+   "conversationId": "demo-c-056",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonsoir, l’objet est-il complet ?",
+   "ilYaMinutes": 6217
+  },
+  {
+   "id": "demo-m-0277",
+   "conversationId": "demo-c-056",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, venez à deux sans problème.",
+   "ilYaMinutes": 5707
+  },
+  {
+   "id": "demo-m-0278",
+   "conversationId": "demo-c-057",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, c’est à quel étage ? Il y a un ascenseur ?",
+   "ilYaMinutes": 4566
+  },
+  {
+   "id": "demo-m-0279",
+   "conversationId": "demo-c-057",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Avec plaisir, venez à deux sans problème.",
+   "ilYaMinutes": 3994
+  },
+  {
+   "id": "demo-m-0280",
+   "conversationId": "demo-c-058",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Hello ! Je peux venir avec un ami pour le porter ?",
+   "ilYaMinutes": 734
+  },
+  {
+   "id": "demo-m-0281",
+   "conversationId": "demo-c-058",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Pas de souci, c’est au 2e avec ascenseur.",
+   "ilYaMinutes": 689
+  },
+  {
+   "id": "demo-m-0282",
+   "conversationId": "demo-c-059",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis étudiante, est-ce que je peux passer au créneau prévu ?",
+   "ilYaMinutes": 8681
+  },
+  {
+   "id": "demo-m-0283",
+   "conversationId": "demo-c-059",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 8506
+  },
+  {
+   "id": "demo-m-0284",
+   "conversationId": "demo-c-060",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour ! Il est bien en bon état comme indiqué ?",
+   "ilYaMinutes": 5801
+  },
+  {
+   "id": "demo-m-0285",
+   "conversationId": "demo-c-061",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis étudiante, est-ce que je peux passer au créneau prévu ?",
+   "ilYaMinutes": 3070
+  },
+  {
+   "id": "demo-m-0286",
+   "conversationId": "demo-c-062",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Hello ! Je peux venir avec un ami pour le porter ?",
+   "ilYaMinutes": 3941
+  },
+  {
+   "id": "demo-m-0287",
+   "conversationId": "demo-c-062",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Pas de souci, c’est au 2e avec ascenseur.",
+   "ilYaMinutes": 3921
+  },
+  {
+   "id": "demo-m-0288",
+   "conversationId": "demo-c-063",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, est-ce que ça rentre dans une petite voiture ?",
+   "ilYaMinutes": 2179
+  },
+  {
+   "id": "demo-m-0289",
+   "conversationId": "demo-c-063",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Pas de souci, c’est au 2e avec ascenseur.",
+   "ilYaMinutes": 2166
+  },
+  {
+   "id": "demo-m-0290",
+   "conversationId": "demo-c-064",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, quelles sont les dimensions exactes ?",
+   "ilYaMinutes": 11273
+  },
+  {
+   "id": "demo-m-0291",
+   "conversationId": "demo-c-064",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 10826
+  },
+  {
+   "id": "demo-m-0292",
+   "conversationId": "demo-c-065",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, c’est à quel étage ? Il y a un ascenseur ?",
+   "ilYaMinutes": 7356
+  },
+  {
+   "id": "demo-m-0293",
+   "conversationId": "demo-c-065",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, il fonctionne parfaitement, je l’ai testé hier.",
+   "ilYaMinutes": 7022
+  },
+  {
+   "id": "demo-m-0294",
+   "conversationId": "demo-c-066",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis intéressé. Vous êtes souple sur l’horaire ?",
+   "ilYaMinutes": 9239
+  },
+  {
+   "id": "demo-m-0295",
+   "conversationId": "demo-c-066",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Je peux décaler d’une demi-heure si besoin, dites-moi.",
+   "ilYaMinutes": 8865
+  },
+  {
+   "id": "demo-m-0296",
+   "conversationId": "demo-c-067",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour, je suis étudiante, est-ce que je peux passer au créneau prévu ?",
+   "ilYaMinutes": 2435
+  },
+  {
+   "id": "demo-m-0297",
+   "conversationId": "demo-c-068",
+   "type": "utilisateur",
+   "auteur": "demandeur",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Bonjour ! Il est bien en bon état comme indiqué ?",
+   "ilYaMinutes": 31
+  },
+  {
+   "id": "demo-m-0298",
+   "conversationId": "demo-c-068",
+   "type": "utilisateur",
+   "auteur": "offrant",
+   "reservationId": null,
+   "evenement": null,
+   "contenu": "Oui, en très bon état, je l’ai très peu utilisé.",
+   "ilYaMinutes": 24
+  }
+ ]
+}

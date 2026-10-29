@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { Heart, Search } from "lucide-react";
+import { Heart, MessageCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import CarteAnnonce from "@/components/CarteAnnonce.jsx";
 import { EtatVide, ErreurChargement, ListeEnChargement } from "@/components/Etats.jsx";
@@ -93,6 +93,14 @@ export default function Accueil({ profil }) {
             className="flex h-12 flex-1 items-center gap-2.5 rounded-2xl border border-primary/10 bg-white px-4 text-[0.95rem] text-muted-foreground shadow-[0_6px_18px_-12px_rgb(155_77_219/35%)]">
             <Search className="size-5 text-ardoise" aria-hidden="true" />
             Chercher une pépite…
+          </Link>
+          {/* Messages : pas de place dans le menu du bas de la maquette ; on y
+              accède d'ici, comme la cloche de la maquette, ou depuis le profil. */}
+          <Link
+            to="/messages"
+            aria-label="Messages"
+            className="grid size-12 shrink-0 place-items-center rounded-2xl border border-primary/10 bg-white text-ardoise shadow-[0_6px_18px_-12px_rgb(155_77_219/35%)]">
+            <MessageCircle className="size-5" aria-hidden="true" />
           </Link>
         </header>
 
