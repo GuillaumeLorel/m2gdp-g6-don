@@ -15,7 +15,9 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link');
+// Cartes d'annonce seulement : la section « En cours » de l'accueil a aussi
+// des liens en liste (dons, demandes).
+const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link').filter({ hasText: 'participation' });
 
 test('Connexion : panneau de la marque à côté du formulaire', async ({ page }) => {
   await page.goto('/');

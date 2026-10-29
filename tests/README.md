@@ -37,6 +37,7 @@ appels réseau, sans toucher aux données.
 | Fichier | US |
 | --- | --- |
 | `e2e/connexion.spec.js` | Connexion par le code à 6 chiffres de l’e-mail (et par lien, encore géré) |
+| `e2e/echanges.spec.js` | Favoris (#49, #50), messagerie (#63 à #65), réservation : demande, validation, déclin, renoncement, paiement Stripe de test, adresse exacte (#52, #53, #55, #56), modifier ou retirer son annonce (#39), profil (#67, #68) |
 | `e2e/creer-annonce.spec.js` | US-6, US-7, US-8 — Créer une annonce en deux étapes, participation et créneau, adresse préremplie (#34, #35, #36) |
 | `e2e/en-cours.spec.js` | US-5 — Dons et demandes en cours sur l’accueil (#33) |
 | `e2e/accueil.spec.js` | US-4 — Accueil, menu du bas, derniers objets (#32) |

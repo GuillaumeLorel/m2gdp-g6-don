@@ -8,7 +8,9 @@ import { PROFILS, attendrePasDeDefilementHorizontal, ouvrirConnecte } from './ou
 
 test.use({ viewport: { width: 820, height: 1180 } });
 
-const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link');
+// Cartes d'annonce seulement : la section « En cours » de l'accueil a aussi
+// des liens en liste (dons, demandes).
+const cartes = (page) => page.getByRole('main').getByRole('listitem').getByRole('link').filter({ hasText: 'participation' });
 
 async function deuxColonnes(page) {
   await expect(cartes(page).nth(2)).toBeVisible();

@@ -74,7 +74,7 @@ Worker en ligne : **https://doneo-api.guillaume-lorel.workers.dev**
 | --- | --- |
 | D1 `doneo-sessions` | région WEUR, `database_id` dans `wrangler.toml` |
 | R2 `doneo-fichiers` | **plus utilisé** depuis le 25/10/2026 : les photos sont dans Supabase Storage (§ 3 bis) |
-| Secrets | `SUPABASE_SECRET_KEY` |
+| Secrets | `SUPABASE_SECRET_KEY` ; `STRIPE_SECRET_KEY` (clé **de test** `sk_test_…`, paiement des participations : une clé de production est refusée par le code) |
 
 Pour reposer le secret (rotation de clé), depuis `workers/` — en pipant le
 contenu plutôt qu'en le collant, pour qu'il ne reste pas dans l'historique du
@@ -160,10 +160,13 @@ npm run build    # produit public/dist
 
 Pour tester une route du Worker avant qu'elle soit déployée :
 
-1. Créer `workers/.dev.vars` (git-ignoré) avec le secret du Worker :
+1. Créer `workers/.dev.vars` (git-ignoré) avec les secrets du Worker :
    ```
    SUPABASE_SECRET_KEY='sb_secret_...'
+   STRIPE_SECRET_KEY='sk_test_...'
    ```
+   Sans clé Stripe, tout fonctionne sauf le paiement de test (« pas encore
+   configuré »).
 2. Lancer le Worker : `cd workers && npx wrangler dev --port 8787`.
 3. Créer `public/.env.development.local` (git-ignoré) :
    `VITE_API_BASE=http://localhost:8787`, puis relancer `npm run dev`.
