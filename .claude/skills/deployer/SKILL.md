@@ -8,7 +8,8 @@ description: Déploie le projet Donéo — le front et la vitrine sur Vercel, le
 ## Normalement : fusionner dans `main`, rien d'autre
 
 Chaque mise à jour de `main` déclenche `.github/workflows/deployer.yml` :
-le Worker, puis l'app et la vitrine, puis une vérification que tout répond.
+le Worker, puis l'app, la vitrine et le site de présentation, puis une
+vérification que tout répond.
 Mettre en ligne = fusionner la PR `develop` → `main`, puis suivre le run :
 
 ```bash
@@ -46,6 +47,7 @@ Deux projets Vercel, sur le compte de Guillaume (équipe
 |-------|---------|-------|-----|
 | `doneo` | `public/` | par Vercel (`public/vercel.json`) | https://doneo-app.vercel.app |
 | `doneo-vitrine` | `landing/` | aucun, HTML statique | https://doneo-vitrine.vercel.app |
+| `doneo-presentation` | `presentation/` | aucun, HTML statique | https://doneo-presentation.vercel.app |
 
 ```bash
 cd public && npx vercel deploy --prod --yes   # l'app

@@ -1,7 +1,7 @@
 # Deploiement automatique : chaque mise a jour de `main` part en ligne.
 #
 #   1. le Worker Cloudflare (l'API), d'abord : le front depend de ses routes ;
-#   2. l'app et la vitrine sur Vercel, en parallele ;
+#   2. l'app, la vitrine et le site de presentation sur Vercel, en parallele ;
 #   3. une verification que tout repond.
 #
 # Secrets du depot (Settings > Secrets and variables > Actions), voir
@@ -59,6 +59,7 @@ jobs:
         site:
           - { nom: app, dossier: public, projet: prj_sHYI3xNzJsxq8MGKgjLvgr8CzsyS }
           - { nom: vitrine, dossier: landing, projet: prj_534PRxOXXkHVE1f3ur23Y76rhKM8 }
+          - { nom: presentation, dossier: presentation, projet: prj_XznOCPsiPH3IERDNpG6b8N7r9mZ7 }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -100,3 +101,4 @@ jobs:
           verifier https://doneo-app.vercel.app/
           verifier https://doneo-app.vercel.app/recherche
           verifier https://doneo-vitrine.vercel.app/
+          verifier https://doneo-presentation.vercel.app/

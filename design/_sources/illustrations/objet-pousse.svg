@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg data-dc-tpl="232" width="62" height="62" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path data-dc-tpl="233" d="M32 30V14" stroke="#2F4F5C" stroke-width="2.4" stroke-linecap="round"/>
+          <ellipse data-dc-tpl="234" cx="41" cy="14" rx="9" ry="6" fill="#BFE9E1" stroke="#2F4F5C" stroke-width="2.4"/>
+          <path data-dc-tpl="235" d="M16 31h32l-4 22H20z" fill="#C79BEC" stroke="#2F4F5C" stroke-width="2.4" stroke-linejoin="round"/>
+          <circle data-dc-tpl="236" cx="26" cy="40" r="2.4" fill="#2F4F5C"/>
+          <circle data-dc-tpl="237" cx="38" cy="40" r="2.4" fill="#2F4F5C"/>
+          <path data-dc-tpl="238" d="M28 45.5a5 5 0 0 0 8 0" stroke="#2F4F5C" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
