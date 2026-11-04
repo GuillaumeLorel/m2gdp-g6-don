@@ -17,7 +17,7 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="stylesheet" href="css/style.css?v=6">
 
   <style>
     /* CSS critique — héro et en-tête, pour un premier affichage sans décalage */
@@ -87,6 +87,7 @@
           <div class="hero__actions">
             <a class="bouton bouton--sur-violet" href="https://doneo-app.vercel.app/" target="_blank" rel="noopener">Donner un objet<span class="visually-hidden"> sur l'app Donéo, nouvel onglet</span></a>
             <a class="bouton bouton--contour-blanc" href="https://doneo-app.vercel.app/" target="_blank" rel="noopener">Trouver un objet<span class="visually-hidden"> sur l'app Donéo, nouvel onglet</span></a>
+            <a class="bouton bouton--contour-blanc" href="#video" data-lancer-video><span aria-hidden="true">▶&nbsp;</span>Voir la vidéo (1 min)</a>
           </div>
           <p class="hero__app">
             <a class="hero__lien-app" href="https://doneo-app.vercel.app/" target="_blank" rel="noopener">doneo-app.vercel.app<span class="hero__lien-app-fleche" aria-hidden="true">→</span><span class="visually-hidden"> : ouvrir l'app Donéo, nouvel onglet</span></a>
@@ -107,6 +108,33 @@
             </div>
             <img class="telephone__sticker" src="assets/illustrations/objet-coeur.svg" alt="" width="120" height="120">
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIDÉO DE PRÉSENTATION -->
+    <section id="video" class="section video-section" aria-labelledby="video-titre">
+      <div class="conteneur">
+        <div class="section__entete au-defilement">
+          <h2 id="video-titre" class="section__titre">Donéo en 1 minute</h2>
+          <p class="section__sous-titre">Une étagère, deux voisins, une association : l'histoire en images.</p>
+        </div>
+        <div class="video">
+          <p class="video__annotation" aria-hidden="true">
+            <span>Ça dure 1 minute, promis !</span>
+            <svg class="video__fleche" width="60" height="56" viewBox="0 0 60 56" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10c22-6 40 6 42 38"/><path d="M36 40l10 10 9-12"/></svg>
+          </p>
+          <img class="video__sticker video__sticker--haut" src="assets/illustrations/expression-celebration.svg" alt="" width="96" height="96" loading="lazy">
+          <img class="video__sticker video__sticker--bas" src="assets/illustrations/objet-cadeau.svg" alt="" width="96" height="96" loading="lazy">
+          <div class="video__carte">
+            <div class="video__cadre">
+              <video class="video__lecteur" controls preload="none" playsinline poster="assets/video/doneo-affiche.webp" width="1920" height="1080" aria-label="Vidéo de présentation de Donéo (1 minute)">
+                <source src="assets/video/doneo.mp4" type="video/mp4">
+                <p>Votre navigateur ne lit pas cette vidéo. <a href="https://youtu.be/0oIrckj7bB8" target="_blank" rel="noopener">La voir sur YouTube<span class="visually-hidden">, nouvel onglet</span></a>.</p>
+              </video>
+            </div>
+          </div>
+          <p class="video__lien"><a href="https://youtu.be/0oIrckj7bB8" target="_blank" rel="noopener">Voir sur YouTube<span class="visually-hidden">, nouvel onglet</span></a></p>
         </div>
       </div>
     </section>
@@ -757,6 +785,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=4" type="module"></script>
+  <script src="js/main.js?v=6" type="module"></script>
 </body>
 </html>
