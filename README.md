@@ -31,6 +31,7 @@ qu'un lieu approximatif (code postal et ville). Les rôles `offrant` et
 | Répertoire   | Contenu                                                        |
 |--------------|----------------------------------------------------------------|
 | `/landing`   | Site vitrine statique. https://doneo-vitrine.vercel.app        |
+| `/presentation` | Site de présentation du projet. https://doneo-presentation.vercel.app |
 | `/public`    | Application web frontend (PWA). https://doneo-app.vercel.app   |
 | `/workers`   | Logique métier backend (Cloudflare Workers)                    |
 | `/docs`      | Documentation technique et guides                              |

@@ -246,7 +246,8 @@ plus la fusion fait mal. Récupérer `develop` régulièrement :
 Quand `develop` est stable, on la fusionne dans `main` (par PR `develop` →
 `main`). **C'est tout** : la fusion déclenche le workflow
 [`.github/workflows/deployer.yml`](../.github/workflows/deployer.yml), qui
-déploie le Worker, puis l'app et la vitrine, puis vérifie que tout répond.
+déploie le Worker, puis l'app, la vitrine et le site de présentation, puis
+vérifie que tout répond.
 Suivre son avancement dans l'onglet **Actions** du dépôt (3 à 4 minutes).
 
 > ⚠️ **Ne plus déployer à la main.** `vercel deploy` et `wrangler deploy`
@@ -269,6 +270,7 @@ Suivre son avancement dans l'onglet **Actions** du dépôt (3 à 4 minutes).
 | Worker | https://doneo-api.guillaume-lorel.workers.dev | job `worker`, en premier : le front dépend de ses routes |
 | App | https://doneo-app.vercel.app (projet Vercel `doneo`) | job `vercel (app)` |
 | Vitrine | https://doneo-vitrine.vercel.app (projet Vercel `doneo-vitrine`) | job `vercel (vitrine)` |
+| Site de présentation | https://doneo-presentation.vercel.app (projet Vercel `doneo-presentation`) | job `vercel (presentation)` |
 
 Vercel construit lui-même l'app (`npm run build`, réglages dans
 `public/vercel.json`) : inutile de builder avant. Le workflow lui envoie une
