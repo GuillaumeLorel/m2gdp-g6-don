@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Donéo — Présentation du projet · Donné, pas jeté.</title>
+  <meta name="description" content="Présentation du projet Donéo au jury : produit, parcours utilisateurs, charte graphique, maquettes, travail du PO et du DEV.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="assets/illustrations/objet-coeur.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;600;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="evitement" href="#contenu">Aller au contenu</a>
+
+  <header class="entete">
+    <div class="conteneur">
+      <a class="entete-logo" href="#haut"><img src="assets/logo.svg" alt="Donéo — retour en haut de la page" width="166" height="40"></a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <nav class="menu" id="menu" aria-label="Sections">
+        <ul>
+          <li><a href="#projet">Projet</a></li>
+          <li><a href="#parcours">Parcours</a></li>
+          <li><a href="#charte">Charte</a></li>
+          <li><a href="#maquettes">Maquettes</a></li>
+          <li><a href="#po">PO</a></li>
+          <li><a href="#dev">DEV</a></li>
+          <li class="menu-app"><a href="https://doneo-app.vercel.app/" target="_blank" rel="noopener">Ouvrir l’app</a></li>
+        </ul>
+      </nav>
+      <a class="bouton bouton-principal" href="https://doneo-app.vercel.app/" target="_blank" rel="noopener">Ouvrir l’app</a>
+    </div>
+  </header>
+
+  <main id="contenu">
+    <section class="hero" id="haut" aria-labelledby="titre-principal">
+      <svg class="coeur-flottant" style="left:6%;top:12%" width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.5 3.3 5 6.8 5c2 0 3.4 1.1 4.2 2.4C11.8 6.1 13.2 5 15.2 5c3.5 0 5.6 3.5 4.3 6.8C19.5 16.4 12 21 12 21z"/></svg>
+      <svg class="coeur-flottant" style="left:46%;bottom:10%" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.5 3.3 5 6.8 5c2 0 3.4 1.1 4.2 2.4C11.8 6.1 13.2 5 15.2 5c3.5 0 5.6 3.5 4.3 6.8C19.5 16.4 12 21 12 21z"/></svg>
+      <div class="conteneur">
+        <div>
+          <h1 id="titre-principal">Donéo</h1>
+          <p class="slogan">Donné, pas jeté.</p>
+          <p class="pitch">Le don d’objets entre particuliers de la Métropole de Lyon&nbsp;: l’offrant fixe librement une participation solidaire, reversée à l’association de son choix, moins une micro-commission.</p>
+          <div class="hero-actions">
+            <a class="bouton bouton-blanc" href="https://doneo-app.vercel.app/" target="_blank" rel="noopener">Ouvrir l’app</a>
+            <a class="bouton bouton-contour" href="https://doneo-vitrine.vercel.app/" target="_blank" rel="noopener">Site vitrine</a>
+            <a class="bouton bouton-contour" href="https://github.com/GuillaumeLorel/m2gdp-g6-don" target="_blank" rel="noopener">GitHub</a>
+          </div>
+          <a class="lien-pdf" href="assets/doneo-pitch-j3.pdf" download>Télécharger le pitch J3 (PDF, 3,4&nbsp;Mo)</a>
+        </div>
+        <div class="hero-visuel">
+          <div class="telephone">
+            <div class="ecran"><img src="assets/img/capture-app.webp" alt="Écran de connexion de l’application Donéo" width="780" height="1688"></div>
+          </div>
+          <img class="sticker sticker-1" src="assets/illustrations/objet-cadeau.svg" alt="" width="88" height="88">
+          <img class="sticker sticker-2" src="assets/illustrations/expression-celebration.svg" alt="" width="74" height="74">
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 Projet -->
+    <section class="section" id="projet" aria-labelledby="t-projet">
+      <div class="conteneur">
+        <div class="section-tete">
+          <span class="numero" aria-hidden="true">01</span>
+          <h2 id="t-projet">Le projet</h2>
+          <p class="intro">Le modèle économique et la proposition de valeur de Donéo, tels que construits par l’équipe.</p>
+          <img class="sticker sticker-section" src="assets/illustrations/objet-piece.svg" alt="" width="72" height="72">
+        </div>
+        <div class="grille-2">
+          <figure class="carte">
+            <h3>Lean Canvas</h3>
+            <button class="zoom" type="button"><img src="assets/img/lean-canvas.webp" alt="Lean Canvas de Donéo" width="676" height="446" loading="lazy"></button>
+            <figcaption>Problèmes, solution, proposition de valeur, canaux, revenus et coûts.</figcaption>
+          </figure>
+          <figure class="carte">
+            <h3>Value Proposition Canvas</h3>
+            <button class="zoom" type="button"><img src="assets/img/vpc.webp" alt="Value Proposition Canvas de Donéo" width="1672" height="940" loading="lazy"></button>
+            <figcaption>Ce que Donéo apporte à l’offrante et au demandeur.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Parcours -->
+    <section class="section" id="parcours" aria-labelledby="t-parcours">
+      <div class="conteneur">
+        <div class="section-tete">
+          <span class="numero" aria-hidden="true">02</span>
+          <h2 id="t-parcours">Parcours utilisateurs</h2>
+          <p class="intro">Deux personas, un storyboard et leurs deux parcours.</p>
+        </div>
+        <div class="grille-2">
+          <article class="carte persona">
+            <img class="persona-pastille" src="assets/illustrations/objet-coeur.svg" alt="" width="84" height="84">
+            <div>
+              <h3>Léa, 27&nbsp;ans</h3>
+              <span class="role">Offrante</span>
+              <blockquote>« Je préfère que ça serve à quelqu’un. »</blockquote>
+              <p>Déménage dans trois semaines et doit vider son appartement sans passer par la déchetterie. Elle veut que ses meubles servent encore.</p>
+            </div>
+          </article>
+          <article class="carte persona">
+            <img class="persona-pastille" src="assets/illustrations/objet-pousse.svg" alt="" width="84" height="84">
+            <div>
+              <h3>Jérôme, 22&nbsp;ans</h3>
+              <span class="role">Demandeur</span>
+              <blockquote>« Je n’ai rien demandé à personne. »</blockquote>
+              <p>Étudiant, il vient d’emménager dans un studio non meublé. Budget très serré, pas de voiture, et l’envie de ne pas se sentir assisté.</p>
+            </div>
+          </article>
+        </div>
+
+        <h3 class="sous-titre">Storyboard</h3>
+        <figure class="carte">
+          <button class="zoom" type="button"><img src="assets/img/storyboard.webp" alt="Storyboard du parcours Donéo" width="3186" height="1824" loading="lazy"></button>
+        </figure>
+
+        <h3 class="sous-titre">User Journey Maps</h3>
+        <div class="onglets" role="tablist" aria-label="User Journey Maps">
+          <button type="button" role="tab" id="onglet-lea" aria-controls="panneau-lea" aria-selected="true">Léa — offrante</button>
+          <button type="button" role="tab" id="onglet-jerome" aria-controls="panneau-jerome" aria-selected="false" tabindex="-1">Jérôme — demandeur</button>
+        </div>
+        <div class="carte" role="tabpanel" id="panneau-lea" aria-labelledby="onglet-lea">
+          <button class="zoom" type="button"><img src="assets/img/ujm-offrante.webp" alt="User Journey Map de Léa, offrante" width="1672" height="940" loading="lazy"></button>
+        </div>
+        <div class="carte" role="tabpanel" id="panneau-jerome" aria-labelledby="onglet-jerome" hidden>
+          <button class="zoom" type="button"><img src="assets/img/ujm-demandeur.webp" alt="User Journey Map de Jérôme, demandeur" width="1672" height="940" loading="lazy"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Charte -->
+    <section class="section" id="charte" aria-labelledby="t-charte">
+      <div class="conteneur">
+        <div class="section-tete">
+          <span class="numero" aria-hidden="true">03</span>
+          <h2 id="t-charte">Charte graphique</h2>
+          <p class="intro">Une identité douce et chaleureuse, appliquée à l’application, au site vitrine et à cette page.</p>
+          <img class="sticker sticker-section" src="assets/illustrations/expression-heureux.svg" alt="" width="72" height="72">
+        </div>
+
+        <h3>Logo</h3>
+        <div class="logos">
+          <div class="logo-planche"><img src="assets/logo.svg" alt="Logo Donéo sur fond clair" width="1125" height="271" loading="lazy"></div>
+          <div class="logo-planche sur-violet"><img src="assets/logo-blanc.svg" alt="Logo Donéo en blanc sur fond violet" width="1125" height="271" loading="lazy"></div>
+        </div>
+
+        <h3 class="sous-titre">Couleurs</h3>
+        <ul class="palette">
+          <li><div class="teinte" style="background:#9B4DDB"></div><div><strong>Violet</strong><code>#9B4DDB</code><small>Actions</small></div></li>
+          <li><div class="teinte" style="background:#E23C8E"></div><div><strong>Rose</strong><code>#E23C8E</code><small>Accents, émotion</small></div></li>
+          <li><div class="teinte" style="background:#2F4F5C"></div><div><strong>Ardoise</strong><code>#2F4F5C</code><small>Titres</small></div></li>
+          <li><div class="teinte" style="background:#F7F2FC;border-bottom:1px solid #E7D6F5"></div><div><strong>Lilas</strong><code>#F7F2FC</code><small>Fond</small></div></li>
+          <li><div class="teinte" style="background:#E7D6F5"></div><div><strong>Lavande</strong><code>#E7D6F5</code><small>Cartes</small></div></li>
+          <li><div class="teinte" style="background:#C6CAF6"></div><div><strong>Pervenche</strong><code>#C6CAF6</code><small>Accompagnement</small></div></li>
+          <li><div class="teinte" style="background:#EDF5B3"></div><div><strong>Citron</strong><code>#EDF5B3</code><small>Accompagnement</small></div></li>
+        </ul>
+
+        <h3 class="sous-titre">Typographies</h3>
+        <div class="polices">
+          <div class="carte">
+            <p><strong>Fredoka</strong> — titres</p>
+            <p class="specimen-grand fredoka">Donné, pas jeté.</p>
+            <p class="alphabet fredoka">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz éèàçô</p>
+          </div>
+          <div class="carte">
+            <p><strong>Inter</strong> — texte et chiffres</p>
+            <p class="specimen-grand inter">Participation 2026</p>
+            <p class="alphabet">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz 0123456789</p>
+          </div>
+        </div>
+
+        <h3 class="sous-titre">Illustrations</h3>
+        <ul class="illustrations">
+          <li><img src="assets/illustrations/objet-coeur.svg" alt="" width="72" height="72" loading="lazy"><span>objet-coeur</span></li>
+          <li><img src="assets/illustrations/objet-cadeau.svg" alt="" width="72" height="72" loading="lazy"><span>objet-cadeau</span></li>
+          <li><img src="assets/illustrations/objet-etoile.svg" alt="" width="72" height="72" loading="lazy"><span>objet-etoile</span></li>
+          <li><img src="assets/illustrations/objet-piece.svg" alt="" width="72" height="72" loading="lazy"><span>objet-piece</span></li>
+          <li><img src="assets/illustrations/objet-pousse.svg" alt="" width="72" height="72" loading="lazy"><span>objet-pousse</span></li>
+          <li><img src="assets/illustrations/expression-heureux.svg" alt="" width="72" height="72" loading="lazy"><span>expression-heureux</span></li>
+          <li><img src="assets/illustrations/expression-celebration.svg" alt="" width="72" height="72" loading="lazy"><span>expression-celebration</span></li>
+          <li><img src="assets/illustrations/expression-reconnaissant.svg" alt="" width="72" height="72" loading="lazy"><span>expression-reconnaissant</span></li>
+          <li><img src="assets/illustrations/expression-surpris.svg" alt="" width="72" height="72" loading="lazy"><span>expression-surpris</span></li>
+          <li><img src="assets/illustrations/expression-triste.svg" alt="" width="72" height="72" loading="lazy"><span>expression-triste</span></li>
+        </ul>
+
+        <h3 class="sous-titre">Planche de la charte</h3>
+        <figure class="carte">
+          <button class="zoom" type="button"><img src="assets/img/charte.webp" alt="Planche complète de la charte graphique Donéo" width="3840" height="2160" loading="lazy"></button>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 04 Maquettes -->
+    <section class="section" id="maquettes" aria-labelledby="t-maquettes">
+      <div class="conteneur">
+        <div class="section-tete">
+          <span class="numero" aria-hidden="true">04</span>
+          <h2 id="t-maquettes">Maquettes</h2>
+          <p class="intro">L’application et le site vitrine, tels qu’ils sont en ligne.</p>
+        </div>
+        <div class="maquettes">
+          <div class="maquette">
+            <div class="telephone">
+              <div class="ecran"><button class="zoom" type="button"><img src="assets/img/capture-app.webp" alt="Application Donéo sur mobile : écran de connexion" width="780" height="1688" loading="lazy"></button></div>
+            </div>
+            <p>Application — mobile, 390 × 844</p>
+            <a class="bouton bouton-principal" href="https://doneo-app.vercel.app/" target="_blank" rel="noopener">Ouvrir l’app</a>
+          </div>
+          <div class="maquette">
+            <div class="navigateur">
+              <div class="navigateur-barre"><span></span><span></span><span></span><code>doneo-vitrine.vercel.app</code></div>
+              <button class="zoom" type="button"><img src="assets/img/capture-vitrine.webp" alt="Site vitrine Donéo sur ordinateur : page d’accueil" width="1440" height="900" loading="lazy"></button>
+            </div>
+            <p>Site vitrine — ordinateur, 1440 × 900</p>
+            <a class="bouton bouton-secondaire" href="https://doneo-vitrine.vercel.app/" target="_blank" rel="noopener">Voir le site vitrine</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 PO -->
+    <section class="section" id="po" aria-labelledby="t-po">
+      <div class="conteneur">
+        <div class="section-tete">
+          <span class="numero" aria-hidden="true">05</span>
+          <h2 id="t-po">Product Owner</h2>
+          <p class="intro">EPICs, priorisation et user stories, repris de <code>specs/</code> et de <code>tests/README.md</code>.</p>
+          <img class="sticker sticker-section" src="assets/illustrations/objet-etoile.svg" alt="" width="72" height="72">
+        </div>
+
+        <div class="tableau-defile">
+          <table>
+            <caption>EPICs</caption>
+            <thead><tr><th scope="col">EPIC</th><th scope="col">Objectif</th><th scope="col">Issue</th><th scope="col">Priorité</th></tr></thead>
+            <tbody>
+              <tr><td>EPIC-1 · Authentification et profil utilisateur</td><td>Gérer l’identité et l’accès des utilisateurs sans mot de passe.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/1" target="_blank" rel="noopener">#1</a></td><td><span class="badge badge-socle">Socle Pré-J3</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tableau-defile">
+          <table>
+            <caption>Priorisation des fonctionnalités (specs/data-model.md)</caption>
+            <thead><tr><th scope="col">Priorité</th><th scope="col">Fonctionnalités</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-socle">Socle Pré-J3</span></td><td>Profil, publication, recherche simple, contact, réservation payée en mode test</td></tr>
+              <tr><td><span class="badge badge-must">MUST</span></td><td>Géolocalisation et proximité, favoris, recherche et tri avancés, statut des annonces, stockage des documents</td></tr>
+              <tr><td><span class="badge badge-should">SHOULD</span></td><td>Préférences de recherche, options et statut de réservation</td></tr>
+              <tr><td><span class="badge badge-could">COULD</span></td><td>Messagerie actionnable, commentaires et avis, capture média, création IA, notation</td></tr>
+              <tr><td><span class="badge badge-fake">COULD FAKE</span></td><td>Paiement, vérification d’identité</td></tr>
+              <tr><td><span class="badge badge-wont">WON’T</span></td><td>Notifications non lues, multilingue, forum, SSO, fidélité</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sous-titre">User stories</h3>
+        <details open>
+          <summary>EPIC-1 · Authentification et profil utilisateur</summary>
+          <ul class="us-liste">
+            <li><span><strong>US-1</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/2" target="_blank" rel="noopener">#2</a>) — Inscription et création de profil</span><span class="badge badge-socle">Socle Pré-J3</span></li>
+            <li><span><strong>US-2</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/3" target="_blank" rel="noopener">#3</a>) — Connexion utilisateur existant</span><span class="badge badge-socle">Socle Pré-J3</span></li>
+            <li><span><strong>US-3</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/9" target="_blank" rel="noopener">#9</a>) — Consulter les membres inscrits</span><span class="badge badge-socle">Socle Pré-J3</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>Autres user stories</summary>
+          <ul class="us-liste">
+            <li><span><strong>US-4</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/32" target="_blank" rel="noopener">#32</a>) — Accueil, menu du bas, derniers objets</span></li>
+            <li><span><strong>US-5</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/33" target="_blank" rel="noopener">#33</a>) — Dons et demandes en cours sur l’accueil</span></li>
+            <li><span><strong>US-6</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/34" target="_blank" rel="noopener">#34</a>) — Créer une annonce en deux étapes</span></li>
+            <li><span><strong>US-7</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/35" target="_blank" rel="noopener">#35</a>) — Participation et créneau</span></li>
+            <li><span><strong>US-8</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/36" target="_blank" rel="noopener">#36</a>) — Adresse préremplie</span></li>
+            <li><span><strong>US-9</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/37" target="_blank" rel="noopener">#37</a>) — Fiche d’annonce, adresse jamais exposée</span></li>
+            <li><span><strong>US-12</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/40" target="_blank" rel="noopener">#40</a>) — Illustration des annonces sans photo</span></li>
+            <li><span><strong>US-13</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/41" target="_blank" rel="noopener">#41</a>) — Recherche par mot-clé en liste</span></li>
+            <li><span><strong>US-14</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/42" target="_blank" rel="noopener">#42</a>) — Filtres catégorie, état, participation</span></li>
+            <li><span><strong>US-15</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/43" target="_blank" rel="noopener">#43</a>) — Tri par date, participation ou créneau</span></li>
+            <li><span><strong>US-16</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/44" target="_blank" rel="noopener">#44</a>) — Bascule liste / carte</span></li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <!-- 06 DEV -->
+    <section class="section" id="dev" aria-labelledby="t-dev">
+      <div class="conteneur">
+        <div class="section-tete">
+          <span class="numero" aria-hidden="true">06</span>
+          <h2 id="t-dev">Développement</h2>
+          <p class="intro">Le modèle de données et le contrat d’API, rendus depuis <code>specs/data-model.md</code> et <code>specs/openapi.yaml</code>.</p>
+        </div>
+
+        <h3>Modèle de données</h3>
+        <div class="carte diagramme">
+          <h4>Diagramme de classes — cœur métier</h4>
+          <pre class="mermaid">
+classDiagram
+    direction TB
+
+    class Utilisateur {
+        +string id
+        +string email
+        +string nom
+        +string prenom
+        +date dateNaissance
+        +string photoUrl
+        +string numeroRue
+        +string rue
+        +string complementAdresse
+        +string codePostal
+        +string ville
+        +string[] roles
+        +date creeLe
+        +date misAJourLe
+    }
+
+    class Annonce {
+        +string id
+        +string offrantId
+        +string associationId
+        +string categorieId
+        +string sousCategorieId
+        +string titre
+        +string description
+        +string etat
+        +number participation
+        +Creneau creneauRetrait
+        +string numeroRue
+        +string rue
+        +string complementAdresse
+        +string codePostal
+        +string ville
+        +number latitude
+        +number longitude
+        +number latitudeApprochee
+        +number longitudeApprochee
+        +string quartier
+        +string[] mediaIds
+        +string statut
+        +boolean assisteeParIA
+        +date creeLe
+        +date misAJourLe
+    }
+
+    class Creneau {
+        &lt;&lt;valeur&gt;&gt;
+        +datetime debut
+        +datetime fin
+    }
+
+    class Categorie {
+        +string id
+        +string libelle
+        +string parentId
+        +string illustrationUrl
+        +number ordre
+    }
+
+    class Association {
+        +string id
+        +string nom
+        +string description
+        +string thematique
+        +string numeroRna
+        +string codePostal
+        +string ville
+        +string siteWeb
+        +string logoUrl
+    }
+
+    class Media {
+        +string id
+        +string proprietaireId
+        +string type
+        +string typeMime
+        +number tailleOctets
+        +number dureeSecondes
+        +string url
+        +string miniatureUrl
+        +date creeLe
+    }
+
+    class Reservation {
+        +string id
+        +string annonceId
+        +string demandeurId
+        +string offrantId
+        +string conversationId
+        +string statut
+        +string motifAnnulation
+        +date proposeeLe
+        +number participationDemandee
+        +number montantDebite
+        +string statutPaiement
+        +string referencePaiement
+        +string environnementPaiement
+        +date creeLe
+        +date misAJourLe
+    }
+
+    class Favori {
+        +string utilisateurId
+        +string annonceId
+        +date creeLe
+    }
+
+    class RechercheSauvegardee {
+        +string id
+        +string utilisateurId
+        +string libelle
+        +object criteres
+        +date creeLe
+    }
+
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; Annonce : publie (offrant)
+    Annonce &quot;*&quot; --&gt; &quot;1&quot; Association : reverse à
+    Annonce &quot;*&quot; --&gt; &quot;1&quot; Categorie : classée dans
+    Categorie &quot;*&quot; --&gt; &quot;0..1&quot; Categorie : sous-catégorie de
+    Annonce &quot;1&quot; *-- &quot;1&quot; Creneau : créneau de retrait
+    Annonce &quot;1&quot; --&gt; &quot;*&quot; Media : illustrée par
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; Media : téléverse
+    Annonce &quot;1&quot; --&gt; &quot;*&quot; Reservation : file de réservations
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; Reservation : demande (demandeur)
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; Favori : marque
+    Favori &quot;*&quot; --&gt; &quot;1&quot; Annonce : désigne
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; RechercheSauvegardee : enregistre
+</pre>
+        </div>
+        <div class="carte diagramme">
+          <h4>Diagramme de classes — échanges entre membres</h4>
+          <pre class="mermaid">
+classDiagram
+    direction TB
+
+    class Utilisateur
+    class Annonce
+    class Reservation
+    class Media
+
+    class Conversation {
+        +string id
+        +string annonceId
+        +string offrantId
+        +string demandeurId
+        +date creeLe
+        +date misAJourLe
+    }
+
+    class Message {
+        +string id
+        +string conversationId
+        +string type
+        +string auteurId
+        +string reservationId
+        +string evenement
+        +string contenu
+        +string[] mediaIds
+        +date creeLe
+    }
+
+    class Commentaire {
+        +string id
+        +string annonceId
+        +string auteurId
+        +string contenu
+        +Reponse reponse
+        +string statut
+        +date creeLe
+        +date misAJourLe
+    }
+
+    class Reponse {
+        &lt;&lt;valeur&gt;&gt;
+        +string contenu
+        +date creeLe
+        +date misAJourLe
+    }
+
+    class Avis {
+        +string id
+        +string reservationId
+        +string auteurId
+        +string cibleId
+        +number note
+        +string commentaire
+        +date creeLe
+        +date misAJourLe
+    }
+
+    Annonce &quot;1&quot; --&gt; &quot;*&quot; Conversation : permet le contact
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; Conversation : participe
+    Conversation &quot;1&quot; --&gt; &quot;*&quot; Reservation : porte les échanges de
+    Conversation &quot;1&quot; *-- &quot;*&quot; Message : contient
+    Message &quot;*&quot; --&gt; &quot;0..1&quot; Reservation : évènement de
+    Message &quot;1&quot; --&gt; &quot;*&quot; Media : joint
+    Annonce &quot;1&quot; --&gt; &quot;*&quot; Commentaire : questions publiques
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; Commentaire : rédige (demandeur)
+    Commentaire &quot;1&quot; *-- &quot;0..1&quot; Reponse : réponse de l&#x27;offrant
+    Reservation &quot;1&quot; --&gt; &quot;0..2&quot; Avis : évaluée par
+    Utilisateur &quot;1&quot; --&gt; &quot;*&quot; Avis : reçoit
+</pre>
+        </div>
+        <div class="carte diagramme">
+          <h4>États d’une réservation</h4>
+          <pre class="mermaid">
+stateDiagram-v2
+    [*] --&gt; demandee : demande (J4)
+    demandee --&gt; proposee : l&#x27;offrant valide
+    demandee --&gt; annulee : l&#x27;offrant décline, ou le demandeur annule
+    [*] --&gt; liste_attente : demande sur une annonce déjà tenue (J5)
+
+    liste_attente --&gt; proposee : place libérée, en tête de file
+    liste_attente --&gt; annulee : désistement, objet remis à autrui, annonce retirée
+
+    proposee --&gt; confirmee : paiement validé (mode test)
+    proposee --&gt; annulee : refus, sans réponse, désistement, annonce retirée
+
+    confirmee --&gt; remise : remise confirmée par l&#x27;offrant
+    confirmee --&gt; annulee : désistement, annonce retirée (remboursement fictif)
+
+    remise --&gt; [*]
+    annulee --&gt; [*]
+</pre>
+        </div>
+        <div class="carte diagramme">
+          <h4>Séquence — désistement et liste d’attente</h4>
+          <pre class="mermaid">
+sequenceDiagram
+    participant B1 as Demandeur 1 (détenteur)
+    participant W as Worker
+    participant B2 as Demandeur 2 (1er en file)
+    participant B3 as Demandeur 3 (2e en file)
+    participant D as Offrant
+
+    B1-&gt;&gt;W: POST /reservations/{id}/desistement
+    W-&gt;&gt;W: B1 passe à « annulee » (desistement)
+    W-&gt;&gt;D: message système « desistement »
+    W-&gt;&gt;W: B2 passe à « proposee »
+    W-&gt;&gt;B2: message système « objet_propose » + e-mail
+    alt B2 accepte
+        B2-&gt;&gt;W: POST /reservations/{id}/paiement
+        W--&gt;&gt;B2: réservation confirmée, adresse exacte
+    else B2 refuse
+        B2-&gt;&gt;W: POST /reservations/{id}/refus
+        W-&gt;&gt;W: B2 passe à « annulee » (refus)
+        W-&gt;&gt;B3: message système « objet_propose » + e-mail
+    else B2 ne répond pas
+        D-&gt;&gt;W: POST /reservations/{id}/sans-reponse
+        W-&gt;&gt;W: B2 passe à « annulee » (sans_reponse)
+        W-&gt;&gt;B3: message système « objet_propose » + e-mail
+    end
+</pre>
+        </div>
+
+        <h3 class="sous-titre">Routes de l’API</h3>
+        <div class="tableau-defile">
+          <table>
+            <caption>50 routes — specs/openapi.yaml, version 0.3.0</caption>
+            <thead><tr><th scope="col">Méthode</th><th scope="col">Chemin</th><th scope="col">Résumé</th></tr></thead>
+            <tbody>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/health</code></td><td>Healthcheck — Déjà en ligne</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/auth/statut-email</code></td><td>L’adresse a-t-elle déjà un compte ? — Déjà en ligne</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/profil</code></td><td>Profil de l’utilisateur connecté — Déjà en ligne</td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/profil</code></td><td>Créer ou mettre à jour son profil — Déjà en ligne</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/profil/resume</code></td><td>Mes statistiques et toutes mes annonces</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs</code></td><td>Annuaire public des inscrits — Déjà en ligne</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs/{id}</code></td><td>Profil public d’un membre</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs/{id}/avis</code></td><td>Avis reçus par un membre</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/categories</code></td><td>Arbre des catégories</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/associations</code></td><td>Lister les associations bénéficiaires</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/medias</code></td><td>Téléverser une photo, une vidéo ou un enregistrement vocal</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/medias/{id}</code></td><td>Le fichier d’un média (redirection)</td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/medias/{id}</code></td><td>Supprimer un média non rattaché</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/ia/brouillon-annonce</code></td><td>Générer un brouillon d’annonce à partir d’une phrase ou d’une photo</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces</code></td><td>Rechercher et trier des annonces</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces</code></td><td>Publier une annonce (offrant)</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}</code></td><td>Consulter une annonce</td></tr>
+              <tr><td><span class="methode m-patch">PATCH</span></td><td><code>/api/annonces/{id}</code></td><td>Modifier son annonce (offrant)</td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/annonces/{id}</code></td><td>Retirer son annonce (offrant)</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/edition</code></td><td>Fiche complète pour modifier son annonce (offrant)</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/contexte-local</code></td><td>Quartier, météo du créneau et points d’intérêt proches</td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/annonces/{id}/favori</code></td><td>Ajouter aux favoris</td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/annonces/{id}/favori</code></td><td>Retirer des favoris</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/favoris</code></td><td>Mes annonces favorites</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/recherches</code></td><td>Mes recherches sauvegardées</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/recherches</code></td><td>Sauvegarder une recherche</td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/recherches/{id}</code></td><td>Supprimer une recherche sauvegardée</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/commentaires</code></td><td>Questions et réponses publiques d’une annonce</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/commentaires</code></td><td>Poser une question sous une annonce (demandeur)</td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/commentaires/{id}</code></td><td>Supprimer son commentaire (auteur)</td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/commentaires/{id}/reponse</code></td><td>Répondre à une question (offrant de l’annonce)</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/commentaires/{id}/masquage</code></td><td>Masquer ou rétablir un commentaire (offrant de l’annonce)</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/conversations</code></td><td>Mes conversations</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/conversation</code></td><td>Contacter l’offrant</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/conversations/{id}/messages</code></td><td>Lire les messages d’une conversation</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/conversations/{id}/messages</code></td><td>Envoyer un message, avec ou sans pièces jointes</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/reservations</code></td><td>Demander un objet — ou s’inscrire en liste d’attente</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/reservations</code></td><td>File de réservations d’une annonce (offrant)</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/reservations</code></td><td>Mes réservations — demandées ou reçues</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/reservations/{id}</code></td><td>Consulter une réservation</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/validation</code></td><td>Valider une demande (offrant)</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/declin</code></td><td>Décliner une demande (offrant)</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/renonciation</code></td><td>Annuler sa demande, ou refuser l’objet proposé (demandeur)</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/paiement</code></td><td>Ouvrir le tunnel de paiement de test (Stripe)</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/paiement/confirmation</code></td><td>Confirmer le paiement et révéler l’adresse exacte</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/desistement</code></td><td>Se désister</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/sans-reponse</code></td><td>Passer au suivant faute de réponse (offrant)</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/remise</code></td><td>Confirmer la remise de l’objet (offrant)</td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/avis</code></td><td>Laisser un avis sur l’autre partie</td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/avis/{id}</code></td><td>Modifier son avis</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <a class="bouton bouton-principal" href="assets/openapi.yaml" download>Télécharger openapi.yaml</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pied">
+    <div class="conteneur">
+      <div>
+        <img src="assets/logo-blanc.svg" alt="Donéo" width="150" height="36" loading="lazy">
+        <p>Donné, pas jeté.</p>
+        <p>Projet M2CIM 2026/2027 — Gestion de projet, Université Lumière Lyon 2</p>
+      </div>
+      <ul aria-label="Équipe">
+        <li>[Prénom NOM — UX]</li>
+        <li>[Prénom NOM — PO]</li>
+        <li>[Prénom NOM — DEV]</li>
+      </ul>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Image agrandie">
+    <button class="lightbox-fermer" type="button" aria-label="Fermer">×</button>
+    <img src="data:," alt="">
+    <p></p>
+  </dialog>
+</body>
+</html>

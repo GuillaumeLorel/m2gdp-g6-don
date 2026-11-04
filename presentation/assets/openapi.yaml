@@ -1,0 +1,2196 @@
+openapi: "3.0.3"
+info:
+  title: "Donéo — API de vente caritative d'objets"
+  version: "0.3.0"
+  description: >
+    API de la plateforme de don caritatif via la vente d'objets (groupe 6).
+    L'offrant cède un objet, fixe une participation solidaire — un montant
+    modeste — et choisit une association. Le demandeur, étudiant ou personne
+    dans le besoin, verse cette participation et repart avec l'objet à petit
+    prix, tandis que l'argent va intégralement à l'association.
+
+
+    **Version 0.3** — intègre les retours clients du 17/09/2026 : médias,
+    création d'annonce assistée par IA, contexte local, messagerie actionnable,
+    avis, favoris, recherche avancée ; et deux règles de l'équipe : commentaires
+    publics sur les annonces, liste d'attente en cas de désistement. Le modèle
+    de données et ses règles sont détaillés dans `specs/data-model.md`.
+
+
+    **Changement de rupture** : on ne paie plus en réservant, mais quand l'objet
+    vous est proposé. `POST /api/annonces/{id}/reservation` devient
+    `POST /api/annonces/{id}/reservations` (demande), suivi de
+    `POST /api/reservations/{id}/paiement` (confirmation). Aucune de ces routes
+    n'étant encore codée, la rupture est sans conséquence.
+
+
+    Seules les routes marquées « Déjà en ligne » sont implémentées aujourd'hui.
+
+tags:
+  - name: "Profils"
+  - name: "Référentiels"
+  - name: "Médias"
+  - name: "IA"
+  - name: "Annonces"
+  - name: "Données locales"
+  - name: "Favoris"
+  - name: "Recherches"
+  - name: "Commentaires"
+  - name: "Conversations"
+  - name: "Réservations"
+  - name: "Avis"
+
+paths:
+  /api/health:
+    get:
+      summary: "Healthcheck — Déjà en ligne"
+      responses:
+        "200":
+          description: "Service en ligne"
+
+  # --- Authentification et profil -------------------------------------------
+  # Ces routes sont DEJA implementees et deployees (POC J2).
+
+  /api/auth/statut-email:
+    post:
+      tags: ["Profils"]
+      summary: "✉️ L'adresse a-t-elle déjà un compte ? — Déjà en ligne"
+      description: >
+        Sert uniquement à adapter le message affiché (« lien de connexion » ou
+        « lien pour créer votre compte »). Supabase n'envoie qu'un seul type de
+        lien : seul le libellé change.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        "200":
+          description: "Réponse"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  existe: { type: boolean }
+        "400": { description: "Adresse invalide" }
+
+  /api/profil:
+    get:
+      tags: ["Profils"]
+      summary: "👤 Profil de l'utilisateur connecté — Déjà en ligne"
+      security: [{ jetonSupabase: [] }]
+      responses:
+        "200":
+          description: "Profil"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Profil" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "404":
+          description: >
+            Profil inexistant. 404 volontaire : le front s'en sert pour savoir
+            qu'il doit afficher le formulaire d'inscription.
+    put:
+      tags: ["Profils"]
+      summary: "💾 Créer ou mettre à jour son profil — Déjà en ligne"
+      description: >
+        L'e-mail est repris du jeton vérifié, jamais du corps de la requête :
+        sinon n'importe qui pourrait s'enregistrer sous l'adresse d'un autre.
+      security: [{ jetonSupabase: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProfilSoumis" }
+      responses:
+        "200": { description: "Profil mis à jour" }
+        "201": { description: "Profil créé" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "422": { $ref: "#/components/responses/Invalide" }
+
+  /api/profil/resume:
+    get:
+      tags: ["Profils"]
+      summary: "📊 Mes statistiques et toutes mes annonces"
+      description: >
+        Pour l'écran Profil : objets donnés, objets reçus, montant reversé aux
+        associations, et toutes les annonces du membre — y compris celles
+        remises, que la recherche publique ne renvoie plus.
+      security: [{ jetonSupabase: [] }]
+      responses:
+        "200":
+          description: "Résumé"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [statistiques, annonces]
+                properties:
+                  statistiques:
+                    type: object
+                    properties:
+                      objetsDonnes: { type: integer }
+                      objetsRecus: { type: integer }
+                      montantReverse: { type: number }
+                  annonces:
+                    type: array
+                    items: { $ref: "#/components/schemas/AnnoncePublique" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
+  /api/utilisateurs:
+    get:
+      tags: ["Profils"]
+      summary: "📇 Annuaire public des inscrits — Déjà en ligne"
+      description: >
+        Liste BLANCHE : seuls les champs explicitement publics sortent. E-mail
+        et adresse exacte ne sont jamais renvoyés. Tout champ ajouté au profil
+        est exclu par défaut.
+      responses:
+        "200":
+          description: "Liste"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  utilisateurs:
+                    type: array
+                    items: { $ref: "#/components/schemas/ProfilPublic" }
+                  total: { type: integer }
+
+  /api/utilisateurs/{id}:
+    get:
+      tags: ["Profils"]
+      summary: "🪪 Profil public d'un membre"
+      description: >
+        Même liste blanche que l'annuaire, enrichie de la note moyenne et du
+        nombre d'avis reçus.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Profil public"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProfilPublic" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  /api/utilisateurs/{id}/avis:
+    get:
+      tags: ["Avis"]
+      summary: "⭐ Avis reçus par un membre"
+      parameters:
+        - { $ref: "#/components/parameters/Id" }
+        - { $ref: "#/components/parameters/Page" }
+        - { $ref: "#/components/parameters/ParPage" }
+      responses:
+        "200":
+          description: "Avis reçus, du plus récent au plus ancien"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Pagination"
+                  - type: object
+                    required: [avis]
+                    properties:
+                      avis:
+                        type: array
+                        items: { $ref: "#/components/schemas/Avis" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  # --- Référentiels -----------------------------------------------------------
+
+  /api/categories:
+    get:
+      tags: ["Référentiels"]
+      summary: "🗂️ Arbre des catégories"
+      description: >
+        Deux niveaux : les catégories principales, chacune avec ses
+        sous-catégories. Remplace l'énumération figée de la version 0.2 : la
+        liste vit en base, et le barème en exige 10+ principales avec 5+
+        sous-catégories chacune.
+      responses:
+        "200":
+          description: "Catégories principales, avec leurs sous-catégories"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [categories]
+                properties:
+                  categories:
+                    type: array
+                    items: { $ref: "#/components/schemas/Categorie" }
+
+  /api/associations:
+    get:
+      tags: ["Référentiels"]
+      summary: "❤️ Lister les associations bénéficiaires"
+      description: >
+        Liste alimentée depuis le Répertoire national des associations, filtrée
+        sur la Métropole de Lyon.
+      parameters:
+        - name: q
+          in: query
+          description: "Recherche dans le nom et la présentation"
+          schema: { type: string }
+        - name: thematique
+          in: query
+          schema: { type: string }
+        - name: codePostal
+          in: query
+          schema: { type: string, pattern: "^[0-9]{5}$" }
+      responses:
+        "200":
+          description: "Associations sélectionnables par l'offrant"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [associations]
+                properties:
+                  associations:
+                    type: array
+                    items: { $ref: "#/components/schemas/Association" }
+
+  # --- Médias -----------------------------------------------------------------
+
+  /api/medias:
+    post:
+      tags: ["Médias"]
+      summary: "📷 Téléverser une photo, une vidéo ou un enregistrement vocal"
+      description: >
+        Le téléversement est séparé de la publication : on envoie le fichier, on
+        reçoit un identifiant, puis on le cite dans une annonce ou un message.
+        C'est ce qui permet la capture directe depuis l'appareil. Stockage dans
+        Supabase Storage (bucket `medias`, région UE), auteur noté dans la
+        table `medias`. Un média jamais rattaché au bout de 24 h est purgé.
+      security: [{ jetonSupabase: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [fichier]
+              properties:
+                fichier:
+                  type: string
+                  format: binary
+                  description: >
+                    Photo : JPEG, PNG, WebP, 5 Mo. Vidéo : MP4, WebM, 30 s et
+                    25 Mo. Audio : WebM, Ogg, M4A, 60 s et 5 Mo.
+      responses:
+        "201":
+          description: "Média enregistré"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Media" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "413": { description: "Fichier trop volumineux ou trop long" }
+        "415": { description: "Format non pris en charge" }
+
+  /api/medias/{id}:
+    get:
+      tags: ["Médias"]
+      summary: "🖼️ Le fichier d'un média (redirection)"
+      description: >
+        Public. Les fichiers sont servis directement par Supabase Storage,
+        bucket public en lecture : l'`url` du schéma Media y pointe déjà.
+        Cette route ne fait que rediriger, pour les liens construits à partir
+        du seul identifiant.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "302":
+          description: "Redirection vers le fichier dans Supabase Storage"
+    delete:
+      tags: ["Médias"]
+      summary: "🗑️ Supprimer un média non rattaché"
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: "Média supprimé" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "409":
+          description: "Média déjà rattaché à une annonce ou un message"
+
+  # --- IA -----------------------------------------------------------------------
+
+  /api/ia/brouillon-annonce:
+    post:
+      tags: ["IA"]
+      summary: "✨ Générer un brouillon d'annonce à partir d'une phrase ou d'une photo"
+      description: >
+        L'IA rédige un brouillon, elle ne publie jamais : la réponse préremplit
+        le formulaire, que l'offrant corrige puis publie par
+        `POST /api/annonces`.
+
+
+        Le Worker garde la clé du service tiers (OpenRouter) et applique un
+        quota par utilisateur dans D1. La sortie du modèle est validée comme
+        n'importe quelle saisie : tout champ invalide — catégorie inconnue,
+        créneau incohérent — est écarté et listé dans `champsIncertains`.
+        Aucune adresse ne doit figurer dans la description générée : le Worker
+        vérifie que ni `numeroRue` ni `rue` du profil n'y apparaissent.
+      security: [{ jetonSupabase: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BrouillonDemande" }
+      responses:
+        "200":
+          description: "Brouillon à relire et compléter"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BrouillonAnnonce" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403":
+          description: "Réservé aux comptes ayant le rôle `offrant`"
+        "422": { $ref: "#/components/responses/Invalide" }
+        "429": { $ref: "#/components/responses/TropDeRequetes" }
+        "502":
+          description: >
+            Service IA indisponible. Le front bascule sur le formulaire manuel :
+            l'IA accélère la saisie, elle ne la conditionne pas.
+
+  # --- Annonces -------------------------------------------------------------------
+
+  /api/annonces:
+    get:
+      tags: ["Annonces"]
+      summary: "🔍 Rechercher et trier des annonces"
+      description: >
+        Public. Avec un jeton, chaque annonce indique en plus si elle figure
+        dans les favoris de l'utilisateur. Par défaut, seules les annonces
+        `disponible` et `reserve` sont renvoyées — une annonce réservée accepte
+        encore des inscriptions en liste d'attente.
+
+
+        La proximité se calcule sur la **position approchée** de l'annonce, et
+        la distance renvoyée est **arrondie à 0,5 km** : une distance exacte,
+        interrogée depuis trois points, suffirait à trianguler un domicile.
+      security: [{}, { jetonSupabase: [] }]
+      parameters:
+        - name: q
+          in: query
+          description: "Recherche texte dans le titre et la description"
+          schema: { type: string }
+        - name: offrantId
+          in: query
+          description: >
+            Les annonces d'un membre — sert aux « dons en cours » de son
+            accueil. Ses annonces sont publiques : rien de plus n'est révélé.
+          schema: { type: string }
+        - name: categorieId
+          in: query
+          schema: { type: string }
+        - name: sousCategorieId
+          in: query
+          schema: { type: string }
+        - name: etat
+          in: query
+          schema: { $ref: "#/components/schemas/EtatObjet" }
+        - name: codePostal
+          in: query
+          schema: { type: string, pattern: "^[0-9]{5}$" }
+        - name: ville
+          in: query
+          schema: { type: string }
+        - name: latitude
+          in: query
+          description: "Position de celui qui cherche. Jamais stockée."
+          schema: { type: number, minimum: -90, maximum: 90 }
+        - name: longitude
+          in: query
+          schema: { type: number, minimum: -180, maximum: 180 }
+        - name: rayonKm
+          in: query
+          schema: { type: number, minimum: 0.5, maximum: 50, default: 10 }
+        - name: participationMax
+          in: query
+          schema: { type: number, minimum: 0 }
+        - name: creneauApres
+          in: query
+          description: "Ne garder que les créneaux qui commencent après cette date"
+          schema: { type: string, format: date-time }
+        - name: disponiblesSeulement
+          in: query
+          description: "Exclure les annonces déjà réservées"
+          schema: { type: boolean, default: false }
+        - name: tri
+          in: query
+          description: >
+            `proximite` exige `latitude` et `longitude`, ou un `codePostal` dont
+            on prend le centroïde ; sinon 422.
+          schema:
+            type: string
+            enum: [recent, proximite, participation, creneau]
+            default: recent
+        - { $ref: "#/components/parameters/Page" }
+        - { $ref: "#/components/parameters/ParPage" }
+      responses:
+        "200":
+          description: "Page d'annonces — adresse approchée uniquement"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PageAnnonces" }
+        "422": { $ref: "#/components/responses/Invalide" }
+    post:
+      tags: ["Annonces"]
+      summary: "➕ Publier une annonce (offrant)"
+      description: >
+        L'offrant est repris du jeton vérifié, pas du corps : `offrantId` ne
+        se déclare pas soi-même. À la publication, le Worker géocode l'adresse
+        complète — coordonnées exactes, privées — et en déduit le quartier
+        et la position approchée — décalée de 200 à 500 m —, publics.
+      security: [{ jetonSupabase: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AnnonceSoumise" }
+      responses:
+        "201":
+          description: "Annonce créée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnnoncePublique" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403":
+          description: "Réservé aux comptes ayant le rôle `offrant`, ou média d'autrui cité"
+        "422":
+          description: >
+            Saisie invalide — toutes les erreurs d'un coup —, ou adresse de
+            retrait introuvable au géocodage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErreursValidation" }
+        "503":
+          description: "Service de géocodage (Géoplateforme de l'IGN) indisponible : réessayer"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Erreur" }
+
+  /api/annonces/{id}:
+    get:
+      tags: ["Annonces"]
+      summary: "📄 Consulter une annonce"
+      description: >
+        Fiche publique. L'adresse exacte n'y figure jamais, pour personne : le
+        demandeur d'une réservation confirmée la lit sur la réservation,
+        l'offrant sur `GET /api/annonces/{id}/edition`. Le schéma public reste
+        ainsi une liste blanche, sans champ privé à masquer selon l'appelant.
+      security: [{}, { jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Fiche publique de l'annonce"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnnoncePublique" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+    patch:
+      tags: ["Annonces"]
+      summary: "✏️ Modifier son annonce (offrant)"
+      description: >
+        Dès qu'une réservation non annulée existe, `participation` et
+        `associationId` sont figées (409) : le montant proposé à la file ne doit
+        pas changer en cours de route. Modifier le créneau reste possible — c'est
+        le report de rendez-vous — et poste un message système
+        `creneau_modifie` au détenteur. L'adresse est figée tant qu'une
+        réservation est confirmée : le demandeur l'a déjà reçue.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AnnonceModification" }
+      responses:
+        "200":
+          description: "Annonce modifiée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnnoncePublique" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "409": { $ref: "#/components/responses/Conflit" }
+        "422": { $ref: "#/components/responses/Invalide" }
+    delete:
+      tags: ["Annonces"]
+      summary: "🚫 Retirer son annonce (offrant)"
+      description: >
+        Retrait logique : `statut` passe à `retiree`. Toutes les réservations
+        en cours passent à `annulee` (`annonce_retiree`), avec un message
+        système. Une réservation déjà `confirmee` est payée : son
+        `statutPaiement` passe à `rembourse`, comme pour un désistement — le
+        demandeur n'a pas à supporter le retrait de l'offrant. Impossible sur
+        une annonce `remis`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: "Annonce retirée" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "409": { $ref: "#/components/responses/Conflit" }
+
+  /api/annonces/{id}/edition:
+    get:
+      tags: ["Annonces"]
+      summary: "📝 Fiche complète pour modifier son annonce (offrant)"
+      description: >
+        Réservée à l'offrant de l'annonce. Renvoie la fiche publique augmentée
+        des champs privés d'adresse, pour préremplir le formulaire de
+        modification. Les coordonnées exactes n'en font pas partie : elles sont
+        recalculées par le Worker à chaque changement d'adresse.
+
+
+        Indique aussi quels champs sont figés à l'instant de la lecture, pour
+        que l'interface les grise au lieu de laisser l'offrant buter sur un
+        409 à l'enregistrement.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Fiche complète de l'annonce"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnnonceOffrant" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  /api/annonces/{id}/contexte-local:
+    get:
+      tags: ["Données locales"]
+      summary: "🌦️ Quartier, météo du créneau et points d'intérêt proches"
+      description: >
+        Calculé à la demande, jamais stocké avec l'annonce. Météo : Open-Meteo,
+        pendant le créneau de retrait, `null` au-delà de l'horizon de prévision.
+        Quartiers et points d'intérêt : jeux de données de la Métropole de Lyon,
+        mesurés depuis la position approchée. Réponses mises en cache dans D1.
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Contexte local"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContexteLocal" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "502":
+          description: "Service tiers indisponible ; l'annonce reste consultable"
+
+  # --- Favoris ------------------------------------------------------------------
+
+  /api/annonces/{id}/favori:
+    put:
+      tags: ["Favoris"]
+      summary: "💜 Ajouter aux favoris"
+      description: "Idempotent : ajouter deux fois ne crée pas de doublon."
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: "En favori" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+    delete:
+      tags: ["Favoris"]
+      summary: "🤍 Retirer des favoris"
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: "Retiré des favoris" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
+  /api/favoris:
+    get:
+      tags: ["Favoris"]
+      summary: "💜 Mes annonces favorites"
+      description: >
+        Toutes les annonces mises en favori, y compris celles remises ou
+        retirées depuis, pour que l'utilisateur comprenne pourquoi elles ne sont
+        plus disponibles.
+      security: [{ jetonSupabase: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/Page" }
+        - { $ref: "#/components/parameters/ParPage" }
+      responses:
+        "200":
+          description: "Page d'annonces favorites"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PageAnnonces" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
+  # --- Recherches sauvegardées -------------------------------------------------
+
+  /api/recherches:
+    get:
+      tags: ["Recherches"]
+      summary: "🔖 Mes recherches sauvegardées"
+      security: [{ jetonSupabase: [] }]
+      responses:
+        "200":
+          description: "Recherches, de la plus récente à la plus ancienne"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [recherches]
+                properties:
+                  recherches:
+                    type: array
+                    items: { $ref: "#/components/schemas/RechercheSauvegardee" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+    post:
+      tags: ["Recherches"]
+      summary: "🔖 Sauvegarder une recherche"
+      description: "10 recherches sauvegardées au plus par utilisateur (409 au-delà)."
+      security: [{ jetonSupabase: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RechercheSoumise" }
+      responses:
+        "201":
+          description: "Recherche sauvegardée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RechercheSauvegardee" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "409": { $ref: "#/components/responses/Conflit" }
+        "422": { $ref: "#/components/responses/Invalide" }
+
+  /api/recherches/{id}:
+    delete:
+      tags: ["Recherches"]
+      summary: "🗑️ Supprimer une recherche sauvegardée"
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: "Recherche supprimée" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  # --- Commentaires publics ----------------------------------------------------
+
+  /api/annonces/{id}/commentaires:
+    get:
+      tags: ["Commentaires"]
+      summary: "💬 Questions et réponses publiques d'une annonce"
+      description: >
+        Public. Les commentaires masqués sont exclus, sauf pour l'offrant de
+        l'annonce, qui les voit avec leur statut pour pouvoir les rétablir.
+      security: [{}, { jetonSupabase: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/Id" }
+        - { $ref: "#/components/parameters/Page" }
+        - { $ref: "#/components/parameters/ParPage" }
+      responses:
+        "200":
+          description: "Commentaires, du plus ancien au plus récent"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Pagination"
+                  - type: object
+                    required: [commentaires]
+                    properties:
+                      commentaires:
+                        type: array
+                        items: { $ref: "#/components/schemas/Commentaire" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+    post:
+      tags: ["Commentaires"]
+      summary: "❓ Poser une question sous une annonce (demandeur)"
+      description: >
+        Réservé au rôle `demandeur`. L'offrant ne commente pas sa propre
+        annonce : il y répond (403). Plus de commentaire sur une annonce
+        `remis` ou `retiree` (409).
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TexteSoumis" }
+      responses:
+        "201":
+          description: "Commentaire publié"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Commentaire" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "409": { $ref: "#/components/responses/Conflit" }
+        "422": { $ref: "#/components/responses/Invalide" }
+
+  /api/commentaires/{id}:
+    delete:
+      tags: ["Commentaires"]
+      summary: "🗑️ Supprimer son commentaire (auteur)"
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "204": { description: "Commentaire supprimé" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  /api/commentaires/{id}/reponse:
+    put:
+      tags: ["Commentaires"]
+      summary: "↩️ Répondre à une question (offrant de l'annonce)"
+      description: >
+        Une seule réponse par commentaire, créée ou remplacée par cette route.
+        Pas de réponse à la réponse : un fil de discussion public serait un
+        forum, classé WON'T. L'interface avertit l'offrant de ne pas y écrire
+        son adresse.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TexteSoumis" }
+      responses:
+        "200":
+          description: "Réponse enregistrée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Commentaire" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403":
+          description: "Seul l'offrant de l'annonce peut répondre"
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "422": { $ref: "#/components/responses/Invalide" }
+
+  /api/commentaires/{id}/masquage:
+    post:
+      tags: ["Commentaires"]
+      summary: "🙈 Masquer ou rétablir un commentaire (offrant de l'annonce)"
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [masque]
+              properties:
+                masque: { type: boolean }
+      responses:
+        "200":
+          description: "Statut mis à jour"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Commentaire" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  # --- Conversations ------------------------------------------------------------
+
+  /api/conversations:
+    get:
+      tags: ["Conversations"]
+      summary: "📨 Mes conversations"
+      description: "Triées par activité la plus récente."
+      security: [{ jetonSupabase: [] }]
+      responses:
+        "200":
+          description: "Conversations de l'utilisateur, avec leur dernier message"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [conversations]
+                properties:
+                  conversations:
+                    type: array
+                    items: { $ref: "#/components/schemas/Conversation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
+  /api/annonces/{id}/conversation:
+    post:
+      tags: ["Conversations"]
+      summary: "✉️ Contacter l'offrant"
+      description: >
+        Crée ou retrouve la conversation entre le demandeur connecté et
+        l'offrant de l'annonce — elle est unique par couple (annonce,
+        demandeur). Le premier message est facultatif à la création.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MessageSoumis" }
+      responses:
+        "200":
+          description: "Conversation existante retrouvée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Conversation" }
+        "201":
+          description: "Conversation créée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Conversation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403":
+          description: "L'offrant ne peut pas ouvrir une conversation avec lui-même"
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  /api/conversations/{id}/messages:
+    get:
+      tags: ["Conversations"]
+      summary: "📖 Lire les messages d'une conversation"
+      description: >
+        Messages des participants et messages système. Un message système porte
+        un `evenement` et la `reservationId` concernée : le front en déduit les
+        boutons d'action à afficher (payer, refuser, se désister).
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Messages de la conversation"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [messages]
+                properties:
+                  messages:
+                    type: array
+                    items: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403":
+          description: "Utilisateur absent de la conversation"
+        "404": { $ref: "#/components/responses/Introuvable" }
+    post:
+      tags: ["Conversations"]
+      summary: "💬 Envoyer un message, avec ou sans pièces jointes"
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MessageSoumis" }
+      responses:
+        "201":
+          description: "Message envoyé"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Message" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403":
+          description: "Utilisateur absent de la conversation, ou média d'autrui cité"
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "422": { $ref: "#/components/responses/Invalide" }
+
+  # --- Réservations et liste d'attente ----------------------------------------
+
+  /api/annonces/{id}/reservations:
+    post:
+      tags: ["Réservations"]
+      summary: "🙋 Demander un objet — ou s'inscrire en liste d'attente"
+      description: >
+        Réservé au rôle `demandeur`, et pas sur sa propre annonce.
+
+
+        Parcours retenu le 29/10/2026 : la réservation naît `demandee`.
+        L'**offrant** la valide (`/validation`, l'objet est alors proposé et
+        l'annonce passe à `reserve`) ou la décline (`/declin`). Le
+        demandeur paie ensuite (`/paiement`). Plusieurs personnes peuvent
+        demander le même objet : l'offrant en choisit une, et ne peut pas le
+        proposer à une seconde tant que la première le tient.
+
+
+        La conversation (annonce, demandeur) est créée si besoin et reçoit un
+        message système `demande_recue` ; `message` (facultatif, dans le
+        corps) y est ajouté. Aucun paiement à ce stade. La liste d'attente
+        ordonnée (`liste_attente`) vient en J5.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "201":
+          description: "Réservation `demandee`"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403":
+          description: "Pas le rôle `demandeur`, ou demande sur sa propre annonce"
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "409":
+          description: >
+            Réservation déjà en cours sur cette annonce ; annonce remise ou
+            retirée ; liste d'attente pleine (5) ; déjà 3 réservations en cours
+            pour ce demandeur, file d'attente comprise ; ou créneau de
+            retrait déjà terminé — l'offrant doit d'abord le modifier.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Erreur" }
+    get:
+      tags: ["Réservations"]
+      summary: "📋 File de réservations d'une annonce (offrant)"
+      description: >
+        Le détenteur actuel en tête, puis la liste d'attente dans l'ordre.
+        Réservé à l'offrant de l'annonce.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "File ordonnée"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [reservations]
+                properties:
+                  reservations:
+                    type: array
+                    items: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  /api/reservations:
+    get:
+      tags: ["Réservations"]
+      summary: "🧾 Mes réservations — demandées ou reçues"
+      security: [{ jetonSupabase: [] }]
+      parameters:
+        - name: role
+          in: query
+          required: true
+          description: >
+            `demandeur` : les objets que j'ai demandés. `offrant` : les
+            demandes reçues sur mes annonces.
+          schema: { type: string, enum: [demandeur, offrant] }
+        - name: statut
+          in: query
+          schema: { $ref: "#/components/schemas/StatutReservation" }
+      responses:
+        "200":
+          description: "Réservations"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [reservations]
+                properties:
+                  reservations:
+                    type: array
+                    items: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
+  /api/reservations/{id}:
+    get:
+      tags: ["Réservations"]
+      summary: "🔎 Consulter une réservation"
+      description: >
+        Réservé aux deux parties. `adresseRetrait` n'est renseignée que pour le
+        demandeur, et seulement tant que la réservation est `confirmee`. Elle
+        se relit autant que nécessaire — l'ancien contrat ne la renvoyait qu'une
+        fois, et le demandeur la perdait en rechargeant la page.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Réservation"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+
+  /api/reservations/{id}/validation:
+    post:
+      tags: ["Réservations"]
+      summary: "✅ Valider une demande (offrant)"
+      description: >
+        Sur une réservation `demandee`, par l'offrant. Elle passe à `proposee`,
+        `participationDemandee` est figée, et l'annonce passe à `reserve` —
+        si elle est encore disponible : l'offrant ne propose pas le même objet
+        à deux personnes. Message système `objet_propose`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Réservation proposée au demandeur"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: >
+            La demande a déjà reçu une réponse, l'objet est déjà proposé à
+            quelqu'un, ou le créneau est passé.
+
+  /api/reservations/{id}/declin:
+    post:
+      tags: ["Réservations"]
+      summary: "✋ Décliner une demande (offrant)"
+      description: >
+        Sur une réservation `demandee`, par l'offrant. Elle passe à `annulee`
+        (`declinee`). Message système `demande_declinee`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Demande déclinée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "La demande a déjà reçu une réponse"
+
+  /api/reservations/{id}/renonciation:
+    post:
+      tags: ["Réservations"]
+      summary: "🙅 Annuler sa demande, ou refuser l'objet proposé (demandeur)"
+      description: >
+        Sur une réservation `demandee` (motif `desistement`) ou `proposee`
+        (motif `refus` : l'annonce redevient `disponible`), par son
+        demandeur. Une réservation déjà payée relève du désistement (J5).
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Réservation annulée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "Réservation déjà payée, ou déjà close"
+
+  /api/reservations/{id}/paiement:
+    post:
+      tags: ["Réservations"]
+      summary: "💳 Ouvrir le tunnel de paiement de test (Stripe)"
+      description: >
+        Uniquement sur une réservation `proposee`, par son demandeur. Ouvre une
+        session Stripe Checkout **en mode test** (carte 4242 4242 4242 4242)
+        au montant de `participationDemandee` — 0,50 € au moins, minimum de
+        Stripe — et renvoie l'adresse de la page de paiement. Aucun euro ne
+        change de main : `montantDebite` reste à 0. Au retour, le front
+        appelle `/paiement/confirmation`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Adresse de la page de paiement"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [urlPaiement]
+                properties:
+                  urlPaiement: { type: string, format: uri }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "La réservation n'est pas (ou plus) `proposee`"
+        "503":
+          description: "Clé Stripe de test absente du Worker"
+
+  /api/reservations/{id}/paiement/confirmation:
+    post:
+      tags: ["Réservations"]
+      summary: "🔓 Confirmer le paiement et révéler l'adresse exacte"
+      description: >
+        Au retour du tunnel. Le Worker demande à Stripe si la session est
+        payée ; si oui, la réservation passe à `confirmee`
+        (`statutPaiement` = `paye`, `referencePaiement` = identifiant de la
+        transaction de test), avec un message système `paiement_valide`, et
+        la réponse contient `adresseRetrait`. Idempotent.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Réservation confirmée ; `adresseRetrait` renseignée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "402": { description: "Paiement non abouti : réessayer" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "Aucun paiement en cours pour cette réservation"
+
+  /api/reservations/{id}/desistement:
+    post:
+      tags: ["Réservations"]
+      summary: "↩️ Se désister"
+      description: >
+        Par le demandeur, depuis `liste_attente`, `proposee` ou `confirmee`.
+        La réservation passe à `annulee` (`desistement`) ; si elle était payée,
+        `statutPaiement` passe à `rembourse` — fictivement, comme le paiement.
+
+
+        Si le demandeur tenait l'objet, celui-ci est proposé au premier de la
+        file, qui reçoit un message système `objet_propose` : il paie pour
+        accepter, ou refuse. Si la file est vide, l'annonce redevient
+        `disponible`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Désistement enregistré"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "Réservation déjà remise ou annulée"
+
+  /api/reservations/{id}/sans-reponse:
+    post:
+      tags: ["Réservations"]
+      summary: "⏭️ Passer au suivant faute de réponse (offrant)"
+      description: >
+        Il n'y a pas de délai automatique : si la personne à qui l'objet est
+        proposé ne répond pas, c'est l'offrant qui décide de passer au
+        suivant. Sur une réservation `proposee`, par l'offrant de l'annonce.
+        Elle passe à `annulee` (`sans_reponse`) et l'objet est proposé au
+        premier de la file ; si la file est vide, l'annonce redevient
+        `disponible`.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Réservation annulée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "409":
+          description: "La réservation n'est pas `proposee`"
+
+  /api/reservations/{id}/remise:
+    post:
+      tags: ["Réservations"]
+      summary: "🤝 Confirmer la remise de l'objet (offrant)"
+      description: >
+        Sur une réservation `confirmee`, par l'offrant. Elle passe à `remise`,
+        l'annonce à `remis`, et toute la file restante à `annulee`
+        (`attribuee_a_autrui`). Les avis s'ouvrent pour les deux parties.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      responses:
+        "200":
+          description: "Remise enregistrée"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Reservation" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "La réservation n'est pas `confirmee`"
+
+  # --- Avis ---------------------------------------------------------------------
+
+  /api/reservations/{id}/avis:
+    post:
+      tags: ["Avis"]
+      summary: "⭐ Laisser un avis sur l'autre partie"
+      description: >
+        Uniquement sur une réservation `remise`. Le demandeur note
+        l'offrant, l'offrant peut noter le demandeur : un avis au plus par
+        partie et par réservation.
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AvisSoumis" }
+      responses:
+        "201":
+          description: "Avis publié"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Avis" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "409":
+          description: "Réservation pas encore remise, ou avis déjà déposé"
+        "422": { $ref: "#/components/responses/Invalide" }
+
+  /api/avis/{id}:
+    put:
+      tags: ["Avis"]
+      summary: "✏️ Modifier son avis"
+      security: [{ jetonSupabase: [] }]
+      parameters: [{ $ref: "#/components/parameters/Id" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AvisSoumis" }
+      responses:
+        "200":
+          description: "Avis modifié"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Avis" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "403": { $ref: "#/components/responses/Interdit" }
+        "404": { $ref: "#/components/responses/Introuvable" }
+        "422": { $ref: "#/components/responses/Invalide" }
+
+components:
+  securitySchemes:
+    jetonSupabase:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Jeton d'accès Supabase obtenu après connexion par lien magique.
+        Le Worker le fait vérifier par Supabase (`GET /auth/v1/user`), puis
+        agit avec la clé secrète. Le front n'écrit jamais dans la base.
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    ParPage:
+      name: parPage
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+
+  responses:
+    NonAuthentifie:
+      description: "Authentification requise"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Erreur" }
+    Interdit:
+      description: "Action réservée à une autre personne ou à un autre rôle"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Erreur" }
+    Introuvable:
+      description: "Ressource introuvable"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Erreur" }
+    Conflit:
+      description: "L'état actuel de la ressource interdit l'opération"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Erreur" }
+    Invalide:
+      description: "Champs invalides"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErreursValidation" }
+    TropDeRequetes:
+      description: "Quota atteint"
+      headers:
+        Retry-After:
+          description: "Secondes avant de pouvoir réessayer"
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Erreur" }
+
+  schemas:
+    # Deux formes d'erreur, calquees sur le Worker en ligne
+    # (workers/src/index.js) et deja lues par le front (public/src/lib/api.js) :
+    # une erreur unique, ou la liste des erreurs de validation en 422.
+    Erreur:
+      type: object
+      required: [erreur]
+      properties:
+        erreur:
+          type: string
+          description: "Message lisible, en français, affichable tel quel"
+
+    ErreursValidation:
+      type: object
+      required: [erreurs]
+      description: >
+        Réponse 422 : **toutes** les erreurs de la saisie d'un coup, pour que
+        l'utilisateur corrige son formulaire en une fois. Au pluriel, et non
+        `erreur` : c'est la forme que renvoie déjà `PUT /api/profil`, et que le
+        front assemble en un seul message.
+      properties:
+        erreurs:
+          type: array
+          minItems: 1
+          items: { type: string }
+          example: ["Le code postal doit comporter 5 chiffres.", "La rue est obligatoire."]
+
+    # --- Valeurs réutilisées ----------------------------------------------------
+
+    Creneau:
+      type: object
+      required: [debut, fin]
+      description: >
+        Intervalle daté, et non plus chaîne libre : il permet de savoir si le
+        créneau est terminé, de trier par créneau et de recevoir le
+        créneau proposé par l'IA. `fin` après `debut`, `debut` dans le futur à la
+        publication.
+      properties:
+        debut: { type: string, format: date-time }
+        fin: { type: string, format: date-time }
+
+    EtatObjet:
+      type: string
+      enum: [neuf, tres_bon_etat, bon_etat, usage]
+      description: "État de l'objet ♻️"
+
+    StatutAnnonce:
+      type: string
+      enum: [disponible, reserve, remis, retiree]
+      description: >
+        « remis » et non « vendu » : rien n'est vendu ici. `reserve` dès qu'une
+        réservation est `proposee` ou `confirmee`, ou que la liste d'attente
+        n'est pas vide ; retour à `disponible` quand plus personne ne tient
+        l'objet ni n'attend. Une annonce `reserve` accepte encore des
+        inscriptions en liste d'attente.
+
+    StatutReservation:
+      type: string
+      enum: [demandee, liste_attente, proposee, confirmee, remise, annulee]
+      description: >
+        `demandee` : en attente de la réponse de l'offrant. `proposee` :
+        validée par l'offrant, le demandeur doit payer. `confirmee` : payée,
+        l'adresse exacte est donnée. `liste_attente` et `remise` : J5.
+
+    ProfilResume:
+      type: object
+      description: "Ce qu'on affiche d'un membre à côté d'un contenu qu'il a publié."
+      required: [id, prenom]
+      properties:
+        id: { type: string }
+        prenom: { type: string }
+        initialeNom:
+          type: string
+          description: "Initiale du nom suivie d'un point (« M. »), pour afficher « Claire M. »"
+          example: "M."
+        photoUrl: { type: string, nullable: true }
+        noteMoyenne:
+          type: number
+          nullable: true
+          description: "Moyenne des avis reçus, `null` sans avis"
+        nombreAvis: { type: integer }
+
+    # --- Référentiels -------------------------------------------------------------
+
+    CategorieResume:
+      type: object
+      description: Catégorie telle qu'embarquée dans une annonce
+      required: [id, libelle]
+      properties:
+        id: { type: string }
+        libelle: { type: string, example: "Mobilier" }
+
+    Categorie:
+      type: object
+      required: [id, libelle]
+      properties:
+        id: { type: string }
+        libelle: { type: string, example: "Mobilier" }
+        parentId:
+          type: string
+          nullable: true
+          description: "`null` pour une catégorie principale"
+        illustrationUrl:
+          type: string
+          description: "Photo par défaut d'une annonce sans média 🖼️"
+        ordre: { type: integer }
+        sousCategories:
+          type: array
+          description: "Renseigné pour les catégories principales"
+          items: { $ref: "#/components/schemas/Categorie" }
+
+    Association:
+      type: object
+      required: [id, nom]
+      properties:
+        id: { type: string, description: "Identifiant de l'association 🆔" }
+        nom: { type: string, description: "Nom de l'association ❤️" }
+        description: { type: string, description: "Présentation de la cause 📝" }
+        thematique: { type: string, example: "Précarité étudiante" }
+        numeroRna:
+          type: string
+          pattern: "^W[0-9]{9}$"
+          description: "Numéro au Répertoire national des associations"
+        codePostal: { type: string }
+        ville: { type: string }
+        siteWeb: { type: string, format: uri }
+        logoUrl: { type: string, format: uri }
+
+    # --- Médias -------------------------------------------------------------------
+
+    Media:
+      type: object
+      required: [id, type, url]
+      properties:
+        id: { type: string, readOnly: true }
+        type: { type: string, enum: [photo, video, audio] }
+        typeMime: { type: string, example: "image/webp" }
+        tailleOctets: { type: integer }
+        dureeSecondes:
+          type: number
+          nullable: true
+          description: "Vidéo et audio seulement"
+        url: { type: string, format: uri }
+        miniatureUrl:
+          type: string
+          format: uri
+          nullable: true
+          description: "Vignette d'une vidéo"
+        creeLe: { type: string, format: date-time, readOnly: true }
+
+    # --- IA -------------------------------------------------------------------------
+
+    BrouillonDemande:
+      type: object
+      required: [texte]
+      properties:
+        texte:
+          type: string
+          minLength: 3
+          maxLength: 1000
+          description: >
+            Saisie rapide, tapée ou dictée. Ex : « vélo de ville bleu, bon état,
+            à récupérer samedi entre 14 h et 16 h ».
+          example: "vélo de ville bleu, bon état, samedi 14h-16h"
+        mediaIds:
+          type: array
+          maxItems: 3
+          items: { type: string }
+          description: >
+            Photos déjà téléversées, pour la reconnaissance de l'objet. Elles
+            partent chez le service tiers : l'interface le dit avant l'envoi.
+
+    BrouillonAnnonce:
+      type: object
+      description: >
+        Tous les champs sont facultatifs : l'IA ne remplit que ce qu'elle a pu
+        déduire. L'adresse n'y figure jamais — elle vient du profil.
+      required: [champsIncertains]
+      properties:
+        titre: { type: string, maxLength: 80 }
+        description: { type: string, maxLength: 1000 }
+        categorieId: { type: string }
+        sousCategorieId: { type: string }
+        etat: { $ref: "#/components/schemas/EtatObjet" }
+        participationConseillee:
+          type: number
+          minimum: 0.01
+          description: "Une suggestion, présentée comme telle. L'offrant décide."
+        creneauRetrait: { $ref: "#/components/schemas/Creneau" }
+        champsIncertains:
+          type: array
+          items: { type: string }
+          description: >
+            Champs que l'IA n'a pas su déduire, ou dont la valeur proposée a été
+            écartée à la validation. L'interface les met en évidence.
+          example: ["etat", "creneauRetrait"]
+
+    # --- Annonces -------------------------------------------------------------------
+
+    # Champs saisissables d'une annonce, definis UNE seule fois. La creation
+    # (AnnonceSoumise) et la modification (AnnonceModification) en derivent :
+    # un champ ajoute ici devient aussitot publiable et modifiable, sans copie
+    # a maintenir a la main. Ils portent l'adresse exacte : ne jamais les
+    # reutiliser comme schema de reponse publique, voir AnnoncePublique.
+    AnnonceChamps:
+      type: object
+      properties:
+        titre:
+          type: string
+          maxLength: 80
+          description: "Titre de l'objet 🏷 (ex : « Vélo de ville en bon état »)"
+        description:
+          type: string
+          maxLength: 1000
+          description: "Description de l'objet 📝"
+        categorieId: { type: string }
+        sousCategorieId:
+          type: string
+          description: >
+            Doit appartenir à `categorieId` (422 sinon). En modification, la
+            vérification porte sur la catégorie résultante : changer
+            `categorieId` seul, sans sous-catégorie compatible, est refusé.
+        etat: { $ref: "#/components/schemas/EtatObjet" }
+        participation:
+          type: number
+          minimum: 0.01
+          description: >
+            Participation solidaire en euros 💶, fixée par l'offrant.
+            Obligatoire et versée intégralement à l'association. Elle se veut
+            **modeste** — c'est une contribution à une cause, pas le prix de
+            l'objet — mais aucun plafond n'est imposé techniquement.
+        associationId:
+          type: string
+          description: "Association choisie par l'offrant ❤️ — c'est elle qui touche l'argent"
+        creneauRetrait: { $ref: "#/components/schemas/Creneau" }
+        numeroRue:
+          type: string
+          maxLength: 10
+          description: "🔒 Privé jusqu'au paiement. Chaîne : « 14 bis » est valide."
+        rue:
+          type: string
+          maxLength: 150
+          description: "🔒 Privée jusqu'au paiement."
+        complementAdresse:
+          type: string
+          maxLength: 100
+          description: "🔒 Privé jusqu'au paiement. Facultatif."
+        codePostal:
+          type: string
+          pattern: "^[0-9]{5}$"
+          description: "🌍 Public — visible avant paiement."
+        ville:
+          type: string
+          maxLength: 100
+          description: "🌍 Publique — visible avant paiement."
+        mediaIds:
+          type: array
+          maxItems: 8
+          items: { type: string }
+          description: >
+            Médias téléversés par l'offrant lui-même 📸 — 8 au plus, dont une
+            seule vidéo. Sans média, l'illustration de la catégorie s'affiche.
+
+    # Corps du POST : tous les champs obligatoires sauf le complement et les
+    # medias, plus la trace d'une assistance par l'IA, fixee a la creation.
+    AnnonceSoumise:
+      allOf:
+        - $ref: "#/components/schemas/AnnonceChamps"
+        - type: object
+          required:
+            [
+              titre,
+              description,
+              categorieId,
+              sousCategorieId,
+              etat,
+              participation,
+              associationId,
+              creneauRetrait,
+              numeroRue,
+              rue,
+              codePostal,
+              ville,
+            ]
+          properties:
+            assisteeParIA:
+              type: boolean
+              default: false
+              description: >
+                Vrai si le formulaire a été prérempli par un brouillon IA. Fixé
+                à la création : il ne se modifie pas ensuite.
+
+    # Corps du PATCH : les memes champs, tous facultatifs, au moins un.
+    AnnonceModification:
+      allOf:
+        - $ref: "#/components/schemas/AnnonceChamps"
+        - type: object
+          minProperties: 1
+      description: >
+        Les champs de création, tous facultatifs, sous les réserves décrites sur
+        la route : `participation` et `associationId` figées dès qu'une
+        réservation non annulée existe, adresse figée tant qu'une réservation
+        est confirmée.
+
+    # Schema de REPONSE. Liste blanche : numeroRue, rue, complementAdresse et
+    # les coordonnees exactes en sont absents PAR CONSTRUCTION, pas par
+    # filtrage. C'est la regle posee dans AGENTS.md.
+    AnnoncePublique:
+      type: object
+      required: [id, titre, participation, statut, codePostal, ville]
+      properties:
+        id: { type: string }
+        titre: { type: string }
+        description: { type: string }
+        categorie: { $ref: "#/components/schemas/CategorieResume" }
+        sousCategorie: { $ref: "#/components/schemas/CategorieResume" }
+        etat: { $ref: "#/components/schemas/EtatObjet" }
+        participation:
+          type: number
+          description: "Participation solidaire 💶 — versée à l'association"
+        association:
+          type: object
+          properties:
+            id: { type: string }
+            nom: { type: string }
+        offrant: { $ref: "#/components/schemas/ProfilResume" }
+        creneauRetrait: { $ref: "#/components/schemas/Creneau" }
+        codePostal:
+          type: string
+          description: "📍 Visible AVANT paiement"
+        ville:
+          type: string
+          description: "📍 Visible AVANT paiement"
+        quartier:
+          type: string
+          nullable: true
+          description: "📍 Arrondissement (« Lyon 7e ») ou commune"
+        latitudeApprochee:
+          type: number
+          description: "📍 Position exacte décalée de 200 à 500 m, décalage dérivé de l'adresse (un seul point par adresse) — jamais la position exacte"
+        longitudeApprochee: { type: number }
+        distanceKm:
+          type: number
+          nullable: true
+          description: >
+            Arrondie à 0,5 km et calculée sur la position approchée. Renseignée
+            seulement si la requête fournit une position ou un code postal.
+        medias:
+          type: array
+          items: { $ref: "#/components/schemas/Media" }
+        illustrationUrl:
+          type: string
+          description: "Illustration de la catégorie, à afficher sans média"
+        statut: { $ref: "#/components/schemas/StatutAnnonce" }
+        nombreEnAttente:
+          type: integer
+          description: "Personnes inscrites en liste d'attente"
+        nombreCommentaires: { type: integer }
+        estFavori:
+          type: boolean
+          nullable: true
+          description: "`null` quand la requête n'est pas authentifiée"
+        assisteeParIA: { type: boolean }
+        creeLe: { type: string, format: date-time }
+        misAJourLe: { type: string, format: date-time }
+
+    # Schema reserve à l'offrant de l'annonce (GET /api/annonces/{id}/edition).
+    # Jamais renvoye par une route de liste ni a un autre utilisateur.
+    AnnonceOffrant:
+      allOf:
+        - $ref: "#/components/schemas/AnnoncePublique"
+        - type: object
+          required: [numeroRue, rue, champsFiges]
+          properties:
+            numeroRue:
+              type: string
+              description: "🔒 Visible du seul offrant"
+            rue:
+              type: string
+              description: "🔒 Visible du seul offrant"
+            complementAdresse:
+              type: string
+              description: "🔒 Visible du seul offrant"
+            champsFiges:
+              type: array
+              items:
+                type: string
+                enum:
+                  [
+                    participation,
+                    associationId,
+                    numeroRue,
+                    rue,
+                    complementAdresse,
+                    codePostal,
+                    ville,
+                  ]
+              description: >
+                Champs non modifiables en l'état : `participation` et
+                `associationId` dès qu'une réservation non annulée existe,
+                l'adresse tant qu'une réservation est confirmée. Liste vide
+                sinon.
+
+    # Convention des listes : une route qui accepte `page` et `parPage` compose
+    # Pagination avec sa liste ; une liste non paginee (categories,
+    # conversations, reservations...) renvoie la liste seule. OpenAPI 3.0 n'a
+    # pas de generiques : on factorise les metadonnees, pas l'enveloppe entiere.
+    Pagination:
+      type: object
+      required: [total, page, parPage]
+      properties:
+        total:
+          type: integer
+          description: "Nombre total d'éléments, toutes pages confondues"
+        page: { type: integer, minimum: 1 }
+        parPage: { type: integer, minimum: 1, maximum: 50 }
+
+    PageAnnonces:
+      allOf:
+        - $ref: "#/components/schemas/Pagination"
+        - type: object
+          required: [annonces]
+          properties:
+            annonces:
+              type: array
+              items: { $ref: "#/components/schemas/AnnoncePublique" }
+
+    ContexteLocal:
+      type: object
+      properties:
+        quartier:
+          type: string
+          nullable: true
+          description: "Arrondissement ou commune"
+        meteoCreneau:
+          type: object
+          nullable: true
+          description: "`null` au-delà de l'horizon de prévision"
+          properties:
+            resume: { type: string, example: "Averses éparses" }
+            temperatureC: { type: number }
+            probabilitePluie:
+              type: integer
+              minimum: 0
+              maximum: 100
+            source: { type: string, example: "Open-Meteo" }
+        pointsInteret:
+          type: array
+          description: "Repères proches de la position approchée — 10 au plus"
+          items:
+            type: object
+            properties:
+              nom: { type: string, example: "Station Bellecour" }
+              type: { type: string, example: "transport" }
+              distanceM:
+                type: integer
+                description: "Arrondie à 100 m"
+        sources:
+          type: array
+          items: { type: string }
+          description: "Attribution des jeux de données utilisés"
+
+    # --- Recherches ---------------------------------------------------------------
+
+    CriteresRecherche:
+      type: object
+      description: >
+        Les mêmes critères que `GET /api/annonces`, à deux exceptions près : la
+        pagination, et `latitude` / `longitude`, exclues **exprès** — la
+        position de celui qui cherche n'est jamais stockée. Une recherche
+        sauvegardée par proximité s'appuie donc sur `codePostal`, dont on prend
+        le centroïde.
+      properties:
+        q: { type: string }
+        categorieId: { type: string }
+        sousCategorieId: { type: string }
+        etat: { $ref: "#/components/schemas/EtatObjet" }
+        codePostal: { type: string, pattern: "^[0-9]{5}$" }
+        ville: { type: string }
+        rayonKm: { type: number, minimum: 0.5, maximum: 50 }
+        participationMax: { type: number, minimum: 0 }
+        creneauApres:
+          type: string
+          format: date-time
+          description: >
+            Date absolue, rejouée telle quelle. Une fois passée, elle ne filtre
+            plus rien : la recherche renvoie simplement tous les créneaux à
+            venir.
+        disponiblesSeulement: { type: boolean }
+        tri: { type: string, enum: [recent, proximite, participation, creneau] }
+
+    RechercheSoumise:
+      type: object
+      required: [libelle, criteres]
+      properties:
+        libelle:
+          type: string
+          minLength: 1
+          maxLength: 60
+          example: "Bureaux près de la fac"
+        criteres: { $ref: "#/components/schemas/CriteresRecherche" }
+
+    RechercheSauvegardee:
+      allOf:
+        - $ref: "#/components/schemas/RechercheSoumise"
+        - type: object
+          required: [id, creeLe]
+          properties:
+            id: { type: string, readOnly: true }
+            creeLe: { type: string, format: date-time, readOnly: true }
+
+    # --- Commentaires -------------------------------------------------------------
+
+    TexteSoumis:
+      type: object
+      required: [contenu]
+      properties:
+        contenu:
+          type: string
+          minLength: 1
+          maxLength: 500
+
+    Commentaire:
+      type: object
+      required: [id, annonceId, auteur, contenu, statut, creeLe]
+      properties:
+        id: { type: string, readOnly: true }
+        annonceId: { type: string, readOnly: true }
+        auteur: { $ref: "#/components/schemas/ProfilResume" }
+        contenu: { type: string }
+        reponse:
+          type: object
+          nullable: true
+          description: "Réponse unique de l'offrant, `null` tant qu'il n'a pas répondu"
+          properties:
+            contenu: { type: string }
+            creeLe: { type: string, format: date-time }
+            misAJourLe: { type: string, format: date-time }
+        statut:
+          type: string
+          enum: [visible, masque]
+          description: "`masque` n'est visible que de l'offrant de l'annonce"
+        creeLe: { type: string, format: date-time, readOnly: true }
+        misAJourLe: { type: string, format: date-time, readOnly: true }
+
+    # --- Conversations ------------------------------------------------------------
+
+    Conversation:
+      type: object
+      required: [id, monRole, creeLe]
+      properties:
+        id: { type: string, readOnly: true }
+        monRole:
+          type: string
+          enum: [offrant, demandeur]
+          description: "Le rôle du lecteur dans cette conversation"
+        annonce:
+          type: object
+          description: "Résumé de l'annonce : titre, statut, participation, créneau, visuel"
+          properties:
+            id: { type: string }
+            titre: { type: string }
+            statut: { $ref: "#/components/schemas/StatutAnnonce" }
+            participation: { type: number }
+            creneauRetrait: { $ref: "#/components/schemas/Creneau" }
+        interlocuteur: { $ref: "#/components/schemas/ProfilResume" }
+        reservation:
+          allOf:
+            - $ref: "#/components/schemas/Reservation"
+          description: >
+            La réservation qui commande les actions : celle en cours, sinon la
+            dernière. **Absente** s'il n'y en a jamais eu.
+        dernierMessage:
+          allOf:
+            - $ref: "#/components/schemas/Message"
+          description: >
+            **Absent**, et non `null`, quand la conversation n'a encore aucun
+            message : en OpenAPI 3.0, `nullable` à côté d'un `allOf` sans `type`
+            n'autorise pas `null`.
+        creeLe: { type: string, format: date-time, readOnly: true }
+        misAJourLe: { type: string, format: date-time, readOnly: true }
+
+    MessageSoumis:
+      type: object
+      description: "Il faut un texte, des pièces jointes, ou les deux."
+      properties:
+        contenu:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        mediaIds:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items: { type: string }
+          description: "Photos, vidéos ou messages vocaux téléversés par l'expéditeur"
+      anyOf:
+        - required: [contenu]
+        - required: [mediaIds]
+
+    Message:
+      type: object
+      required: [id, conversationId, type, creeLe]
+      properties:
+        id: { type: string, readOnly: true }
+        conversationId: { type: string, readOnly: true }
+        type:
+          type: string
+          enum: [utilisateur, systeme]
+        auteurId:
+          type: string
+          nullable: true
+          description: "`null` pour un message système"
+        reservationId:
+          type: string
+          nullable: true
+          description: >
+            Réservation concernée. Le front s'en sert pour afficher les boutons
+            d'action d'un message système.
+        evenement:
+          type: string
+          nullable: true
+          enum:
+            [
+              demande_en_file,
+              objet_propose,
+              paiement_valide,
+              refus,
+              desistement,
+              sans_reponse,
+              objet_remis,
+              attribuee_a_autrui,
+              creneau_modifie,
+              annonce_retiree,
+              null,
+            ]
+          description: >
+            Renseigné pour les messages système uniquement. `null` figure dans
+            l'énumération : en OpenAPI 3.0, `nullable` ne suffit pas à
+            l'autoriser quand une liste de valeurs est imposée.
+        contenu: { type: string, nullable: true }
+        medias:
+          type: array
+          items: { $ref: "#/components/schemas/Media" }
+        creeLe: { type: string, format: date-time, readOnly: true }
+
+    # --- Réservations ---------------------------------------------------------------
+
+    AdresseRetrait:
+      type: object
+      description: "🔓 L'adresse exacte, révélée au demandeur d'une réservation confirmée."
+      properties:
+        numeroRue: { type: string }
+        rue: { type: string }
+        complementAdresse: { type: string }
+        codePostal: { type: string }
+        ville: { type: string }
+
+    Reservation:
+      type: object
+      required: [id, annonceId, demandeurId, offrantId, conversationId, statut, creeLe]
+      properties:
+        id: { type: string, readOnly: true }
+        annonceId:
+          type: string
+          readOnly: true
+          description: "Repris du chemin de la requête."
+        demandeurId:
+          type: string
+          readOnly: true
+          description: >
+            Identifiant du demandeur 👤 — repris du jeton vérifié, jamais du
+            corps de la requête : sinon on pourrait réserver au nom d'un autre.
+        offrantId:
+          type: string
+          readOnly: true
+          description: "Recopié depuis l'annonce, pour lister les demandes reçues."
+        conversationId:
+          type: string
+          readOnly: true
+          description: "Toujours renseigné : les messages système y sont postés."
+        statut: { $ref: "#/components/schemas/StatutReservation" }
+        motifAnnulation:
+          type: string
+          nullable: true
+          enum:
+            [
+              desistement,
+              refus,
+              declinee,
+              sans_reponse,
+              attribuee_a_autrui,
+              annonce_retiree,
+              null,
+            ]
+          description: "Renseigné quand `statut` vaut `annulee`, `null` sinon"
+        position:
+          type: integer
+          nullable: true
+          readOnly: true
+          description: "Rang dans la liste d'attente, calculé. `null` hors `liste_attente`."
+        proposeeLe:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+          description: >
+            Date de la proposition. L'offrant s'en sert pour juger s'il est
+            temps de passer au suivant faute de réponse.
+        participationDemandee:
+          type: number
+          nullable: true
+          readOnly: true
+          description: >
+            La **vraie** participation, celle affichée au demandeur. Figée au
+            moment de la proposition, pour qu'une modification ultérieure ne
+            réécrive pas l'historique.
+        montantDebite:
+          type: number
+          enum: [0]
+          readOnly: true
+          description: "💶 Ce qui est réellement prélevé : **0**, toujours."
+        statutPaiement:
+          type: string
+          enum: [en_attente, paye, echoue, rembourse]
+          default: en_attente
+          description: >
+            🎭 `paye` débloque l'adresse exacte. Toute réservation payée qui
+            passe ensuite à `annulee` passe aussi à `rembourse`, quel que soit
+            le motif — désistement du demandeur ou retrait de l'annonce par
+            l'offrant. Fictif, comme le paiement.
+        referencePaiement:
+          type: string
+          nullable: true
+          readOnly: true
+          description: >
+            Identifiant de transaction renvoyé par le prestataire. Preuve que le
+            tunnel de paiement a bien été parcouru, même en mode test.
+        environnementPaiement:
+          type: string
+          enum: [test]
+          readOnly: true
+          description: >
+            Toujours `test`. Rend explicite en base qu'aucune transaction réelle
+            n'a eu lieu — à ne jamais basculer sur `production` dans ce projet.
+        adresseRetrait:
+          allOf:
+            - $ref: "#/components/schemas/AdresseRetrait"
+          readOnly: true
+          description: >
+            Présente pour le seul demandeur, et seulement tant que la
+            réservation est `confirmee`. **Absente** dans tous les autres cas —
+            et jamais sur une route de liste. Absente plutôt que `null` : c'est
+            l'esprit de la liste blanche, un champ privé ne sort pas du tout.
+        creeLe: { type: string, format: date-time, readOnly: true }
+        misAJourLe: { type: string, format: date-time, readOnly: true }
+
+    # --- Avis -----------------------------------------------------------------------
+
+    AvisSoumis:
+      type: object
+      required: [note]
+      properties:
+        note: { type: integer, minimum: 1, maximum: 5 }
+        commentaire: { type: string, maxLength: 500 }
+
+    Avis:
+      allOf:
+        - $ref: "#/components/schemas/AvisSoumis"
+        - type: object
+          required: [id, reservationId, auteur, cibleId, creeLe]
+          properties:
+            id: { type: string, readOnly: true }
+            reservationId: { type: string, readOnly: true }
+            auteur: { $ref: "#/components/schemas/ProfilResume" }
+            cibleId:
+              type: string
+              readOnly: true
+              description: "L'autre partie de la réservation"
+            creeLe: { type: string, format: date-time, readOnly: true }
+            misAJourLe: { type: string, format: date-time, readOnly: true }
+
+    # --- Profils --------------------------------------------------------------------
+    # L'adresse est decomposee : cela permet de publier codePostal + ville sans
+    # jamais laisser sortir le numero et la rue. Voir specs/data-model.md.
+
+    ProfilSoumis:
+      type: object
+      required:
+        [nom, prenom, roles, numeroRue, rue, codePostal, ville, dateNaissance]
+      properties:
+        nom: { type: string, minLength: 1, maxLength: 80 }
+        prenom: { type: string, minLength: 1, maxLength: 80 }
+        roles:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: { type: string, enum: [offrant, demandeur] }
+          description: "Rôles cumulables 🎁🙋 : un même compte peut donner et réserver."
+        numeroRue:
+          type: string
+          maxLength: 10
+          description: >
+            🔒 Privé. Chaîne et non nombre : « 14 bis », « 3-5 » et « 12 ter »
+            sont des numéros valides.
+        rue:
+          type: string
+          minLength: 2
+          maxLength: 150
+          description: "🔒 Privé. Libellé de la voie, ex : « rue de la Charité »."
+        complementAdresse:
+          type: string
+          maxLength: 100
+          description: "🔒 Privé. Facultatif, ex : « Bât. B, appt 12 »."
+        codePostal:
+          type: string
+          pattern: "^[0-9]{5}$"
+          description: "🌍 Public — porte la proximité, affiché dans l'annuaire."
+        ville:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: "🌍 Public — affichée dans l'annuaire à côté du code postal."
+        dateNaissance:
+          type: string
+          format: date
+          description: >
+            Doit exister, ne pas être dans le futur, moins de 120 ans. Aucune
+            condition d'âge : la plateforme est ouverte aux mineurs.
+
+    Profil:
+      allOf:
+        - $ref: "#/components/schemas/ProfilSoumis"
+        - type: object
+          properties:
+            id: { type: string, description: "Identifiant du compte Supabase (UUID) 🔑" }
+            email:
+              type: string
+              format: email
+              description: "🔒 Repris du jeton vérifié. Jamais exposé publiquement."
+            photoUrl: { type: string }
+            creeLe: { type: string, format: date-time }
+            misAJourLe: { type: string, format: date-time }
+
+    ProfilPublic:
+      type: object
+      description: "Ce qui sort de l'annuaire, et rien d'autre."
+      properties:
+        id: { type: string }
+        prenom: { type: string }
+        nom: { type: string }
+        roles:
+          type: array
+          items: { type: string }
+        photoUrl: { type: string }
+        codePostal: { type: string }
+        ville:
+          type: string
+          description: "Chaîne vide pour les profils antérieurs au champ."
+        noteMoyenne:
+          type: number
+          nullable: true
+          description: "Moyenne des avis reçus, `null` sans avis. Absente de l'annuaire en ligne actuel."
+        nombreAvis:
+          type: integer
+          description: "Absent de l'annuaire en ligne actuel."
