@@ -231,16 +231,41 @@
         <div class="section-tete">
           <span class="numero" aria-hidden="true">05</span>
           <h2 id="t-po">Product Owner</h2>
-          <p class="intro">EPICs, priorisation et user stories, repris de <code>specs/</code> et de <code>tests/README.md</code>.</p>
+          <p class="intro">Les 14 EPICs et les 48 tickets, repris des issues GitHub, avec leur état réel. La priorisation vient de <code>specs/data-model.md</code>.</p>
           <img class="sticker sticker-section" src="assets/illustrations/objet-etoile.svg" alt="" width="72" height="72">
         </div>
 
         <div class="tableau-defile">
           <table>
-            <caption>EPICs</caption>
-            <thead><tr><th scope="col">EPIC</th><th scope="col">Objectif</th><th scope="col">Issue</th><th scope="col">Priorité</th></tr></thead>
+            <caption>Avancement par jalon — 37 tickets livrés sur 48</caption>
+            <thead><tr><th scope="col">Jalon</th><th scope="col">Date</th><th scope="col">Contenu</th><th scope="col">Livrés</th></tr></thead>
             <tbody>
-              <tr><td>EPIC-1 · Authentification et profil utilisateur</td><td>Gérer l’identité et l’accès des utilisateurs sans mot de passe.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/1" target="_blank" rel="noopener">#1</a></td><td><span class="badge badge-socle">Socle Pré-J3</span></td></tr>
+              <tr><td>Socle Pré-J3</td><td>16/09/2026</td><td>Inscription, connexion, annuaire des membres</td><td>3/3</td></tr>
+              <tr><td>J4 – Démo</td><td>04/11/2026</td><td>Accueil, annonces, recherche, carte, favoris, réservation, paiement de test, messagerie, profil, associations, données</td><td>34/34</td></tr>
+              <tr><td>J5 – Lancement</td><td>10/11/2026</td><td>Remise de l’objet, liste d’attente, désistement, e-mail de proposition, distance, météo, commission</td><td>0/11</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tableau-defile">
+          <table>
+            <caption>EPICs</caption>
+            <thead><tr><th scope="col">EPIC</th><th scope="col">Objectif</th><th scope="col">Issue</th><th scope="col">Priorité</th><th scope="col">Livrés</th></tr></thead>
+            <tbody>
+              <tr><td>EPIC-1 · Authentification et profil utilisateur</td><td>Gérer l’identité et l’accès des utilisateurs sans mot de passe.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/1" target="_blank" rel="noopener">#1</a></td><td><span class="badge badge-socle">Socle Pré-J3</span></td><td>3/3</td></tr>
+              <tr><td>EPIC-2 · Accueil et navigation</td><td>Donner un point d’entrée clair, mobile-first, qui sert l’offrant comme le demandeur.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/19" target="_blank" rel="noopener">#19</a></td><td><span class="badge badge-must">MUST</span></td><td>2/2</td></tr>
+              <tr><td>EPIC-3 · Annonces : création et fiche</td><td>Permettre de publier un objet en deux étapes et de le consulter.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/20" target="_blank" rel="noopener">#20</a></td><td><span class="badge badge-must">MUST</span></td><td>6/7</td></tr>
+              <tr><td>EPIC-4 · Recherche et filtres</td><td>Retrouver rapidement un objet par mot-clé, catégorie, état et participation.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/21" target="_blank" rel="noopener">#21</a></td><td><span class="badge badge-must">MUST</span></td><td>4/4</td></tr>
+              <tr><td>EPIC-5 · Géolocalisation et carte</td><td>Situer les annonces sur une carte et par distance, sans révéler l’adresse exacte.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/22" target="_blank" rel="noopener">#22</a></td><td><span class="badge badge-must">MUST</span></td><td>2/4</td></tr>
+              <tr><td>EPIC-6 · Favoris et statuts</td><td>Mettre des annonces de côté et connaître leur statut.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/23" target="_blank" rel="noopener">#23</a></td><td><span class="badge badge-must">MUST</span></td><td>3/3</td></tr>
+              <tr><td>EPIC-7 · Réservation et paiement test</td><td>Demande, validation par l’offrant, paiement test (participation et commission), adresse révélée, remise confirmée.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/24" target="_blank" rel="noopener">#24</a></td><td><span class="badge badge-must">MUST</span></td><td>4/6</td></tr>
+              <tr><td>EPIC-8 · Messagerie</td><td>Échanger entre offrant et demandeur autour d’une annonce, avec messages système.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/25" target="_blank" rel="noopener">#25</a></td><td><span class="badge badge-must">MUST</span></td><td>3/4</td></tr>
+              <tr><td>EPIC-9 · Questions publiques</td><td>Poser et lire des questions publiques sur une annonce.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/26" target="_blank" rel="noopener">#26</a></td><td><span class="badge badge-should">SHOULD</span></td><td>Aucun ticket</td></tr>
+              <tr><td>EPIC-10 · Compte, historique et avis</td><td>Consulter et modifier son profil ; historique et avis.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/27" target="_blank" rel="noopener">#27</a></td><td><span class="badge badge-must">MUST</span></td><td>2/2</td></tr>
+              <tr><td>EPIC-11 · Associations et preuve de versement</td><td>Lister les associations de la Métropole de Lyon et les relier aux annonces.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/28" target="_blank" rel="noopener">#28</a></td><td><span class="badge badge-must">MUST</span></td><td>3/3</td></tr>
+              <tr><td>EPIC-12 · Création rapide par IA</td><td>Pré-remplir une annonce à partir d’une photo.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/29" target="_blank" rel="noopener">#29</a></td><td><span class="badge badge-could">COULD</span></td><td>Aucun ticket</td></tr>
+              <tr><td>EPIC-13 · Données et réalisme</td><td>Générer des données de test réalistes (catégories, annonces, utilisateurs, conversations, illustrations).</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/30" target="_blank" rel="noopener">#30</a></td><td><span class="badge badge-must">MUST</span></td><td>5/5</td></tr>
+              <tr><td>EPIC-14 · Liste d’attente et désistement</td><td>File d’attente (5 max), désistement, proposition au suivant et e-mail.</td><td><a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/31" target="_blank" rel="noopener">#31</a></td><td><span class="badge badge-must">MUST</span></td><td>0/5</td></tr>
             </tbody>
           </table>
         </div>
@@ -260,29 +285,121 @@
           </table>
         </div>
 
-        <h3 class="sous-titre">User stories</h3>
+        <h3 class="sous-titre">User stories et tâches</h3>
         <details open>
-          <summary>EPIC-1 · Authentification et profil utilisateur</summary>
+          <summary>EPIC-1 · Authentification et profil utilisateur <span class="us-compteur">3/3 livrés</span></summary>
           <ul class="us-liste">
-            <li><span><strong>US-1</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/2" target="_blank" rel="noopener">#2</a>) — Inscription et création de profil</span><span class="badge badge-socle">Socle Pré-J3</span></li>
-            <li><span><strong>US-2</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/3" target="_blank" rel="noopener">#3</a>) — Connexion utilisateur existant</span><span class="badge badge-socle">Socle Pré-J3</span></li>
-            <li><span><strong>US-3</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/9" target="_blank" rel="noopener">#9</a>) — Consulter les membres inscrits</span><span class="badge badge-socle">Socle Pré-J3</span></li>
+            <li><span><strong>US-1</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/2" target="_blank" rel="noopener">#2</a>) — Inscription et création de profil</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-2</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/3" target="_blank" rel="noopener">#3</a>) — Connexion utilisateur existant</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-3</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/9" target="_blank" rel="noopener">#9</a>) — Consulter les membres inscrits</span><span class="badge badge-livre">Livré</span></li>
           </ul>
         </details>
         <details>
-          <summary>Autres user stories</summary>
+          <summary>EPIC-2 · Accueil et navigation <span class="us-compteur">2/2 livrés</span></summary>
           <ul class="us-liste">
-            <li><span><strong>US-4</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/32" target="_blank" rel="noopener">#32</a>) — Accueil, menu du bas, derniers objets</span></li>
-            <li><span><strong>US-5</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/33" target="_blank" rel="noopener">#33</a>) — Dons et demandes en cours sur l’accueil</span></li>
-            <li><span><strong>US-6</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/34" target="_blank" rel="noopener">#34</a>) — Créer une annonce en deux étapes</span></li>
-            <li><span><strong>US-7</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/35" target="_blank" rel="noopener">#35</a>) — Participation et créneau</span></li>
-            <li><span><strong>US-8</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/36" target="_blank" rel="noopener">#36</a>) — Adresse préremplie</span></li>
-            <li><span><strong>US-9</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/37" target="_blank" rel="noopener">#37</a>) — Fiche d’annonce, adresse jamais exposée</span></li>
-            <li><span><strong>US-12</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/40" target="_blank" rel="noopener">#40</a>) — Illustration des annonces sans photo</span></li>
-            <li><span><strong>US-13</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/41" target="_blank" rel="noopener">#41</a>) — Recherche par mot-clé en liste</span></li>
-            <li><span><strong>US-14</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/42" target="_blank" rel="noopener">#42</a>) — Filtres catégorie, état, participation</span></li>
-            <li><span><strong>US-15</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/43" target="_blank" rel="noopener">#43</a>) — Tri par date, participation ou créneau</span></li>
-            <li><span><strong>US-16</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/44" target="_blank" rel="noopener">#44</a>) — Bascule liste / carte</span></li>
+            <li><span><strong>US-4</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/32" target="_blank" rel="noopener">#32</a>) — Afficher l’accueil avec menu du bas et derniers objets</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-5</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/33" target="_blank" rel="noopener">#33</a>) — Retrouver ses dons et ses demandes en cours depuis l’accueil</span><span class="badge badge-livre">Livré</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-3 · Annonces : création et fiche <span class="us-compteur">6/7 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-6</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/34" target="_blank" rel="noopener">#34</a>) — Créer une annonce en deux étapes avec photos</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-7</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/35" target="_blank" rel="noopener">#35</a>) — Fixer la participation et le créneau de retrait</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-8</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/36" target="_blank" rel="noopener">#36</a>) — Préremplir l’adresse de retrait depuis le profil</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-9</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/37" target="_blank" rel="noopener">#37</a>) — Consulter la fiche d’une annonce</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-10</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/38" target="_blank" rel="noopener">#38</a>) — Afficher la météo du créneau sur la fiche</span><span class="badge badge-avenir">J5</span></li>
+            <li><span><strong>US-11</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/39" target="_blank" rel="noopener">#39</a>) — Modifier ou retirer son annonce</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-12</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/40" target="_blank" rel="noopener">#40</a>) — Illustrer une annonce sans photo par l’image de sa catégorie</span><span class="badge badge-livre">Livré</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-4 · Recherche et filtres <span class="us-compteur">4/4 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-13</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/41" target="_blank" rel="noopener">#41</a>) — Rechercher des annonces par mot-clé en liste</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-14</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/42" target="_blank" rel="noopener">#42</a>) — Filtrer les annonces par catégorie, état et participation</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-15</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/43" target="_blank" rel="noopener">#43</a>) — Trier les annonces par date, participation ou créneau</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-16</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/44" target="_blank" rel="noopener">#44</a>) — Basculer entre la vue liste et la vue carte</span><span class="badge badge-livre">Livré</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-5 · Géolocalisation et carte <span class="us-compteur">2/4 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-17</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/45" target="_blank" rel="noopener">#45</a>) — [API] Géocoder l’adresse d’une annonce à sa publication</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-18</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/46" target="_blank" rel="noopener">#46</a>) — Afficher les annonces sur une carte</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-19</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/47" target="_blank" rel="noopener">#47</a>) — Afficher la distance approximative d’une annonce</span><span class="badge badge-avenir">J5</span></li>
+            <li><span><strong>US-20</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/48" target="_blank" rel="noopener">#48</a>) — Filtrer les annonces autour d’une adresse</span><span class="badge badge-avenir">J5</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-6 · Favoris et statuts <span class="us-compteur">3/3 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-21</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/49" target="_blank" rel="noopener">#49</a>) — Ajouter ou retirer une annonce de ses favoris</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-22</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/50" target="_blank" rel="noopener">#50</a>) — Consulter la liste de ses favoris</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-23</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/51" target="_blank" rel="noopener">#51</a>) — Afficher le statut d’une annonce</span><span class="badge badge-livre">Livré</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-7 · Réservation et paiement test <span class="us-compteur">4/6 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-24</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/52" target="_blank" rel="noopener">#52</a>) — Demander un objet disponible à l’offrant</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-47</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/53" target="_blank" rel="noopener">#53</a>) — Valider ou décliner la demande d’un demandeur</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-25</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/54" target="_blank" rel="noopener">#54</a>) — Afficher la commission et la part reversée avant paiement</span><span class="badge badge-avenir">J5</span></li>
+            <li><span><strong>US-26</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/55" target="_blank" rel="noopener">#55</a>) — Payer la participation en mode test pour confirmer</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-27</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/56" target="_blank" rel="noopener">#56</a>) — Découvrir l’adresse exacte après paiement validé</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-32</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/62" target="_blank" rel="noopener">#62</a>) — Confirmer la remise de l’objet</span><span class="badge badge-avenir">J5</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-8 · Messagerie <span class="us-compteur">3/4 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-33</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/63" target="_blank" rel="noopener">#63</a>) — Contacter l’offrant depuis une annonce</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-34</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/64" target="_blank" rel="noopener">#64</a>) — Échanger des messages dans une conversation</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-35</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/65" target="_blank" rel="noopener">#65</a>) — Lister ses conversations</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-36</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/66" target="_blank" rel="noopener">#66</a>) — Recevoir des messages système à chaque étape de la réservation</span><span class="badge badge-avenir">J5</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-9 · Questions publiques <span class="us-compteur">aucun ticket</span></summary>
+          <p class="us-vide">Pas de ticket à ce stade : cet EPIC n’entre ni dans la J4 ni dans la J5.</p>
+        </details>
+        <details>
+          <summary>EPIC-10 · Compte, historique et avis <span class="us-compteur">2/2 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-37</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/67" target="_blank" rel="noopener">#67</a>) — Consulter son profil et ses statistiques</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-38</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/68" target="_blank" rel="noopener">#68</a>) — Modifier ses informations de profil</span><span class="badge badge-livre">Livré</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-11 · Associations et preuve de versement <span class="us-compteur">3/3 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-39</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/69" target="_blank" rel="noopener">#69</a>) — Lister les associations de la Métropole de Lyon</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-40</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/70" target="_blank" rel="noopener">#70</a>) — Choisir l’association bénéficiaire en créant une annonce</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-41</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/71" target="_blank" rel="noopener">#71</a>) — Afficher l’association soutenue sur chaque annonce</span><span class="badge badge-livre">Livré</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-12 · Création rapide par IA <span class="us-compteur">aucun ticket</span></summary>
+          <p class="us-vide">Pas de ticket à ce stade : cet EPIC n’entre ni dans la J4 ni dans la J5.</p>
+        </details>
+        <details>
+          <summary>EPIC-13 · Données et réalisme <span class="us-compteur">5/5 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-42</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/72" target="_blank" rel="noopener">#72</a>) — [Data] Générer les catégories et sous-catégories</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-43</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/73" target="_blank" rel="noopener">#73</a>) — [Data] Importer les associations du Répertoire national</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-44</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/74" target="_blank" rel="noopener">#74</a>) — [Data] Générer 100+ annonces et 100+ utilisateurs</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-45</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/75" target="_blank" rel="noopener">#75</a>) — [Data] Générer 200+ conversations, réservations et avis</span><span class="badge badge-livre">Livré</span></li>
+            <li><span><strong>US-46</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/76" target="_blank" rel="noopener">#76</a>) — [Data] Ajouter 20+ illustrations de catégories</span><span class="badge badge-livre">Livré</span></li>
+          </ul>
+        </details>
+        <details>
+          <summary>EPIC-14 · Liste d’attente et désistement <span class="us-compteur">0/5 livrés</span></summary>
+          <ul class="us-liste">
+            <li><span><strong>US-28</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/57" target="_blank" rel="noopener">#57</a>) — S’inscrire en liste d’attente sur un objet réservé</span><span class="badge badge-avenir">J5</span></li>
+            <li><span><strong>US-29</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/58" target="_blank" rel="noopener">#58</a>) — Se désister et proposer l’objet au suivant</span><span class="badge badge-avenir">J5</span></li>
+            <li><span><strong>US-30</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/59" target="_blank" rel="noopener">#59</a>) — Refuser un objet proposé</span><span class="badge badge-avenir">J5</span></li>
+            <li><span><strong>US-31</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/60" target="_blank" rel="noopener">#60</a>) — Passer au suivant faute de réponse</span><span class="badge badge-avenir">J5</span></li>
+            <li><span><strong>US-48</strong> (<a href="https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/61" target="_blank" rel="noopener">#61</a>) — [API] Envoyer un e-mail quand un objet est proposé</span><span class="badge badge-avenir">J5</span></li>
           </ul>
         </details>
       </div>
@@ -294,10 +411,163 @@
         <div class="section-tete">
           <span class="numero" aria-hidden="true">06</span>
           <h2 id="t-dev">Développement</h2>
-          <p class="intro">Le modèle de données et le contrat d’API, rendus depuis <code>specs/data-model.md</code> et <code>specs/openapi.yaml</code>.</p>
+          <p class="intro">Comment Donéo est construit, ce qui a changé en route, puis le modèle de données et le contrat d’API, rendus depuis <code>specs/data-model.md</code> et <code>specs/openapi.yaml</code>.</p>
         </div>
 
-        <h3>Modèle de données</h3>
+        <ul class="sommaire" aria-label="Parties du développement">
+          <li><a href="#dev-architecture">Architecture</a></li>
+          <li><a href="#dev-technos">Technologies</a></li>
+          <li><a href="#dev-regles">Règles clés</a></li>
+          <li><a href="#dev-changements">Changements</a></li>
+          <li><a href="#dev-livraison">Déploiement et tests</a></li>
+          <li><a href="#dev-donnees">Données</a></li>
+          <li><a href="#dev-modele">Modèle</a></li>
+          <li><a href="#dev-api">API</a></li>
+        </ul>
+
+        <h3 id="dev-architecture">Architecture</h3>
+        <div class="carte diagramme">
+          <h4>Qui parle à qui</h4>
+          <pre class="mermaid">
+flowchart TB
+    N[&quot;Navigateur&quot;]
+
+    subgraph VERCEL[&quot;Vercel&quot;]
+        direction LR
+        APP[&quot;App React&quot;]
+        VIT[&quot;Vitrine&quot;]
+        PRE[&quot;Présentation&quot;]
+    end
+
+    W[&quot;API : Cloudflare Worker&quot;]
+
+    subgraph SUPA[&quot;Supabase, Irlande&quot;]
+        direction LR
+        AUTH[&quot;Auth&quot;]
+        PG[&quot;Postgres&quot;]
+        ST[&quot;Storage (photos)&quot;]
+    end
+
+    OSM[&quot;OpenStreetMap (fond de carte)&quot;]
+    STRIPE[&quot;Stripe (mode test)&quot;]
+    IGN[&quot;Géoplateforme IGN (géocodage)&quot;]
+    GMAIL[&quot;SMTP Gmail (code de connexion)&quot;]
+
+    N --&gt;|pages| VERCEL
+    N --&gt;|appels API| W
+    N --&gt;|demande et saisie du code| AUTH
+    N --&gt;|affiche les photos| ST
+    N --&gt;|tuiles| OSM
+    N --&gt;|tunnel de paiement| STRIPE
+    W --&gt;|vérifie le jeton| AUTH
+    W --&gt;|lit et écrit| PG
+    W --&gt;|dépose les photos| ST
+    W --&gt;|ouvre et vérifie le paiement| STRIPE
+    W --&gt;|adresse vers coordonnées| IGN
+    AUTH --&gt;|envoie le code| GMAIL
+</pre>
+        </div>
+        <p class="note">Le navigateur ne lit jamais la base directement : la Row Level Security est active sans aucune règle d’accès, et la clé secrète reste dans le Worker. Toute donnée passe donc par l’API, qui ne laisse sortir que les champs explicitement publics.</p>
+
+        <h3 class="sous-titre" id="dev-technos">Technologies</h3>
+        <div class="tableau-defile">
+          <table>
+            <caption>Ce qui tourne en ligne</caption>
+            <thead><tr><th scope="col">Besoin</th><th scope="col">Technologie</th><th scope="col">Son rôle dans Donéo</th></tr></thead>
+            <tbody>
+              <tr><td>Application</td><td>React 19, Vite 8, React Router 7</td><td>Application monopage de 13 écrans</td></tr>
+              <tr><td>Interface</td><td>Tailwind CSS 4, shadcn/ui (Radix), Lucide</td><td>Mobile-first, composants accessibles, aux couleurs de la charte</td></tr>
+              <tr><td>Carte</td><td>Leaflet 1.9, OpenStreetMap</td><td>Vue carte de la recherche, sur des positions approchées</td></tr>
+              <tr><td>API</td><td>Cloudflare Workers, JavaScript sans dépendance</td><td>Règles métier, filtrage des champs, liaison avec les services</td></tr>
+              <tr><td>Base de données</td><td>Supabase Postgres, par son API REST</td><td>Profils, annonces, conversations, réservations, favoris</td></tr>
+              <tr><td>Connexion</td><td>Supabase Auth, SMTP Gmail</td><td>Code à 6 chiffres par e-mail, sans mot de passe</td></tr>
+              <tr><td>Photos</td><td>Supabase Storage</td><td>Jusqu’à 8 photos par annonce, réduites avant l’envoi</td></tr>
+              <tr><td>Paiement</td><td>Stripe Checkout, mode test</td><td>Vrai tunnel et référence de transaction, sans argent réel</td></tr>
+              <tr><td>Géocodage</td><td>Géoplateforme de l’IGN</td><td>Coordonnées calculées à la publication d’une annonce</td></tr>
+              <tr><td>Hébergement des pages</td><td>Vercel</td><td>App, vitrine et site de présentation</td></tr>
+              <tr><td>Déploiement</td><td>GitHub Actions, Wrangler</td><td>Mise en ligne automatique à chaque fusion dans <code>main</code></td></tr>
+              <tr><td>Tests</td><td>Playwright 1.64</td><td>Tests de bout en bout dans un vrai navigateur</td></tr>
+              <tr><td>Vitrine et présentation</td><td>HTML, CSS et JavaScript statiques, Mermaid</td><td>Pages légères, diagrammes rendus depuis les specs</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Données, connexion et photos sont hébergées en Irlande (UE). L’API et les pages passent par Cloudflare et Vercel, deux sociétés américaines.</p>
+
+        <h3 class="sous-titre" id="dev-regles">Règles clés, garanties par le serveur</h3>
+        <div class="grille-3">
+          <article class="carte">
+            <h4>Adresse à deux niveaux</h4>
+            <p>Avant paiement : code postal, ville et position décalée de 200 à 500&nbsp;m. Après paiement : l’adresse exacte, pour le seul demandeur concerné.</p>
+          </article>
+          <article class="carte">
+            <h4>Paiement de test</h4>
+            <p>Le demandeur passe par le vrai tunnel Stripe et obtient une référence de transaction. Seule une clé de test est acceptée, et <code>montantDebite</code> reste à 0.</p>
+          </article>
+          <article class="carte">
+            <h4>Réservation</h4>
+            <p>L’offrant valide ou décline, puis le demandeur paie ou renonce. Trois demandes en cours au plus par demandeur, et un double clic ne peut pas valider deux fois.</p>
+          </article>
+        </div>
+
+        <h3 class="sous-titre" id="dev-changements">Ce qui a changé en route, et pourquoi</h3>
+        <div class="tableau-defile">
+          <table>
+            <caption>Chaque changement répond à une contrainte rencontrée ou à un choix de l’équipe</caption>
+            <thead><tr><th scope="col">Prévu</th><th scope="col">Raison du changement</th><th scope="col">Retenu</th></tr></thead>
+            <tbody>
+              <tr><td>Connexion par lien magique</td><td>Le filtre anti-spam de Lyon 2 rejette l’e-mail dès qu’il contient un lien</td><td>Code à 6 chiffres, sans aucun lien</td></tr>
+              <tr><td>Firebase</td><td>Demande du 11/10 : services hébergés en France ou dans l’UE</td><td>Supabase (Irlande) et Vercel</td></tr>
+              <tr><td>E-mails envoyés par Brevo</td><td>Sans nom de domaine, Lyon 2 refuse ces e-mails et Outlook les classe en indésirables</td><td>SMTP de Gmail, en attendant un nom de domaine</td></tr>
+              <tr><td>Déploiement de Vercel depuis GitHub</td><td>Le forfait gratuit bloque les commits d’un autre auteur que le titulaire du compte</td><td>Déploiement par GitHub Actions</td></tr>
+              <tr><td>Paiement de 0&nbsp;€ chez Stripe</td><td>Stripe refuse les montants nuls</td><td>Participation envoyée en mode test, 0&nbsp;€ enregistré comme débité</td></tr>
+              <tr><td>Refus au-delà de 5&nbsp;Mo par photo</td><td>Les photos prises au téléphone dépassent souvent ce poids</td><td>Réduction automatique avant l’envoi</td></tr>
+              <tr><td>Objet réservé d’office au premier demandeur</td><td>Choix du 29/10 : laisser la décision à l’offrant et préparer la liste d’attente</td><td>L’offrant valide ou décline chaque demande</td></tr>
+              <tr><td>Photos sur Cloudflare R2</td><td>Regrouper les fichiers en Europe</td><td>Supabase Storage</td></tr>
+              <tr><td>Google Places</td><td>Un service public français, sans clé d’API</td><td>Géoplateforme de l’IGN</td></tr>
+              <tr><td>Messages en temps réel (Supabase Realtime)</td><td>Plus simple pour la démo</td><td>Rafraîchissement toutes les 8 secondes</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sous-titre" id="dev-livraison">Déploiement et tests</h3>
+        <div class="grille-2">
+          <article class="carte">
+            <h4>Du ticket à la mise en ligne</h4>
+            <ol class="etapes">
+              <li>Une branche par ticket, créée depuis <code>develop</code>.</li>
+              <li>Une pull request vers <code>develop</code>.</li>
+              <li>La fusion de <code>develop</code> dans <code>main</code> lance GitHub Actions.</li>
+              <li>L’API et les trois sites partent en ligne.</li>
+              <li>Le workflow vérifie que chacun répond.</li>
+            </ol>
+          </article>
+          <article class="carte">
+            <h4>Tests de bout en bout</h4>
+            <p class="chiffre">106 tests</p>
+            <p>Répartis en 15 fichiers Playwright, de la connexion au paiement Stripe. Ils tournent en vue mobile, avec des suites dédiées à la tablette et au grand écran, et remettent la base en état après leur passage.</p>
+          </article>
+        </div>
+
+        <h3 class="sous-titre" id="dev-donnees">Données</h3>
+        <div class="tableau-defile">
+          <table>
+            <caption>En base le 04/11/2026, face aux attentes de l’évaluation</caption>
+            <thead><tr><th scope="col">Donnée</th><th scope="col">En base</th><th scope="col">Attendu</th></tr></thead>
+            <tbody>
+              <tr><td>Annonces</td><td>150</td><td>90+</td></tr>
+              <tr><td>Profils</td><td>147</td><td>30+</td></tr>
+              <tr><td>Conversations</td><td>72</td><td>10+</td></tr>
+              <tr><td>Réservations</td><td>54</td><td>10+</td></tr>
+              <tr><td>Messages</td><td>305</td><td>—</td></tr>
+              <tr><td>Photos</td><td>45</td><td>—</td></tr>
+              <tr><td>Catégories et sous-catégories</td><td>12 et 72</td><td>—</td></tr>
+              <tr><td>Associations de la Métropole de Lyon</td><td>13</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Les annonces sans photo gardent l’illustration de leur catégorie. Les associations sont réelles, avec leur numéro RNA ; les annonces, les échanges et les profils de démonstration sont fictifs.</p>
+
+        <h3 class="sous-titre" id="dev-modele">Modèle de données</h3>
         <div class="carte diagramme">
           <h4>Diagramme de classes — cœur métier</h4>
           <pre class="mermaid">
@@ -548,7 +818,7 @@ sequenceDiagram
         B2-&gt;&gt;W: POST /reservations/{id}/paiement
         W--&gt;&gt;B2: réservation confirmée, adresse exacte
     else B2 refuse
-        B2-&gt;&gt;W: POST /reservations/{id}/refus
+        B2-&gt;&gt;W: POST /reservations/{id}/renonciation
         W-&gt;&gt;W: B2 passe à « annulee » (refus)
         W-&gt;&gt;B3: message système « objet_propose » + e-mail
     else B2 ne répond pas
@@ -559,67 +829,69 @@ sequenceDiagram
 </pre>
         </div>
 
-        <h3 class="sous-titre">Routes de l’API</h3>
+        <h3 class="sous-titre" id="dev-api">Routes de l’API</h3>
         <div class="tableau-defile">
           <table>
-            <caption>50 routes — specs/openapi.yaml, version 0.3.0</caption>
-            <thead><tr><th scope="col">Méthode</th><th scope="col">Chemin</th><th scope="col">Résumé</th></tr></thead>
+            <caption>50 routes au contrat (specs/openapi.yaml, version 0.3.0) : 32 en ligne, 18 non développées — relevé sur l’API le 04/11/2026</caption>
+            <thead><tr><th scope="col">Méthode</th><th scope="col">Chemin</th><th scope="col">Résumé</th><th scope="col">État</th></tr></thead>
             <tbody>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/health</code></td><td>Healthcheck — Déjà en ligne</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/auth/statut-email</code></td><td>L’adresse a-t-elle déjà un compte ? — Déjà en ligne</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/profil</code></td><td>Profil de l’utilisateur connecté — Déjà en ligne</td></tr>
-              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/profil</code></td><td>Créer ou mettre à jour son profil — Déjà en ligne</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/profil/resume</code></td><td>Mes statistiques et toutes mes annonces</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs</code></td><td>Annuaire public des inscrits — Déjà en ligne</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs/{id}</code></td><td>Profil public d’un membre</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs/{id}/avis</code></td><td>Avis reçus par un membre</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/categories</code></td><td>Arbre des catégories</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/associations</code></td><td>Lister les associations bénéficiaires</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/medias</code></td><td>Téléverser une photo, une vidéo ou un enregistrement vocal</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/medias/{id}</code></td><td>Le fichier d’un média (redirection)</td></tr>
-              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/medias/{id}</code></td><td>Supprimer un média non rattaché</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/ia/brouillon-annonce</code></td><td>Générer un brouillon d’annonce à partir d’une phrase ou d’une photo</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces</code></td><td>Rechercher et trier des annonces</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces</code></td><td>Publier une annonce (offrant)</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}</code></td><td>Consulter une annonce</td></tr>
-              <tr><td><span class="methode m-patch">PATCH</span></td><td><code>/api/annonces/{id}</code></td><td>Modifier son annonce (offrant)</td></tr>
-              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/annonces/{id}</code></td><td>Retirer son annonce (offrant)</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/edition</code></td><td>Fiche complète pour modifier son annonce (offrant)</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/contexte-local</code></td><td>Quartier, météo du créneau et points d’intérêt proches</td></tr>
-              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/annonces/{id}/favori</code></td><td>Ajouter aux favoris</td></tr>
-              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/annonces/{id}/favori</code></td><td>Retirer des favoris</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/favoris</code></td><td>Mes annonces favorites</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/recherches</code></td><td>Mes recherches sauvegardées</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/recherches</code></td><td>Sauvegarder une recherche</td></tr>
-              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/recherches/{id}</code></td><td>Supprimer une recherche sauvegardée</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/commentaires</code></td><td>Questions et réponses publiques d’une annonce</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/commentaires</code></td><td>Poser une question sous une annonce (demandeur)</td></tr>
-              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/commentaires/{id}</code></td><td>Supprimer son commentaire (auteur)</td></tr>
-              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/commentaires/{id}/reponse</code></td><td>Répondre à une question (offrant de l’annonce)</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/commentaires/{id}/masquage</code></td><td>Masquer ou rétablir un commentaire (offrant de l’annonce)</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/conversations</code></td><td>Mes conversations</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/conversation</code></td><td>Contacter l’offrant</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/conversations/{id}/messages</code></td><td>Lire les messages d’une conversation</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/conversations/{id}/messages</code></td><td>Envoyer un message, avec ou sans pièces jointes</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/reservations</code></td><td>Demander un objet — ou s’inscrire en liste d’attente</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/reservations</code></td><td>File de réservations d’une annonce (offrant)</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/reservations</code></td><td>Mes réservations — demandées ou reçues</td></tr>
-              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/reservations/{id}</code></td><td>Consulter une réservation</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/validation</code></td><td>Valider une demande (offrant)</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/declin</code></td><td>Décliner une demande (offrant)</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/renonciation</code></td><td>Annuler sa demande, ou refuser l’objet proposé (demandeur)</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/paiement</code></td><td>Ouvrir le tunnel de paiement de test (Stripe)</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/paiement/confirmation</code></td><td>Confirmer le paiement et révéler l’adresse exacte</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/desistement</code></td><td>Se désister</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/sans-reponse</code></td><td>Passer au suivant faute de réponse (offrant)</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/remise</code></td><td>Confirmer la remise de l’objet (offrant)</td></tr>
-              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/avis</code></td><td>Laisser un avis sur l’autre partie</td></tr>
-              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/avis/{id}</code></td><td>Modifier son avis</td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/health</code></td><td>Healthcheck</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/auth/statut-email</code></td><td>L’adresse a-t-elle déjà un compte ?</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/profil</code></td><td>Profil de l’utilisateur connecté</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/profil</code></td><td>Créer ou mettre à jour son profil</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/profil/resume</code></td><td>Mes statistiques et toutes mes annonces</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs</code></td><td>Annuaire public des inscrits</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs/{id}</code></td><td>Profil public d’un membre</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/utilisateurs/{id}/avis</code></td><td>Avis reçus par un membre</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/categories</code></td><td>Arbre des catégories</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/associations</code></td><td>Lister les associations bénéficiaires</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/medias</code></td><td>Téléverser une photo, une vidéo ou un enregistrement vocal</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/medias/{id}</code></td><td>Le fichier d’un média (redirection)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/medias/{id}</code></td><td>Supprimer un média non rattaché</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/ia/brouillon-annonce</code></td><td>Générer un brouillon d’annonce à partir d’une phrase ou d’une photo</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces</code></td><td>Rechercher et trier des annonces</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces</code></td><td>Publier une annonce (offrant)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}</code></td><td>Consulter une annonce</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-patch">PATCH</span></td><td><code>/api/annonces/{id}</code></td><td>Modifier son annonce (offrant)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/annonces/{id}</code></td><td>Retirer son annonce (offrant)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/edition</code></td><td>Fiche complète pour modifier son annonce (offrant)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/contexte-local</code></td><td>Quartier, météo du créneau et points d’intérêt proches</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/annonces/{id}/favori</code></td><td>Ajouter aux favoris</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/annonces/{id}/favori</code></td><td>Retirer des favoris</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/favoris</code></td><td>Mes annonces favorites</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/recherches</code></td><td>Mes recherches sauvegardées</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/recherches</code></td><td>Sauvegarder une recherche</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/recherches/{id}</code></td><td>Supprimer une recherche sauvegardée</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/commentaires</code></td><td>Questions et réponses publiques d’une annonce</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/commentaires</code></td><td>Poser une question sous une annonce (demandeur)</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-delete">DELETE</span></td><td><code>/api/commentaires/{id}</code></td><td>Supprimer son commentaire (auteur)</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/commentaires/{id}/reponse</code></td><td>Répondre à une question (offrant de l’annonce)</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/commentaires/{id}/masquage</code></td><td>Masquer ou rétablir un commentaire (offrant de l’annonce)</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/conversations</code></td><td>Mes conversations</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/conversation</code></td><td>Contacter l’offrant</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/conversations/{id}/messages</code></td><td>Lire les messages d’une conversation</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/conversations/{id}/messages</code></td><td>Envoyer un message, avec ou sans pièces jointes</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/annonces/{id}/reservations</code></td><td>Demander un objet — ou s’inscrire en liste d’attente</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/annonces/{id}/reservations</code></td><td>File de réservations d’une annonce (offrant)</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/reservations</code></td><td>Mes réservations — demandées ou reçues</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-get">GET</span></td><td><code>/api/reservations/{id}</code></td><td>Consulter une réservation</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/validation</code></td><td>Valider une demande (offrant)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/declin</code></td><td>Décliner une demande (offrant)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/renonciation</code></td><td>Annuler sa demande, ou refuser l’objet proposé (demandeur)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/paiement</code></td><td>Ouvrir le tunnel de paiement de test (Stripe)</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/paiement/confirmation</code></td><td>Confirmer le paiement et révéler l’adresse exacte</td><td><span class="badge badge-livre">En ligne</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/desistement</code></td><td>Se désister</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/sans-reponse</code></td><td>Passer au suivant faute de réponse (offrant)</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/remise</code></td><td>Confirmer la remise de l’objet (offrant)</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-post">POST</span></td><td><code>/api/reservations/{id}/avis</code></td><td>Laisser un avis sur l’autre partie</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
+              <tr><td><span class="methode m-put">PUT</span></td><td><code>/api/avis/{id}</code></td><td>Modifier son avis</td><td><span class="badge badge-avenir">Non développée</span></td></tr>
             </tbody>
           </table>
         </div>
         <div class="actions">
           <a class="bouton bouton-principal" href="assets/openapi.yaml" download>Télécharger openapi.yaml</a>
+          <a class="bouton bouton-secondaire" href="https://doneo-api.guillaume-lorel.workers.dev/api/health" target="_blank" rel="noopener">État de l’API</a>
+          <a class="bouton bouton-secondaire" href="https://github.com/GuillaumeLorel/m2gdp-g6-don" target="_blank" rel="noopener">Code sur GitHub</a>
         </div>
       </div>
     </section>
