@@ -1645,6 +1645,7 @@ summary:focus-visible,
 
 .contact__grille {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 40px;
 }
 
@@ -1996,4 +1997,129 @@ summary:focus-visible,
   font-size: 0.8rem;
   opacity: 0.75;
   margin-top: 16px;
+}
+
+/* ==========================================================================
+   Vidéo de présentation (auto-hébergée, chargée seulement à la lecture)
+   ========================================================================== */
+@font-face {
+  font-family: 'Caveat';
+  src: url('../assets/fonts/web/Caveat-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+.video-section {
+  overflow: hidden;
+}
+
+.video {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.video__annotation {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 4px;
+  margin: -24px 0 6px 8%;
+  font-family: 'Caveat', cursive;
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--rose-coeur);
+  transform: rotate(-4deg);
+  transform-origin: left center;
+}
+
+.video__fleche {
+  flex-shrink: 0;
+  margin-bottom: -22px;
+}
+
+.video__carte {
+  position: relative;
+  z-index: 1;
+  padding: 12px;
+  background: #fff;
+  border-radius: var(--radius-carte);
+  box-shadow: var(--ombre-large);
+}
+
+.video__cadre {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--ardoise);
+}
+
+.video__lecteur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--ardoise);
+}
+
+.video__lecteur:focus-visible {
+  outline: 4px solid var(--violet-doneo);
+  outline-offset: -4px;
+}
+
+.video__sticker {
+  position: absolute;
+  z-index: 2;
+  width: 96px;
+  height: auto;
+  filter: drop-shadow(0 8px 14px rgba(64, 20, 110, 0.25));
+  pointer-events: none;
+}
+
+.video__sticker--haut {
+  top: 8px;
+  right: -36px;
+  transform: rotate(12deg);
+}
+
+.video__sticker--bas {
+  bottom: 20px;
+  left: -40px;
+  transform: rotate(-10deg);
+}
+
+.video__lien {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.video__lien a {
+  color: var(--texte-secondaire);
+}
+
+@media (max-width: 639px) {
+  .video__annotation {
+    margin: -28px 0 4px 4%;
+    font-size: 1.45rem;
+  }
+  .video__fleche {
+    width: 44px;
+    height: 42px;
+  }
+  .video__sticker {
+    width: 60px;
+  }
+  .video__sticker--haut {
+    top: 4px;
+    right: -10px;
+  }
+  .video__sticker--bas {
+    bottom: 30px;
+    left: -12px;
+  }
 }
