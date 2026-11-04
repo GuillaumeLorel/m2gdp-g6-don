@@ -407,7 +407,7 @@ sequenceDiagram
         B2->>W: POST /reservations/{id}/paiement
         W-->>B2: réservation confirmée, adresse exacte
     else B2 refuse
-        B2->>W: POST /reservations/{id}/refus
+        B2->>W: POST /reservations/{id}/renonciation
         W->>W: B2 passe à « annulee » (refus)
         W->>B3: message système « objet_propose » + e-mail
     else B2 ne répond pas

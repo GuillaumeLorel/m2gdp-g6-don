@@ -311,6 +311,8 @@ td code { font-size: .88rem; color: var(--ardoise); word-break: break-word; }
 .badge-fake { background: var(--citron); }
 .badge-wont { background: #E5E2EA; }
 .badge-socle { background: var(--lavande); }
+.badge-livre { background: var(--menthe); }
+.badge-avenir { background: var(--blanc); box-shadow: inset 0 0 0 1px var(--texte-2); color: var(--texte-2); }
 .methode { font: 800 .78rem/1 var(--corps); padding: .35rem .6rem; border-radius: 999px; color: var(--ardoise); display: inline-block; min-width: 4.2rem; text-align: center; }
 .m-get { background: var(--menthe); }
 .m-post { background: var(--pervenche); }
@@ -329,6 +331,22 @@ details[open] summary { border-bottom: 1px solid var(--lavande); }
 .us-liste { list-style: none; margin: 0; padding: .5rem 1.3rem 1rem; }
 .us-liste li { display: flex; flex-wrap: wrap; gap: .4rem 1rem; justify-content: space-between; align-items: baseline; padding: .7rem 0; border-bottom: 1px dashed var(--lavande); }
 .us-liste li:last-child { border-bottom: 0; }
+
+.us-compteur { font: 600 .9rem var(--corps); color: var(--texte-2); margin-left: .4rem; white-space: nowrap; }
+.us-vide { margin: 0; padding: 1rem 1.3rem; color: var(--texte-2); }
+
+.sommaire { list-style: none; margin: 0 0 2.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.sommaire a {
+  display: block; padding: .5rem 1rem; border-radius: 999px; background: var(--blanc);
+  border: 2px solid var(--lavande); color: var(--ardoise); font-weight: 600; text-decoration: none;
+}
+.sommaire a:hover { border-color: var(--violet); }
+
+.grille-3 { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.carte p:last-child, .carte ol:last-child { margin-bottom: 0; }
+.etapes { margin: 0; padding-left: 1.3rem; display: grid; gap: .5rem; }
+.chiffre { font: 700 2.2rem/1.1 var(--titre); color: var(--violet-fonce); margin: 0 0 .4rem; }
+.note { color: var(--texte-2); margin-top: 1rem; }
 
 .a-completer {
   border: 2px dashed var(--rose); background: #FFF4FA; border-radius: var(--rayon);
