@@ -382,6 +382,22 @@ function initCopieLien() {
   });
 }
 
+/* ==========================================================================
+   Vidéo de présentation : le bouton du héro lance la lecture
+   ========================================================================== */
+function initVideo() {
+  const video = document.querySelector('.video__lecteur');
+  if (!video) return;
+
+  // Le défilement doux jusqu'à #video est géré par initDefilementDoux.
+  document.querySelectorAll('[data-lancer-video]').forEach((lien) => {
+    lien.addEventListener('click', () => {
+      video.focus({ preventScroll: true });
+      video.play().catch(() => {});
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initMenuMobile();
   initOnglets();
@@ -391,4 +407,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initDefilementDoux();
   initNavigationActive();
   initCopieLien();
+  initVideo();
 });
