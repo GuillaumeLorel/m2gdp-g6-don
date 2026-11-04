@@ -1645,6 +1645,7 @@ summary:focus-visible,
 
 .contact__grille {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 40px;
 }
 
