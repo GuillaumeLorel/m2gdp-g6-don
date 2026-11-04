@@ -65,7 +65,7 @@ En bref :
 
 ## Équipe
 
-- PO : _à compléter_
-- UX : _à compléter_
-- DEV : Guillaume, _second dev à compléter_
+- PO : Lucas Rolland
+- UX : Mathéo Gaillac
+- DEV : Guillaume Lorel, Moqim Ghizlan
 - Sponsor / Manager : @quangfr
