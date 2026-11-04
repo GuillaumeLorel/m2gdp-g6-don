@@ -43,3 +43,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Visuels sources du site de présentation (lourds, non déployés)
+presentation/_sources/
