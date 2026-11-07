@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { CalendarDays, Heart } from "lucide-react";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
+import { useDistance } from "@/lib/distance.js";
 import {
   LIBELLES_ETAT,
   formaterCreneau,
@@ -20,6 +21,7 @@ import {
  */
 export default function CarteAnnonce({ annonce, variante = "accueil", grille = false, surSurvol }) {
   const reservee = annonce.statut === "reserve";
+  const distance = useDistance(annonce);
   // Variante « recherche » (ecran 05) : l'etat devient une pastille menthe,
   // plus lisible quand on compare des resultats.
   const enPastille = variante === "recherche";
@@ -79,11 +81,11 @@ export default function CarteAnnonce({ annonce, variante = "accueil", grille = f
               <span className="rounded-full bg-menthe px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise">
                 {LIBELLES_ETAT[annonce.etat]}
               </span>
-              <span>{lieuAnnonce(annonce)}</span>
+              <span>{[lieuAnnonce(annonce), distance].filter(Boolean).join(" · ")}</span>
             </>
           ) : (
             <span>
-              {LIBELLES_ETAT[annonce.etat]} · {lieuAnnonce(annonce)}
+              {[LIBELLES_ETAT[annonce.etat], lieuAnnonce(annonce), distance].filter(Boolean).join(" · ")}
             </span>
           )}
           {reservee && (
