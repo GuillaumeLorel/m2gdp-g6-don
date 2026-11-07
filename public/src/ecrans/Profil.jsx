@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { ChevronRight, CircleCheck, Heart, MessageCircle, Pencil, Users } from "lucide-react";
+import { ChevronRight, CircleCheck, Heart, Pencil, Users } from "lucide-react";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { ErreurChargement } from "@/components/Etats.jsx";
 import { chargerMesReservations, chargerResumeProfil } from "@/lib/api.js";
@@ -173,7 +173,6 @@ export default function Profil({ profil }) {
 
       <ul className="doneo-carte mt-6 divide-y divide-primary/10 overflow-hidden">
         {[
-          { vers: "/messages", libelle: "Mes messages", Icone: MessageCircle },
           { vers: "/favoris", libelle: "Mes favoris", Icone: Heart },
           { vers: "/profil/modifier", libelle: "Modifier mon profil et mes rôles", Icone: Pencil },
           { vers: "/membres", libelle: "Membres de la communauté", Icone: Users },

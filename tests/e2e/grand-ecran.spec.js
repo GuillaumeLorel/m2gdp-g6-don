@@ -36,6 +36,14 @@ test('Navigation en haut, sans menu du bas', async ({ page }) => {
   await expect(page).toHaveURL(/\/profil$/);
 });
 
+test('En-tête : Messages placé avant Favoris (#131)', async ({ page }) => {
+  await ouvrirConnecte(page, PROFILS.offrantEtDemandeur);
+  const nav = page.getByRole('navigation', { name: 'Navigation principale' });
+  const messages = await nav.getByRole('link', { name: 'Messages' }).boundingBox();
+  const favoris = await nav.getByRole('link', { name: 'Favoris' }).boundingBox();
+  expect(messages.x).toBeLessThan(favoris.x);
+});
+
 test('Accueil : bandeau, objets en grille de trois, étapes', async ({ page }) => {
   await ouvrirConnecte(page, PROFILS.demandeurSeul);
   await expect(page.getByRole('heading', { name: '1 objet, 1 don.' })).toBeVisible();

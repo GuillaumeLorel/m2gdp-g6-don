@@ -1,11 +1,11 @@
 import { NavLink } from "react-router";
-import { Heart, Home, Plus, Search, User } from "lucide-react";
+import { Home, MessageCircle, Plus, Search, User } from "lucide-react";
 
 const ONGLETS = [
   { vers: "/", libelle: "Accueil", Icone: Home, exact: true },
   { vers: "/recherche", libelle: "Recherche", Icone: Search },
   { vers: "/creer", libelle: "Créer", Icone: Plus, central: true },
-  { vers: "/favoris", libelle: "Favoris", Icone: Heart },
+  { vers: "/messages", libelle: "Messages", Icone: MessageCircle },
   { vers: "/profil", libelle: "Profil", Icone: User },
 ];
 

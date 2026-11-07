@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { Heart, MessageCircle, Search } from "lucide-react";
+import { Heart, Search } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import CarteAnnonce from "@/components/CarteAnnonce.jsx";
 import { EtatVide, ErreurChargement, ListeEnChargement } from "@/components/Etats.jsx";
@@ -94,13 +94,13 @@ export default function Accueil({ profil }) {
             <Search className="size-5 text-ardoise" aria-hidden="true" />
             Chercher une pépite…
           </Link>
-          {/* Messages : pas de place dans le menu du bas de la maquette ; on y
-              accède d'ici, comme la cloche de la maquette, ou depuis le profil. */}
+          {/* Favoris : plus d'onglet dans le menu du bas (Messages l'a remplacé) ;
+              on y accède d'ici, ou depuis le profil. */}
           <Link
-            to="/messages"
-            aria-label="Messages"
+            to="/favoris"
+            aria-label="Favoris"
             className="grid size-12 shrink-0 place-items-center rounded-2xl border border-primary/10 bg-white text-ardoise shadow-[0_6px_18px_-12px_rgb(155_77_219/35%)]">
-            <MessageCircle className="size-5" aria-hidden="true" />
+            <Heart className="size-5" aria-hidden="true" />
           </Link>
         </header>
 
