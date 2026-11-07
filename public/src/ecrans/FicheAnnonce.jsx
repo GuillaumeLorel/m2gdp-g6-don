@@ -318,11 +318,13 @@ export default function FicheAnnonce({ profil }) {
               <Button
                 variant="doneo"
                 size="pilule"
-                className="flex-1"
+                className="min-w-0 flex-1 px-3 text-sm min-[360px]:px-4 min-[360px]:text-base"
                 disabled={remise || termine || maDemande === undefined}
                 onClick={() => setPanneau("demande")}>
-                <Heart className="size-5 fill-current" aria-hidden="true" />
-                {remise ? "Objet déjà remis" : termine ? "Créneau passé" : `Réserver pour ${montant}`}
+                <Heart className="hidden size-5 shrink-0 fill-current min-[360px]:block" aria-hidden="true" />
+                <span className="truncate">
+                  {remise ? "Objet déjà remis" : termine ? "Créneau passé" : `Réserver pour ${montant}`}
+                </span>
               </Button>
               {/* US-30 : contacter l'offrant, sans s'engager. */}
               {!remise && (

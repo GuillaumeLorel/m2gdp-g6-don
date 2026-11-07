@@ -93,3 +93,22 @@ test('Affichage sur mobile', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await attendrePasDeDefilementHorizontal(page);
 });
+
+test.describe('Très petit écran', () => {
+  test.use({ viewport: { width: 320, height: 700 } });
+
+  test('Barre du bas : réserver et écrire restent entiers à 320 px', async ({ page }) => {
+    // Le prix le plus long de la démo : le bouton ne doit pas pousser « Écrire » hors de l'écran.
+    const chere = annonces.filter((a) => a.statut === 'disponible' && a.offrantId !== PROFILS.demandeurSeul)
+      .sort((a, b) => String(b.participation).length - String(a.participation).length)[0];
+    await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${chere.id}`);
+    const reserver = page.getByRole('button', { name: /^Réserver pour/ });
+    const ecrire = page.getByRole('button', { name: /^Écrire à/ });
+    await expect(reserver).toBeVisible();
+    const largeur = page.viewportSize().width;
+    expect((await ecrire.boundingBox()).x + (await ecrire.boundingBox()).width).toBeLessThanOrEqual(largeur);
+    // Le montant n'est pas coupé par des points de suspension.
+    expect(await reserver.locator('span.truncate').evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true);
+    await attendrePasDeDefilementHorizontal(page);
+  });
+});
