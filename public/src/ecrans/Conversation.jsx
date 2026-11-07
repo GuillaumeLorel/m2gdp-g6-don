@@ -7,6 +7,7 @@ import { ErreurChargement } from "@/components/Etats.jsx";
 import {
   chargerConversation,
   confirmerPaiement,
+  confirmerRemise,
   declinerDemande,
   demanderObjet,
   envoyerMessage,
@@ -118,8 +119,11 @@ function BandeauReservation({ conversation, surAction }) {
   } else if (r.statut === "confirmee") {
     texte = monRole === "demandeur"
       ? `Réservation confirmée : ${montant} versés à l’association. Rendez-vous au créneau prévu.`
-      : `Participation de ${montant} validée. ${interlocuteur.prenom} a reçu votre adresse et vient au créneau prévu.`;
+      : `Participation de ${montant} validée : confirmez la remise une fois l’objet donné.`;
     adresse = r.adresseRetrait;
+    if (monRole === "offrant") {
+      actions = [bouton("remettre", "Confirmer la remise", () => agir("remettre", () => confirmerRemise(r.id)), "doneo", CircleCheck)];
+    }
   } else if (r.statut === "remise") {
     texte = "L’objet a été remis. Merci pour l’association !";
   }

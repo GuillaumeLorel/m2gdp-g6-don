@@ -27,7 +27,7 @@
  *   GET|POST /api/conversations/{id}/messages
  *   POST /api/annonces/{id}/reservations, GET /api/reservations?role=,
  *   GET /api/reservations/{id}, POST /api/reservations/{id}/(validation|
- *   declin|renonciation|paiement|paiement/confirmation)
+ *   declin|renonciation|remise|paiement|paiement/confirmation)
  *   GET /api/profil/resume
  */
 
@@ -42,6 +42,7 @@ import { resumeProfil } from './profil.js';
 import { publierAnnonce } from './publication.js';
 import {
   confirmerPaiement,
+  remettre,
   decliner,
   demander,
   lireReservation,
@@ -162,7 +163,7 @@ async function routerEchanges(request, env, pathname, cors) {
     [/^\/api\/conversations\/([\w-]{1,64})\/messages$/, ['GET', 'POST']],
     [/^\/api\/annonces\/([\w-]{1,64})\/reservations$/, ['POST']],
     [/^\/api\/reservations$/, ['GET']],
-    [/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|paiement|paiement\/confirmation))?$/, ['GET', 'POST']],
+    [/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|remise|paiement|paiement\/confirmation))?$/, ['GET', 'POST']],
     [/^\/api\/profil\/resume$/, ['GET']],
   ];
   if (!routes.some(([motif, methodes]) => motif.test(pathname) && methodes.includes(methode))) return null;
@@ -202,7 +203,7 @@ async function routerEchanges(request, env, pathname, cors) {
     if (!['demandeur', 'offrant'].includes(role)) return json({ erreurs: ['« role » doit valoir demandeur ou offrant.'] }, 422, cors);
     return json({ reservations: await listerReservations(env, uid, role) }, 200, cors);
   }
-  if ((r = m(/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|paiement|paiement\/confirmation))?$/))) {
+  if ((r = m(/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|remise|paiement|paiement\/confirmation))?$/))) {
     const [, id, action] = r;
     if (!action) return methode === 'GET' ? repondre(await lireReservation(env, uid, id)) : null;
     if (methode !== 'POST') return null;
@@ -210,6 +211,7 @@ async function routerEchanges(request, env, pathname, cors) {
     if (action === 'declin') return repondre(await decliner(env, uid, id));
     if (action === 'renonciation') return repondre(await renoncer(env, uid, id));
     if (action === 'paiement/confirmation') return repondre(await confirmerPaiement(env, uid, id));
+    if (action === 'remise') return repondre(await remettre(env, uid, id));
     // Retour du tunnel de paiement sur le front qui l'a ouvert.
     const origine = origineAutorisee(request.headers.get('Origin'), env) || 'https://doneo-app.vercel.app';
     return repondre(await payer(env, uid, id, origine));

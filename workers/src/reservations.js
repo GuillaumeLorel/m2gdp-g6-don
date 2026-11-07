@@ -271,6 +271,33 @@ export async function confirmerPaiement(env, utilisateurId, id) {
   return { statut: 200, corps: versReservation(confirmee, utilisateurId, annonce) };
 }
 
+/**
+ * L'offrant confirme la remise (#62) : la reservation payee passe a `remise`,
+ * l'annonce a `remis`, et ce qui attendait encore l'objet est close.
+ */
+export async function remettre(env, utilisateurId, id) {
+  const { r, erreur } = await chargerPour(env, id, utilisateurId, 'offrant');
+  if (erreur) return erreur;
+  const [remise] = await mettreAJour(env, 'reservations', { id, statut: 'confirmee' }, {
+    statut: 'remise', misAJourLe: maintenant(),
+  });
+  if (!remise) {
+    return refus(409, r.statut === 'remise'
+      ? 'La remise est déjà confirmée.'
+      : 'La participation n’est pas versée : la remise ne peut pas être confirmée.');
+  }
+  await mettreAJour(env, 'annonces', { id: r.annonceId }, { statut: 'remis', misAJourLe: maintenant() });
+  await messageSysteme(env, remise, 'objet_remis', 'L’objet a été remis. Merci pour l’association !');
+  // La remise clot la file : ces demandes ne peuvent plus aboutir.
+  const autres = await mettreAJour(env, 'reservations', { annonceId: r.annonceId, statut: ['demandee', 'liste_attente', 'proposee'] }, {
+    statut: 'annulee', motifAnnulation: 'attribuee_a_autrui', misAJourLe: maintenant(),
+  });
+  for (const autre of autres) {
+    await messageSysteme(env, autre, 'attribuee_a_autrui', 'L’objet a été remis à une autre personne : votre demande est close.');
+  }
+  return { statut: 200, corps: versReservation(remise, utilisateurId) };
+}
+
 /** Une reservation, pour ses deux parties ; avec l'adresse pour le demandeur payant (#56). */
 export async function lireReservation(env, utilisateurId, id) {
   const { r, erreur } = await chargerPour(env, id, utilisateurId);
