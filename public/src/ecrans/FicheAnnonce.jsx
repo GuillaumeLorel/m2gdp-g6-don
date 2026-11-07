@@ -4,6 +4,7 @@ import { CalendarDays, CircleCheck, ChevronLeft, Gift, Heart, Loader2, Lock, Map
 import { Button } from "@/components/ui/button.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import MeteoCreneau from "@/components/MeteoCreneau.jsx";
+import { useDistance } from "@/lib/distance.js";
 import { EtatVide, ErreurChargement } from "@/components/Etats.jsx";
 import { chargerAnnonce, chargerMesReservations, contacterOffrant, demanderObjet, retirerAnnonce } from "@/lib/api.js";
 import { basculerFavori, useFavoris } from "@/lib/favoris.js";
@@ -57,6 +58,7 @@ export default function FicheAnnonce({ profil }) {
   const [mot, setMot] = useState("");
   const [action, setAction] = useState(null);
   const [erreurAction, setErreurAction] = useState(null);
+  const distance = useDistance(annonce);
 
   useEffect(() => {
     if (!profil.roles?.includes("demandeur")) {
@@ -193,7 +195,7 @@ export default function FicheAnnonce({ profil }) {
           <li className="rounded-full bg-menthe px-3 py-1 text-ardoise">{LIBELLES_ETAT[annonce.etat]}</li>
           <li className="flex items-center gap-1 rounded-full border border-primary/15 bg-white px-3 py-1 text-ardoise">
             <MapPin className="size-3.5" aria-hidden="true" />
-            {lieuAnnonce(annonce)}
+            {[lieuAnnonce(annonce), distance].filter(Boolean).join(" · ")}
           </li>
         </ul>
 

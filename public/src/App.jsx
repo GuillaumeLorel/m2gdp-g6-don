@@ -3,6 +3,7 @@ import { Navigate, Outlet, Route, Routes } from "react-router";
 import { Loader2 } from "lucide-react";
 import Logo from "@/components/Logo.jsx";
 import EnTeteBureau from "@/components/EnTeteBureau.jsx";
+import FournisseurPosition from "@/components/FournisseurPosition.jsx";
 import MenuBas from "@/components/MenuBas.jsx";
 import PanneauMarque from "@/components/PanneauMarque.jsx";
 import Connexion from "@/ecrans/Connexion.jsx";
@@ -140,6 +141,7 @@ export default function App() {
     ecran = <Inscription email={utilisateur.email} surTermine={setProfil} />;
   } else {
     return (
+      <FournisseurPosition profil={profil}>
       <Routes>
         <Route element={<CoqueConnectee profil={profil} />}>
           <Route index element={<Accueil profil={profil} />} />
@@ -158,6 +160,7 @@ export default function App() {
           <Route path="messages/:id" element={<Conversation profil={profil} />} />
         </Route>
       </Routes>
+      </FournisseurPosition>
     );
   }
 
