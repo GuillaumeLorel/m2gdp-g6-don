@@ -12,7 +12,9 @@ import {
   demanderObjet,
   envoyerMessage,
   ouvrirPaiement,
+  passerAuSuivant,
   renoncerReservation,
+  seDesister,
   validerDemande,
 } from "@/lib/api.js";
 import { formaterCreneau, formaterParticipation, nomOffrant } from "@/lib/format.js";
@@ -106,6 +108,14 @@ function BandeauReservation({ conversation, surAction }) {
       texte = "Demande envoyée : l’offrant doit la valider avant le paiement.";
       actions = [bouton("renoncer", "Annuler ma demande", () => agir("renoncer", () => renoncerReservation(r.id)), "doneoSecondaire", X)];
     }
+  } else if (r.statut === "liste_attente") {
+    const place = r.position ? ` (place ${r.position})` : "";
+    if (monRole === "demandeur") {
+      texte = `Vous êtes en liste d’attente${place} : l’objet est déjà réservé.`;
+      actions = [bouton("desister", "Me désister", () => agir("desister", () => seDesister(r.id)), "doneoSecondaire", X)];
+    } else {
+      texte = `${interlocuteur.prenom} est en liste d’attente${place}.`;
+    }
   } else if (r.statut === "proposee") {
     if (monRole === "demandeur") {
       texte = `Objet réservé : versez ${montant} à l’association pour voir l’adresse exacte.`;
@@ -115,15 +125,16 @@ function BandeauReservation({ conversation, surAction }) {
       ];
     } else {
       texte = `Objet réservé pour ${interlocuteur.prenom} : en attente de sa participation de ${montant}.`;
+      actions = [bouton("suivant", "Passer au suivant", () => agir("suivant", () => passerAuSuivant(r.id)), "doneoSecondaire", X)];
     }
   } else if (r.statut === "confirmee") {
     texte = monRole === "demandeur"
       ? `Réservation confirmée : ${montant} versés à l’association. Rendez-vous au créneau prévu.`
       : `Participation de ${montant} validée : confirmez la remise une fois l’objet donné.`;
     adresse = r.adresseRetrait;
-    if (monRole === "offrant") {
-      actions = [bouton("remettre", "Confirmer la remise", () => agir("remettre", () => confirmerRemise(r.id)), "doneo", CircleCheck)];
-    }
+    actions = monRole === "offrant"
+      ? [bouton("remettre", "Confirmer la remise", () => agir("remettre", () => confirmerRemise(r.id)), "doneo", CircleCheck)]
+      : [bouton("desister", "Me désister", () => agir("desister", () => seDesister(r.id)), "doneoSecondaire", X)];
   } else if (r.statut === "remise") {
     texte = "L’objet a été remis. Merci pour l’association !";
   }

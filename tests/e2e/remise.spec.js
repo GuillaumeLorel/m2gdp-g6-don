@@ -1,7 +1,8 @@
 /**
- * US-32 (issue #62) — Confirmer la remise de l'objet.
+ * US-32 (issue #62) — Confirmer la remise de l'objet ;
+ * US-29 et US-31 (#58, #60) — se désister, passer au suivant faute de réponse.
  *
- * Le ticket n'a pas de critères Gherkin : les scénarios suivent
+ * Les tickets n'ont pas de critères Gherkin : les scénarios suivent
  * specs/data-model.md et specs/openapi.yaml (`POST /api/reservations/{id}/remise`).
  * Le paiement réel (Stripe) est couvert par echanges.spec.js ; ici, l'état
  * « confirmée » est simulé à l'affichage, et les refus sont vérifiés sur le
@@ -82,4 +83,53 @@ test('Pas de remise avant la participation (erreur gérée)', async ({ page }) =
   await page.getByRole('button', { name: 'Confirmer la remise' }).click();
   await expect(page.getByRole('alert')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Confirmer la remise' })).toBeEnabled();
+});
+
+test('Se désister de la liste d’attente : place affichée, bouton de désistement', async ({ page }) => {
+  let envoyee = false;
+  await page.route(`**/api/conversations/${demande.conversationId}/messages`, async (route) => {
+    if (route.request().method() !== 'GET') return route.continue();
+    const reponse = await route.fetch();
+    const c = await reponse.json();
+    c.reservation = { ...c.reservation, statut: 'liste_attente', position: 2 };
+    await route.fulfill({ response: reponse, json: c });
+  });
+  await page.route(`**/api/reservations/${demande.id}/desistement`, (route) => {
+    envoyee = true;
+    return route.fulfill({ json: { id: demande.id, statut: 'annulee' } });
+  });
+  await ouvrirConnecte(page, PROFILS.demandeurSeul, `/messages/${demande.conversationId}`);
+  await expect(page.getByText('Vous êtes en liste d’attente (place 2)')).toBeVisible();
+  await page.getByRole('button', { name: 'Me désister' }).click();
+  expect(envoyee).toBe(true);
+});
+
+test('L’offrant passe au suivant faute de réponse, l’objet redevient disponible', async () => {
+  // Sans personne derrière dans la file, l'annonce redevient disponible.
+  const refus = await appelApi(PROFILS.offrantEtDemandeur, `/api/reservations/${demande.id}/sans-reponse`, { methode: 'POST' });
+  expect(refus.statut).toBe(409); // pas encore proposée
+
+  await appelApi(PROFILS.offrantEtDemandeur, `/api/reservations/${demande.id}/validation`, { methode: 'POST' });
+  const interdit = await appelApi(PROFILS.demandeurSeul, `/api/reservations/${demande.id}/sans-reponse`, { methode: 'POST' });
+  expect(interdit.statut).toBe(403); // seul l'offrant passe au suivant
+
+  const { statut, corps } = await appelApi(PROFILS.offrantEtDemandeur, `/api/reservations/${demande.id}/sans-reponse`, { methode: 'POST' });
+  expect(statut).toBe(200);
+  expect(corps.statut).toBe('annulee');
+  expect(corps.motifAnnulation).toBe('sans_reponse');
+  expect((await appelApi(PROFILS.demandeurSeul, `/api/annonces/${LAMPADAIRE.id}`)).corps.statut).toBe('disponible');
+});
+
+test('Se désister d’un objet proposé : il redevient disponible', async () => {
+  const { corps: nouvelle } = await appelApi(PROFILS.demandeurSeul, `/api/annonces/${LAMPADAIRE.id}/reservations`, { methode: 'POST' });
+  // Une demande que l'offrant n'a pas encore validée n'est pas un désistement.
+  expect((await appelApi(PROFILS.demandeurSeul, `/api/reservations/${nouvelle.id}/desistement`, { methode: 'POST' })).statut).toBe(409);
+
+  await appelApi(PROFILS.offrantEtDemandeur, `/api/reservations/${nouvelle.id}/validation`, { methode: 'POST' });
+  expect((await appelApi(PROFILS.offrantEtDemandeur, `/api/reservations/${nouvelle.id}/desistement`, { methode: 'POST' })).statut).toBe(403);
+
+  const { statut, corps } = await appelApi(PROFILS.demandeurSeul, `/api/reservations/${nouvelle.id}/desistement`, { methode: 'POST' });
+  expect(statut).toBe(200);
+  expect(corps.motifAnnulation).toBe('desistement');
+  expect((await appelApi(PROFILS.demandeurSeul, `/api/annonces/${LAMPADAIRE.id}`)).corps.statut).toBe('disponible');
 });

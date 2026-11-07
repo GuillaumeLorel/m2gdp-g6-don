@@ -32,6 +32,8 @@ export const EN_COURS = ['demandee', 'liste_attente', 'proposee', 'confirmee'];
  */
 const EN_ATTENTE = ['demandee', 'liste_attente', 'proposee'];
 const MAX_EN_COURS = 3;
+/** Personnes au plus dans la liste d'attente d'une annonce (proposition de la spec, a valider avec le PO). */
+const MAX_FILE = 5;
 
 const maintenant = () => new Date().toISOString();
 const euros = (montant) =>
@@ -43,7 +45,7 @@ const refus = (statut, erreur) => ({ statut, corps: { erreur } });
  * n'apparait que pour le demandeur d'une reservation confirmee et payee, et
  * seulement si l'annonce est fournie : jamais sur une route de liste.
  */
-export function versReservation(r, lecteurId, annonce = null) {
+export function versReservation(r, lecteurId, annonce = null, position = null) {
   const adresseVisible =
     annonce && lecteurId === r.demandeurId && r.statut === 'confirmee' && r.statutPaiement === 'paye';
   return {
@@ -53,6 +55,7 @@ export function versReservation(r, lecteurId, annonce = null) {
     demandeurId: r.demandeurId,
     offrantId: r.offrantId,
     statut: r.statut,
+    position,
     motifAnnulation: r.motifAnnulation || null,
     proposeeLe: r.proposeeLe || null,
     participationDemandee: r.participationDemandee === null ? null : Number(r.participationDemandee),
@@ -78,6 +81,40 @@ export function versReservation(r, lecteurId, annonce = null) {
 
 const messageSysteme = (env, r, evenement, contenu) =>
   ajouterMessage(env, r.conversationId, { type: 'systeme', reservationId: r.id, evenement, contenu });
+
+/** Rang (1 = premier) d'une reservation en liste d'attente ; `null` sinon. */
+export async function rangFile(env, r) {
+  if (r.statut !== 'liste_attente') return null;
+  const file = await chercherLignes(env, 'reservations', { annonceId: r.annonceId, statut: 'liste_attente' }, { ordre: 'creeLe.asc' });
+  const rang = file.findIndex((x) => x.id === r.id);
+  return rang === -1 ? null : rang + 1;
+}
+
+/**
+ * L'objet est libere (desistement, refus, sans reponse) : on le propose au
+ * premier de la liste d'attente, qui en est prevenu par un message systeme.
+ * Sans file, l'annonce redevient disponible. Renvoie la reservation promue,
+ * ou `null`.
+ */
+async function proposerAuSuivant(env, annonceId) {
+  const annonce = await lireLigne(env, 'annonces', annonceId);
+  const file = await chercherLignes(env, 'reservations', { annonceId, statut: 'liste_attente' }, { ordre: 'creeLe.asc' });
+  for (const suivant of file) {
+    // `participationDemandee` est figee ici, a la proposition, pas a l'inscription.
+    const [proposee] = await mettreAJour(env, 'reservations', { id: suivant.id, statut: 'liste_attente' }, {
+      statut: 'proposee',
+      proposeeLe: maintenant(),
+      participationDemandee: annonce.participation,
+      misAJourLe: maintenant(),
+    });
+    if (!proposee) continue; // elle vient de se desister : on passe a la suivante
+    await messageSysteme(env, proposee, 'objet_propose',
+      `L’objet est libre et vous est proposé : versez ${euros(annonce.participation)} à l’association pour le réserver, ou refusez.`);
+    return proposee;
+  }
+  await mettreAJour(env, 'annonces', { id: annonceId, statut: 'reserve' }, { statut: 'disponible', misAJourLe: maintenant() });
+  return null;
+}
 
 /** Demander un objet a son offrant (#52). */
 export async function demander(env, utilisateurId, annonceId, message) {
@@ -105,6 +142,13 @@ export async function demander(env, utilisateurId, annonceId, message) {
     return refus(409, `Vous avez déjà ${MAX_EN_COURS} demandes en cours : attendez qu’une se termine.`);
   }
 
+  // Objet deja tenu (propose ou confirme) : on s'inscrit en liste d'attente.
+  const enFile = annonce.statut === 'reserve';
+  if (enFile) {
+    const file = await chercherLignes(env, 'reservations', { annonceId, statut: 'liste_attente' });
+    if (file.length >= MAX_FILE) return refus(409, `La liste d’attente est pleine (${MAX_FILE} personnes).`);
+  }
+
   const { conversation } = await conversationPour(env, annonce, utilisateurId);
   const reservation = await insererLigne(env, 'reservations', {
     id: crypto.randomUUID(),
@@ -112,13 +156,17 @@ export async function demander(env, utilisateurId, annonceId, message) {
     demandeurId: utilisateurId,
     offrantId: annonce.offrantId,
     conversationId: conversation.id,
-    statut: 'demandee',
+    statut: enFile ? 'liste_attente' : 'demandee',
     creeLe: maintenant(),
     misAJourLe: maintenant(),
   });
-  await messageSysteme(env, reservation, 'demande_recue', `${profil.prenom} souhaite récupérer cet objet.`);
+  if (enFile) {
+    await messageSysteme(env, reservation, 'demande_en_file', `${profil.prenom} s’est inscrit·e en liste d’attente.`);
+  } else {
+    await messageSysteme(env, reservation, 'demande_recue', `${profil.prenom} souhaite récupérer cet objet.`);
+  }
   if (message) await ajouterMessage(env, conversation.id, { auteurId: utilisateurId, contenu: message.trim() });
-  return { statut: 201, corps: versReservation(reservation, utilisateurId) };
+  return { statut: 201, corps: versReservation(reservation, utilisateurId, null, await rangFile(env, reservation)) };
 }
 
 /** Charge une reservation et verifie que `utilisateurId` en est la partie attendue. */
@@ -187,11 +235,12 @@ export async function renoncer(env, utilisateurId, id) {
     statut: 'annulee', motifAnnulation: motif, misAJourLe: maintenant(),
   });
   if (!close) return refus(409, 'Cette réservation vient de changer : rechargez la page.');
-  if (motif === 'refus') {
-    await mettreAJour(env, 'annonces', { id: r.annonceId, statut: 'reserve' }, { statut: 'disponible', misAJourLe: maintenant() });
-  }
+  // Un refus libere l'objet : il passe au premier de la file, sinon il redevient disponible.
+  const suivant = motif === 'refus' ? await proposerAuSuivant(env, r.annonceId) : null;
   await messageSysteme(env, close, motif === 'refus' ? 'proposition_refusee' : 'demande_annulee',
-    motif === 'refus' ? 'Le demandeur a renoncé à l’objet : il est de nouveau disponible.' : 'Le demandeur a annulé sa demande.');
+    motif === 'refus'
+      ? `Le demandeur a renoncé à l’objet : ${suivant ? 'il est proposé au suivant.' : 'il est de nouveau disponible.'}`
+      : 'Le demandeur a annulé sa demande.');
   return { statut: 200, corps: versReservation(close, utilisateurId) };
 }
 
@@ -260,15 +309,60 @@ export async function confirmerPaiement(env, utilisateurId, id) {
   }
   await messageSysteme(env, confirmee, 'paiement_valide',
     `Participation de ${euros(confirmee.participationDemandee)} validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.`);
-  // L'objet est attribue : les autres demandes sur cette annonce sont closes,
-  // sinon elles resteraient ouvertes pour toujours (et occuperaient le plafond).
-  const autres = await mettreAJour(env, 'reservations', { annonceId: r.annonceId, statut: ['demandee', 'liste_attente'] }, {
+  // L'objet est attribue : les demandes que l'offrant n'avait pas tranchees sont
+  // closes. La liste d'attente, elle, reste : si le detenteur se desiste, le
+  // premier de la file reprend l'objet. Seule la remise la clot.
+  const autres = await mettreAJour(env, 'reservations', { annonceId: r.annonceId, statut: ['demandee'] }, {
     statut: 'annulee', motifAnnulation: 'attribuee_a_autrui', misAJourLe: maintenant(),
   });
   for (const autre of autres) {
     await messageSysteme(env, autre, 'attribuee_a_autrui', 'L’objet a été attribué à une autre personne : votre demande est close.');
   }
   return { statut: 200, corps: versReservation(confirmee, utilisateurId, annonce) };
+}
+
+/**
+ * Le demandeur se desiste (#58), depuis la liste d'attente, l'objet propose ou
+ * la reservation payee (remboursement fictif, comme le paiement). S'il tenait
+ * l'objet, il passe au premier de la file.
+ */
+export async function seDesister(env, utilisateurId, id) {
+  const { r, erreur } = await chargerPour(env, id, utilisateurId, 'demandeur');
+  if (erreur) return erreur;
+  if (!['liste_attente', 'proposee', 'confirmee'].includes(r.statut)) {
+    return refus(409, r.statut === 'remise' ? 'L’objet a déjà été remis.' : 'Cette réservation est déjà close, ou pas encore proposée.');
+  }
+  const payee = r.statut === 'confirmee';
+  const [close] = await mettreAJour(env, 'reservations', { id, statut: r.statut }, {
+    statut: 'annulee',
+    motifAnnulation: 'desistement',
+    ...(payee ? { statutPaiement: 'rembourse' } : {}),
+    misAJourLe: maintenant(),
+  });
+  if (!close) return refus(409, 'Cette réservation vient de changer : rechargez la page.');
+  const tenait = r.statut !== 'liste_attente';
+  const suivant = tenait ? await proposerAuSuivant(env, r.annonceId) : null;
+  const apres = tenait ? ` : ${suivant ? 'l’objet est proposé au suivant.' : 'l’objet est de nouveau disponible.'}` : '.';
+  await messageSysteme(env, close, 'desistement',
+    `Le demandeur s’est désisté${payee ? ' (participation remboursée, paiement de test)' : ''}${apres}`);
+  return { statut: 200, corps: versReservation(close, utilisateurId) };
+}
+
+/**
+ * L'offrant passe au suivant faute de reponse (#60). Il n'y a pas de delai
+ * automatique : c'est lui qui juge, depuis quand l'objet est propose.
+ */
+export async function passerAuSuivant(env, utilisateurId, id) {
+  const { r, erreur } = await chargerPour(env, id, utilisateurId, 'offrant');
+  if (erreur) return erreur;
+  const [close] = await mettreAJour(env, 'reservations', { id, statut: 'proposee' }, {
+    statut: 'annulee', motifAnnulation: 'sans_reponse', misAJourLe: maintenant(),
+  });
+  if (!close) return refus(409, 'Cet objet n’est pas en attente d’une réponse.');
+  const suivant = await proposerAuSuivant(env, r.annonceId);
+  await messageSysteme(env, close, 'sans_reponse',
+    `L’offrant est passé au suivant, faute de réponse : ${suivant ? 'l’objet est proposé à la personne suivante.' : 'l’objet est de nouveau disponible.'}`);
+  return { statut: 200, corps: versReservation(close, utilisateurId) };
 }
 
 /**
@@ -303,7 +397,7 @@ export async function lireReservation(env, utilisateurId, id) {
   const { r, erreur } = await chargerPour(env, id, utilisateurId);
   if (erreur) return erreur;
   const annonce = r.statut === 'confirmee' ? await lireLigne(env, 'annonces', r.annonceId) : null;
-  return { statut: 200, corps: versReservation(r, utilisateurId, annonce) };
+  return { statut: 200, corps: versReservation(r, utilisateurId, annonce, await rangFile(env, r)) };
 }
 
 /**
@@ -315,5 +409,6 @@ export async function listerReservations(env, utilisateurId, role) {
   const reservations = await chercherLignes(env, 'reservations', { [champ]: utilisateurId }, { ordre: 'creeLe.desc' });
   const brutes = await lireLignes(env, 'annonces', reservations.map((r) => r.annonceId));
   const annonces = new Map((await versAnnoncesPubliques(env, [...brutes.values()])).map((a) => [a.id, a]));
-  return reservations.map((r) => ({ ...versReservation(r, utilisateurId), annonce: annonces.get(r.annonceId) || null }));
+  const rangs = await Promise.all(reservations.map((r) => rangFile(env, r)));
+  return reservations.map((r, i) => ({ ...versReservation(r, utilisateurId, null, rangs[i]), annonce: annonces.get(r.annonceId) || null }));
 }

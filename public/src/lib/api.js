@@ -194,6 +194,10 @@ export const renoncerReservation = (id) => actionReservation(id, 'renonciation')
 /** Ouvre le tunnel de paiement de test ; renvoie l'adresse de la page Stripe. */
 export const ouvrirPaiement = (id) => actionReservation(id, 'paiement').then((d) => d.urlPaiement);
 export const confirmerPaiement = (id) => actionReservation(id, 'paiement/confirmation');
+/** Le demandeur se désiste : l'objet passe au suivant de la file. */
+export const seDesister = (id) => actionReservation(id, 'desistement');
+/** L'offrant passe au suivant, faute de réponse. */
+export const passerAuSuivant = (id) => actionReservation(id, 'sans-reponse');
 /** L'offrant confirme que l'objet a changé de mains. */
 export const confirmerRemise = (id) => actionReservation(id, 'remise');
 

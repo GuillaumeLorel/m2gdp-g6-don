@@ -8,7 +8,7 @@
  */
 import { chercherLignes, insererLigne, lireLigne, lireLignes, mettreAJour } from './base.js';
 import { versAnnoncesPubliques, versProfilResume } from './annonces.js';
-import { versReservation } from './reservations.js';
+import { rangFile, versReservation } from './reservations.js';
 
 export const LONGUEUR_MAX_MESSAGE = 1000;
 
@@ -171,7 +171,7 @@ export async function lireConversation(env, utilisateurId, conversationId) {
     statut: 200,
     corps: {
       ...resume,
-      ...(enCours ? { reservation: versReservation(enCours, utilisateurId, annonce) } : {}),
+      ...(enCours ? { reservation: versReservation(enCours, utilisateurId, annonce, await rangFile(env, enCours)) } : {}),
       messages: messages.map(versMessage),
     },
   };
