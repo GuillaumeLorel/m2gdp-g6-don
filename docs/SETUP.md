@@ -16,8 +16,9 @@ cd m2gdp-g6-don && git checkout develop
 cd public && npm install && npm run dev
 ```
 
-La connexion par lien magique fonctionne aussi en local : `localhost:5173` et
-`localhost:5180` font partie des adresses de retour autorisées par Supabase.
+La connexion par code reçu par e-mail fonctionne aussi en local. `localhost:5173`
+et `localhost:5180` restent des adresses de retour autorisées par Supabase, pour
+les liens de connexion (encore gérés).
 
 > ⚠️ Il n'y a **qu'un seul environnement**. En local, on lit et on écrit dans
 > la **vraie** base Supabase, celle du site en ligne. Ne pas y créer de
@@ -104,7 +105,7 @@ hébergé en **Irlande** (AWS `eu-west-1`, dans l'UE), Postgres 17.
 
 | Élément | Détail |
 | --- | --- |
-| Authentication | Lien magique (e-mail, sans mot de passe). Le front obtient la session ; le Worker vérifie le jeton auprès de Supabase |
+| Authentication | Code à 6 chiffres reçu par e-mail, sans mot de passe (le lien magique reste géré). Le front obtient la session ; le Worker vérifie le jeton auprès de Supabase |
 | Storage | Bucket `medias` : photos des annonces, **public en lecture** (le navigateur les charge directement), écriture par le Worker seul. 5 Mo, JPEG / PNG / WebP |
 | Tables | `utilisateurs`, `categories`, `associations`, `annonces`, `medias` — schéma dans [`supabase/migrations/`](../supabase/migrations/). L'`id` d'un profil est celui du compte de connexion |
 | Accès | **Row Level Security active, sans aucune règle** : la clé publique ne voit rien, seul le Worker (clé secrète) lit et écrit |
@@ -187,10 +188,10 @@ Windows bloque en effet les connexions entrantes vers le Worker local.
    ```bash
    VITE_API_BASE=http://192.168.1.18:5180 npx vite --host 0.0.0.0 --port 5180
    ```
-3. Pour se connecter par lien magique depuis le téléphone, ajouter
-   `http://192.168.1.18:5180/**` aux **Redirect URLs** de Supabase
-   (Authentication › URL Configuration). L'adresse change d'un réseau à
-   l'autre : la retirer une fois les tests finis.
+3. La connexion par code ne demande aucun réglage. Pour un lien de connexion
+   (encore géré), ajouter `http://192.168.1.18:5180/**` aux **Redirect URLs**
+   de Supabase (Authentication › URL Configuration). L'adresse change d'un
+   réseau à l'autre : la retirer une fois les tests finis.
 4. Sur le téléphone : `http://192.168.1.18:5180`.
 
 Particularités liées au fait que l'app vit dans `public/`, pour respecter la
