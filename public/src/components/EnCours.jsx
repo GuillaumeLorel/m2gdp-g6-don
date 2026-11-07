@@ -156,7 +156,7 @@ export default function EnCours({ profil }) {
               <div className="h-[5.25rem] w-[min(18rem,82vw)] animate-pulse rounded-3xl bg-lavande" aria-label="Chargement de vos demandes" />
             ) : demandes.length === 0 ? (
               <Vide lien="/recherche" libelle="Chercher" Icone={Search}>
-                Aucune demande en cours. Les objets que vous demanderez apparaîtront ici.
+                Aucune demande en cours : vos demandes apparaîtront ici.
               </Vide>
             ) : (
               <ul className="-mx-5 flex gap-3 overflow-x-auto px-5 pt-1 pb-3 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">

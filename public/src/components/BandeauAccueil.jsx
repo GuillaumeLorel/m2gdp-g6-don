@@ -33,9 +33,7 @@ export default function BandeauAccueil({ total }) {
           1 objet, <span className="text-primary">1 don.</span>
         </h1>
         <p className="mt-5 max-w-lg text-lg leading-8 text-ardoise/85 text-pretty">
-          Donnez ce dont vous n’avez plus l’usage et fixez une participation modeste : elle soutient
-          l’association de votre choix. Étudiants et personnes dans le besoin repartent avec l’objet,
-          à petit prix.
+          Donnez un objet, la participation va à l’association de votre choix.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">

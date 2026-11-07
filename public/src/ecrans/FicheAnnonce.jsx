@@ -201,8 +201,8 @@ export default function FicheAnnonce({ profil }) {
             {remise
               ? "Cet objet a déjà trouvé preneur. Merci pour l’association !"
               : estLaMienne
-                ? "Vous avez réservé cet objet à un demandeur : suivez l’échange dans vos messages."
-                : "Cet objet est déjà réservé. Vous pouvez quand même le demander : si la personne renonce, l’offrant pourra vous le proposer."}
+                ? "Objet réservé à un demandeur : suivez l’échange dans vos messages."
+                : "Déjà réservé : demandez-le, vous passerez après si la personne renonce."}
           </p>
         )}
 
