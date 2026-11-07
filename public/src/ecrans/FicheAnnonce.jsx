@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { CalendarDays, CircleCheck, ChevronLeft, Gift, Heart, Loader2, Lock, MapPin, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
+import MeteoCreneau from "@/components/MeteoCreneau.jsx";
 import { EtatVide, ErreurChargement } from "@/components/Etats.jsx";
 import { chargerAnnonce, chargerMesReservations, contacterOffrant, demanderObjet, retirerAnnonce } from "@/lib/api.js";
 import { basculerFavori, useFavoris } from "@/lib/favoris.js";
@@ -370,6 +371,7 @@ export default function FicheAnnonce({ profil }) {
           <CalendarDays className="size-5 text-primary" aria-hidden="true" />
           {formaterCreneau(annonce.creneauRetrait)}
         </p>
+        {!termine && <MeteoCreneau annonce={annonce} />}
         {termine && !remise && (
           <p className="mt-1 text-sm text-muted-foreground">
             Ce créneau est passé : l’offrant doit en proposer un nouveau.
