@@ -16,6 +16,7 @@ const statutDon = (annonce) =>
 /** Statut d'une demande, du point de vue du demandeur : ce qu'il a a faire. */
 const STATUTS_DEMANDE = {
   demandee: ["En attente de l’offrant", "bg-pervenche"],
+  liste_attente: ["En liste d’attente", "bg-pervenche"],
   proposee: ["À payer", "bg-citron"],
   confirmee: ["Confirmée", "bg-menthe"],
 };

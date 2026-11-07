@@ -26,6 +26,7 @@ function etape(reservation, monRole) {
   if (!reservation) return null;
   const s = reservation.statut;
   if (s === "demandee") return monRole === "offrant" ? ["Demande à valider", "bg-citron"] : ["Demande envoyée", "bg-pervenche"];
+  if (s === "liste_attente") return ["Liste d’attente", "bg-pervenche"];
   if (s === "proposee") return monRole === "demandeur" ? ["À payer", "bg-citron"] : ["Réservé", "bg-pervenche"];
   if (s === "confirmee") return ["Confirmé", "bg-menthe"];
   if (s === "remise") return ["Remis", "bg-menthe"];

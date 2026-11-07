@@ -21,6 +21,7 @@ function statutAnnonce(a) {
 /** Pastille de statut d'une reservation, du point de vue du demandeur. */
 const STATUTS_RESERVATION = {
   demandee: ["Demande envoyée", "bg-pervenche"],
+  liste_attente: ["En liste d’attente", "bg-pervenche"],
   proposee: ["À payer", "bg-citron"],
   confirmee: ["Confirmée", "bg-menthe"],
   remise: ["Reçu", "bg-menthe"],
