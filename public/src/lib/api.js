@@ -194,6 +194,8 @@ export const renoncerReservation = (id) => actionReservation(id, 'renonciation')
 /** Ouvre le tunnel de paiement de test ; renvoie l'adresse de la page Stripe. */
 export const ouvrirPaiement = (id) => actionReservation(id, 'paiement').then((d) => d.urlPaiement);
 export const confirmerPaiement = (id) => actionReservation(id, 'paiement/confirmation');
+/** L'offrant confirme que l'objet a changé de mains. */
+export const confirmerRemise = (id) => actionReservation(id, 'remise');
 
 /** Modifier ou retirer son annonce. */
 export const chargerEdition = (id) =>
