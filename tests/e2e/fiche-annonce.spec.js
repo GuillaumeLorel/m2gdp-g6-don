@@ -59,7 +59,7 @@ test('Ouvrir une fiche depuis l’accueil, puis revenir', async ({ page }) => {
 
 test('Annonce réservée : signalée, mais la demande reste possible', async ({ page }) => {
   await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${reservee.id}`);
-  await expect(page.getByText('Cet objet est déjà réservé.', { exact: false })).toBeVisible();
+  await expect(page.getByText('Déjà réservé : demandez-le')).toBeVisible();
   // Si la personne renonce, l'offrant pourra proposer l'objet a quelqu'un d'autre.
   await expect(page.getByRole('button', { name: /Réserver pour/ })).toBeEnabled();
 });

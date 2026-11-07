@@ -111,7 +111,7 @@ test.describe('Réservation', () => {
     await expect(page).toHaveURL(/\/messages\/[\w-]+$/);
     const conversation = page.url().split('/').pop();
     await expect(page.getByText('Demande envoyée : l’offrant doit la valider.')).toBeVisible();
-    await expect(page.getByText(`${fatou.prenom} souhaite récupérer cet objet.`)).toBeVisible();
+    await expect(page.getByText(`${fatou.prenom} souhaite récupérer cet objet`)).toBeVisible();
 
     // L'offrant valide : l'objet est reserve pour Fatou, au montant de l'annonce.
     const offrant = await autrePage(browser, baseURL, PROFILS.offrantEtDemandeur, `/messages/${conversation}`);

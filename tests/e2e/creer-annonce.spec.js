@@ -208,7 +208,7 @@ test.describe('US-7 — Participation et créneau', () => {
     await expect(champ(page, 'Complément (facultatif)')).toHaveValue(bastien.complementAdresse);
     await expect(champ(page, 'Code postal')).toHaveValue(bastien.codePostal);
     await expect(champ(page, 'Ville')).toHaveValue(bastien.ville);
-    await expect(page.getByText('ne voit que le code postal et la ville')).toBeVisible();
+    await expect(page.getByText('L’adresse exacte n’est révélée qu’après le paiement de la participation.')).toBeVisible();
     await attendrePasDeDefilementHorizontal(page);
   });
 });

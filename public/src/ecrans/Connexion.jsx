@@ -119,8 +119,7 @@ export default function Connexion() {
             className="size-9 shrink-0"
           />
           <p className="text-[0.8rem] leading-5 text-muted-foreground">
-            Le code est valable une heure et ne sert qu’une fois. Rien reçu ?
-            Regardez vos indésirables.
+            Code valable une heure : rien reçu ? Regardez vos indésirables.
           </p>
         </div>
 

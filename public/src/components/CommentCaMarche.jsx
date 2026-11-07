@@ -15,7 +15,7 @@ const ETAPES = [
     illustration: "/illustrations/objet-pin-carte.svg",
     teinte: "bg-citron",
     titre: "Un demandeur le récupère",
-    texte: "Il verse la participation et découvre l’adresse exacte, puis passe chercher l’objet.",
+    texte: "Il verse la participation, puis découvre l’adresse exacte.",
   },
 ];
 

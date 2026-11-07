@@ -96,18 +96,18 @@ function BandeauReservation({ conversation, surAction }) {
     }
   } else if (r.statut === "demandee") {
     if (monRole === "offrant") {
-      texte = `${interlocuteur.prenom} souhaite récupérer cet objet. Validez pour le lui réserver : ${interlocuteur.prenom} versera alors ${montant} à l’association.`;
+      texte = `${interlocuteur.prenom} souhaite récupérer cet objet : validez pour le lui réserver.`;
       actions = [
         bouton("valider", "Valider la demande", () => agir("valider", () => validerDemande(r.id))),
         bouton("decliner", "Décliner", () => agir("decliner", () => declinerDemande(r.id)), "doneoSecondaire", X),
       ];
     } else {
-      texte = "Demande envoyée : l’offrant doit la valider. Vous verserez ensuite la participation.";
+      texte = "Demande envoyée : l’offrant doit la valider avant le paiement.";
       actions = [bouton("renoncer", "Annuler ma demande", () => agir("renoncer", () => renoncerReservation(r.id)), "doneoSecondaire", X)];
     }
   } else if (r.statut === "proposee") {
     if (monRole === "demandeur") {
-      texte = `L’objet vous est réservé ! Versez ${montant} à l’association pour confirmer et recevoir l’adresse exacte. Paiement de test : rien n’est débité.`;
+      texte = `Objet réservé : versez ${montant} à l’association pour voir l’adresse exacte.`;
       actions = [
         bouton("payer", `Verser ${montant}`, payer, "doneo", CreditCard),
         bouton("renoncer", "Renoncer", () => agir("renoncer", () => renoncerReservation(r.id)), "doneoSecondaire", X),
@@ -150,6 +150,9 @@ function BandeauReservation({ conversation, surAction }) {
           )}
           <span>{texte}</span>
         </p>
+      )}
+      {r?.statut === "proposee" && monRole === "demandeur" && (
+        <p className="px-1 text-xs text-muted-foreground">Paiement de test : rien n’est débité.</p>
       )}
       {adresse && (
         <div className="rounded-2xl border border-succes/30 bg-white p-3.5">

@@ -339,7 +339,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               onChange={modifier("participation")}
               onBlur={toucher("participation")}
               aria-invalid={touches.participation && !participationValide ? "true" : undefined}
-              aide="Un montant modeste, versé intégralement à l’association que vous choisissez. Vous ne touchez rien : c’est ce qui fait de l’objet un don."
+              aide="Montant modeste, versé en entier à l’association : vous ne touchez rien."
             />
             <div className="flex gap-2" role="group" aria-label="Montants suggérés">
               {MONTANTS_SUGGERES.map((m) => (
@@ -436,9 +436,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
             <p className="flex gap-2.5 rounded-2xl bg-lavande/50 p-3.5 text-xs leading-5 text-ardoise">
               <Lock className="mt-0.5 size-4 shrink-0 text-violet-fonce" aria-hidden="true" />
               <span>
-                Avant de verser sa participation, le demandeur ne voit que le code postal et la ville. L’adresse
-                exacte ne lui est donnée qu’une fois sa participation validée. Modifier l’adresse ici ne change pas
-                votre profil.
+                L’adresse exacte n’est révélée qu’après le paiement de la participation.
               </span>
             </p>
           </fieldset>
@@ -538,8 +536,8 @@ function Apercu({ annonce, etape }) {
         <img src="/illustrations/objet-etoile.svg" alt="" aria-hidden="true" className="size-9 shrink-0" />
         <p className="text-xs leading-5 text-muted-foreground text-pretty">
           {etape === 1
-            ? "Une photo nette, prise à la lumière du jour, et les dimensions dans la description : l’objet trouve preneur plus vite."
-            : "Restez modeste : la participation soutient une association, ce n’est pas le prix de l’objet."}
+            ? "Une photo nette et les dimensions aident l’objet à trouver preneur."
+            : "La participation soutient une association : ce n’est pas le prix de l’objet."}
         </p>
       </div>
     </div>
@@ -581,8 +579,7 @@ function RoleOffrantManquant({ profil, surProfil }) {
             Ajouter le rôle offrant
           </Button>
         }>
-        Votre profil a seulement le rôle demandeur. Ajoutez le rôle offrant à votre profil pour publier une annonce :
-        vous garderez aussi la possibilité de demander des objets.
+        Ajoutez le rôle offrant à votre profil pour publier une annonce.
       </EtatVide>
       {erreur && (
         <p role="alert" className="mt-4 text-sm text-destructive">
