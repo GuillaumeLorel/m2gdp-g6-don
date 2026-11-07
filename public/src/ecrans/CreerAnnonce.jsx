@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { CalendarDays, ChevronDown, ChevronLeft, Heart, Loader2, Lock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import Champ, { CLASSES_CHAMP } from "@/components/Champ.jsx";
+import ChampAdresse from "@/components/ChampAdresse.jsx";
 import { EtatVide } from "@/components/Etats.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import PhotosAnnonce from "@/components/PhotosAnnonce.jsx";
@@ -404,6 +405,10 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
           {/* US-8 : adresse preremplie depuis le profil. */}
           <fieldset className="space-y-3" disabled={figes.has("numeroRue")}>
             <legend className="doneo-etiquette">Lieu de retrait</legend>
+            <ChampAdresse
+              id={`${id}-recherche-adresse`}
+              surChoix={(adresse) => setChamps((p) => ({ ...p, ...adresse }))}
+            />
             <div className="grid grid-cols-[6rem_1fr] gap-3">
               <Champ
                 id={`${id}-numero`}

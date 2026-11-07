@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Heart, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import Champ from "@/components/Champ.jsx";
+import ChampAdresse from "@/components/ChampAdresse.jsx";
 import { enregistrerProfil } from "@/lib/api.js";
 
 /** Aujourd'hui, borne haute du champ : on ne naît pas dans le futur. */
@@ -166,6 +167,11 @@ export default function Inscription({ email, surTermine, profil = null }) {
           max={aujourdhui()}
           value={champs.dateNaissance}
           onChange={modifier("dateNaissance")}
+        />
+
+        <ChampAdresse
+          id="recherche-adresse"
+          surChoix={(adresse) => setChamps((p) => ({ ...p, ...adresse }))}
         />
 
         {/* Numero et rue sur une meme ligne : c'est ainsi qu'on ecrit une
