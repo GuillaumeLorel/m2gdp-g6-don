@@ -925,8 +925,10 @@ paths:
 
         La conversation (annonce, demandeur) est créée si besoin et reçoit un
         message système `demande_recue` ; `message` (facultatif, dans le
-        corps) y est ajouté. Aucun paiement à ce stade. La liste d'attente
-        ordonnée (`liste_attente`) vient en J5.
+        corps) y est ajouté. Aucun paiement à ce stade. Si l'objet est déjà
+        tenu (proposé ou confirmé), la demande entre en liste d'attente
+        (`liste_attente`, 5 personnes au plus) et reçoit un message système
+        `demande_en_file`.
       security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
@@ -1074,7 +1076,8 @@ paths:
       description: >
         Sur une réservation `demandee` (motif `desistement`) ou `proposee`
         (motif `refus` : l'annonce redevient `disponible`), par son
-        demandeur. Une réservation déjà payée relève du désistement (J5).
+        demandeur. Une réservation déjà payée relève du désistement
+        (`/desistement`).
       security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
@@ -1390,7 +1393,8 @@ components:
       description: >
         `demandee` : en attente de la réponse de l'offrant. `proposee` :
         validée par l'offrant, le demandeur doit payer. `confirmee` : payée,
-        l'adresse exacte est donnée. `liste_attente` et `remise` : J5.
+        l'adresse exacte est donnée. `liste_attente` : inscrit derrière celui qui
+        tient l'objet. `remise` : l'objet a changé de mains.
 
     ProfilResume:
       type: object

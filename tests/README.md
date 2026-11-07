@@ -21,7 +21,7 @@ npm run rapport                   # rapport HTML, captures des échecs
 
 ## Comment les tests se connectent
 
-Le lien magique passe par une boîte mail : inutilisable dans un test. Avec la
+Le code de connexion arrive par une boîte mail : inutilisable dans un test. Avec la
 clé secrète, les tests demandent à Supabase un lien sans l'envoyer, l'échangent
 contre une **session**, et le front l'adopte par un crochet présent **en
 développement seulement** (`window.__doneoTest`, absent du build de production).
@@ -38,6 +38,8 @@ appels réseau, sans toucher aux données.
 | --- | --- |
 | `e2e/connexion.spec.js` | Connexion par le code à 6 chiffres de l’e-mail (et par lien, encore géré) |
 | `e2e/echanges.spec.js` | Favoris (#49, #50), messagerie (#63 à #65), réservation : demande, validation, déclin, renoncement, paiement Stripe de test, adresse exacte (#52, #53, #55, #56), modifier ou retirer son annonce (#39), profil (#67, #68) |
+| `e2e/remise.spec.js` | Confirmer la remise (#62), se désister et passer au suivant (#58, #60). Le Worker n'a pas encore été essayé avec ces tests |
+| `e2e/adresse-suggestions.spec.js` | US-49 — Suggestions d'adresses à la saisie, service de l'IGN simulé (#129) |
 | `e2e/creer-annonce.spec.js` | US-6, US-7, US-8 — Créer une annonce en deux étapes, participation et créneau, adresse préremplie (#34, #35, #36) |
 | `e2e/en-cours.spec.js` | US-5 — Dons et demandes en cours sur l’accueil (#33) |
 | `e2e/accueil.spec.js` | US-4 — Accueil, menu du bas, derniers objets (#32) |
