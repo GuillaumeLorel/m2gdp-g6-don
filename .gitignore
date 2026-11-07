@@ -49,3 +49,6 @@ presentation/_sources/
 
 # Vidéo source de la vitrine (lourde, la version compressée est dans landing/public/assets/video/)
 landing/assets/video/
+
+# Notes locales (pas pour le depot)
+.claude/a-faire.md
