@@ -40,11 +40,10 @@ test('Photo reconnue : consentement exigé, puis la recherche existante est lanc
 
   await page.getByLabel('Photo de l’objet à chercher').setInputFiles(photo);
   await expect(page.getByRole('searchbox', { name: 'Rechercher un objet' })).toHaveValue('vélo');
-  await expect(page).toHaveURL(/sousCategorieId=sport-velos/);
-  await expect(page).toHaveURL(/categorieId=sport/);
-  // Le panneau se referme, et les filtres posés se retirent comme les autres.
+  // Le mot seul : aucun filtre de catégorie ne vient restreindre la recherche.
+  await expect(page).toHaveURL(/q=v%C3%A9lo|q=vélo/);
+  await expect(page).not.toHaveURL(/categorieId|sousCategorieId/);
   await expect(page.getByRole('group', { name: 'Chercher avec une photo' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /Retirer le filtre/ }).first()).toBeVisible();
 });
 
 test('Photo non reconnue : message clair, recherche par mots toujours disponible', async ({ page }) => {

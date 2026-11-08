@@ -209,10 +209,13 @@ export default function Recherche() {
   }, [surCarte, erreur]);
 
   /** L'IA a reconnu l'objet : sa description alimente la recherche existante. */
-  function appliquerPhoto({ nom, categorieId, sousCategorieId }) {
+  function appliquerPhoto({ nom }) {
     qEcrit.current = nom;
     setSaisie(nom);
-    modifierCriteres({ q: nom, categorieId, sousCategorieId });
+    // Le mot seul : la sous-categorie devinee par l'IA ne correspond pas
+    // toujours au rangement choisi par l'offrant, et un filtre de trop
+    // viderait la liste. Les anciens filtres sont retires pour la meme raison.
+    modifierCriteres({ q: nom, categorieId: "", sousCategorieId: "" });
     setPhotoOuverte(false);
   }
 
