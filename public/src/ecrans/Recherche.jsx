@@ -26,6 +26,8 @@ const TRIS = [
   { valeur: "participation", libelle: "Participation", titre: "La plus petite participation d’abord" },
   { valeur: "creneau", libelle: "Créneau", titre: "Le créneau le plus proche d’abord" },
 ];
+/** Tri par proximite (#48) : seulement quand la recherche est centree sur un point. */
+const TRI_PROXIMITE = { valeur: "proximite", libelle: "Proximité", titre: "Les plus proches d’abord" };
 
 /** « 1 pépite », « 12 pépites ». */
 const pepites = (n) => `${n} ${n > 1 ? "pépites" : "pépite"}`;
@@ -45,7 +47,9 @@ export default function Recherche() {
   const grandEcran = useGrandEcran();
   const surCarte = !grandEcran && parametres.get("vue") === "carte";
   const [survolee, setSurvolee] = useState(null);
-  const tri = TRIS.some((t) => t.valeur === parametres.get("tri")) ? parametres.get("tri") : "recent";
+  const centree = Boolean(parametres.get("latitude") && parametres.get("longitude"));
+  const tris = centree ? [...TRIS, TRI_PROXIMITE] : TRIS;
+  const tri = tris.some((t) => t.valeur === parametres.get("tri")) ? parametres.get("tri") : "recent";
   const cleFiltres = CLES_FILTRES.map((c) => parametres.get(c) || "").join("|");
   const filtres = useMemo(
     () => Object.fromEntries(CLES_FILTRES.map((c, i) => [c, cleFiltres.split("|")[i]])),
@@ -116,7 +120,8 @@ export default function Recherche() {
   }, [q]);
 
   const criteres = useMemo(
-    () => ({ q, ...filtres, tri, parPage: surCarte ? PAR_PAGE_CARTE : PAR_PAGE }),
+    // `lieu` n'est que le libelle de la puce : l'API ne le connait pas.
+    () => ({ q, ...filtres, lieu: undefined, tri, parPage: surCarte ? PAR_PAGE_CARTE : PAR_PAGE }),
     [q, filtres, tri, surCarte],
   );
   // Criteres en vigueur, lus par « Voir plus » une fois sa reponse arrivee.
@@ -209,6 +214,11 @@ export default function Recherche() {
     filtres.categorieId && { cle: "categorieId", libelle: categorie?.libelle || "Catégorie", retirer: { categorieId: "", sousCategorieId: "" } },
     filtres.sousCategorieId && { cle: "sousCategorieId", libelle: sousCategorie?.libelle || "Sous-catégorie", retirer: { sousCategorieId: "" } },
     filtres.etat && { cle: "etat", libelle: LIBELLES_ETAT[filtres.etat] || filtres.etat, retirer: { etat: "" } },
+    filtres.lieu && {
+      cle: "lieu",
+      libelle: `${filtres.lieu} · ${filtres.rayonKm || 5} km`,
+      retirer: { latitude: "", longitude: "", lieu: "", rayonKm: "", ...(tri === "proximite" ? { tri: "" } : {}) },
+    },
     filtres.participationMax && {
       cle: "participationMax",
       libelle: `≤ ${formaterParticipation(Number(filtres.participationMax))}`,
@@ -328,7 +338,7 @@ export default function Recherche() {
             aria-label="Trier"
             className="-mx-5 mt-2 flex items-center gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none]">
             <span className="shrink-0 text-sm text-muted-foreground">Trier</span>
-            {TRIS.map((t) => (
+            {tris.map((t) => (
               <button
                 key={t.valeur}
                 type="button"

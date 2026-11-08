@@ -72,6 +72,25 @@ export async function geocoder({ numeroRue, rue, codePostal, ville }) {
 }
 
 /**
+ * Centre d'un code postal (le centre de la commune, ou de l'arrondissement),
+ * pour chercher autour sans que la personne donne sa position (#48).
+ * Renvoie { latitude, longitude }, null si le code est inconnu ; leve une
+ * erreur si le service ne repond pas.
+ */
+export async function centroideCodePostal(codePostal) {
+  const url = new URL('https://data.geopf.fr/geocodage/search');
+  url.searchParams.set('q', codePostal);
+  url.searchParams.set('type', 'municipality');
+  url.searchParams.set('postcode', codePostal);
+  url.searchParams.set('limit', '1');
+  const reponse = await fetch(url);
+  if (!reponse.ok) throw new Error(`Geoplateforme ${reponse.status}`);
+  const { features = [] } = await reponse.json();
+  const [longitude, latitude] = features[0]?.geometry?.coordinates || [];
+  return Number.isFinite(latitude) && Number.isFinite(longitude) ? { latitude, longitude } : null;
+}
+
+/**
  * Position approchee, publique : la position exacte decalee de 200 a 500 m.
  * Le decalage est DERIVE DE L'ADRESSE, et non tire a chaque annonce : toutes
  * les annonces d'une meme adresse partagent le meme point, et leur moyenne ne

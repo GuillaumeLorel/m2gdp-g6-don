@@ -14,7 +14,7 @@ const MIN_CARACTERES = 3;
  * complement reste a saisir. Si le service ne repond pas ou ne trouve rien,
  * rien ne s'affiche : les champs en dessous se remplissent a la main.
  */
-export default function ChampAdresse({ id, surChoix }) {
+export default function ChampAdresse({ id, surChoix, etiquette = "Chercher mon adresse" }) {
   const idListe = `${useId()}-suggestions`;
   const [texte, setTexte] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -51,12 +51,16 @@ export default function ChampAdresse({ id, surChoix }) {
     setTexte(adresse.label);
     setSuggestions([]);
     setOuvert(false);
-    surChoix({
-      numeroRue: adresse.numeroRue,
-      rue: adresse.rue,
-      codePostal: adresse.codePostal,
-      ville: adresse.ville,
-    });
+    // Le second argument est la position du point, pour qui veut chercher autour.
+    surChoix(
+      {
+        numeroRue: adresse.numeroRue,
+        rue: adresse.rue,
+        codePostal: adresse.codePostal,
+        ville: adresse.ville,
+      },
+      { latitude: adresse.latitude, longitude: adresse.longitude },
+    );
   }
 
   function touche(e) {
@@ -78,7 +82,7 @@ export default function ChampAdresse({ id, surChoix }) {
   return (
     <div className="relative space-y-2">
       <Label htmlFor={id} className="doneo-etiquette">
-        Chercher mon adresse
+        {etiquette}
       </Label>
       <Input
         id={id}

@@ -1,6 +1,8 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useContext, useEffect, useId, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
+import ChampAdresse from "@/components/ChampAdresse.jsx";
+import { ContextePosition } from "@/lib/distance.js";
 import { LIBELLES_ETAT } from "@/lib/format.js";
 
 /** Puce selectionnable de la feuille, d'apres l'ecran 07 de la maquette. */
@@ -9,7 +11,7 @@ function Puce({ active, children, ...props }) {
     <button
       type="button"
       aria-pressed={active}
-      className={`h-10 rounded-full px-4 text-sm font-medium transition-colors ${
+      className={`h-10 rounded-full px-4 text-sm font-medium transition-colors disabled:opacity-50 ${
         active ? "bg-primary text-white shadow-md shadow-primary/30" : "border border-primary/10 bg-white text-ardoise"
       }`}
       {...props}>
@@ -18,7 +20,17 @@ function Puce({ active, children, ...props }) {
   );
 }
 
-export const FILTRES_VIDES = { categorieId: "", sousCategorieId: "", etat: "", participationMax: "" };
+export const FILTRES_VIDES = {
+  categorieId: "", sousCategorieId: "", etat: "", participationMax: "",
+  // « Autour de » (#48) : un point et un rayon. `lieu` n'est que le libelle affiche.
+  latitude: "", longitude: "", rayonKm: "", lieu: "",
+};
+
+export const RAYONS_KM = [1, 2, 5, 10, 20];
+const RAYON_PAR_DEFAUT = 5;
+
+/** Position arrondie a deux decimales (environ 1 km) : on cherche autour d'une zone, pas d'une porte. */
+const arrondir = (n) => Math.round(n * 100) / 100;
 
 /** Participation maximale saisie : vide, ou un montant positif (virgule acceptee). */
 export function lireMontant(saisie) {
@@ -36,8 +48,8 @@ export function lireMontant(saisie) {
  * participation maximale. Les choix ne s'appliquent qu'a « Appliquer » ; les
  * boutons restent visibles en bas de la feuille, meme sur un petit ecran.
  *
- * Pas de filtre de distance ni d'association : l'API ne les prevoit pas a ce
- * stade (exclusions de l'issue). L'etat « A reparer » de la maquette n'existe
+ * « Autour de » (#48) : sa ville, ou une autre adresse, et un rayon. Pas de
+ * filtre d'association : l'API ne le prevoit pas. L'etat « A reparer » de la maquette n'existe
  * pas non plus : on s'en tient aux quatre valeurs de l'API.
  */
 export default function FeuilleFiltres({ ouverte, categories, filtres, surAppliquer, surFermer }) {
@@ -45,6 +57,7 @@ export default function FeuilleFiltres({ ouverte, categories, filtres, surAppliq
   const aideId = useId();
   const [brouillon, setBrouillon] = useState(filtres);
   const [montant, setMontant] = useState("");
+  const maPosition = useContext(ContextePosition);
   const premierBouton = useRef(null);
 
   // A chaque ouverture, on repart des filtres en vigueur.
@@ -73,6 +86,17 @@ export default function FeuilleFiltres({ ouverte, categories, filtres, surAppliq
       // Changer de categorie invalide la sous-categorie choisie.
       ...(cle === "categorieId" ? { sousCategorieId: "" } : {}),
     }));
+
+  /** Chercher autour d'un point : le rayon par defaut s'applique des le choix. */
+  const centrerSur = (position, lieu) =>
+    setBrouillon((b) => ({
+      ...b,
+      latitude: arrondir(position.latitude),
+      longitude: arrondir(position.longitude),
+      lieu,
+      rayonKm: b.rayonKm || RAYON_PAR_DEFAUT,
+    }));
+  const retirerCentre = () => setBrouillon((b) => ({ ...b, latitude: "", longitude: "", lieu: "", rayonKm: "" }));
 
   function appliquer(e) {
     e.preventDefault();
@@ -147,6 +171,47 @@ export default function FeuilleFiltres({ ouverte, categories, filtres, surAppliq
                 </Puce>
               ))}
             </div>
+          </fieldset>
+
+          <fieldset className="mt-5">
+            <legend className="doneo-etiquette">Autour de</legend>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              <Puce
+                active={brouillon.lieu === "Ma ville"}
+                disabled={!maPosition}
+                onClick={() => (brouillon.lieu === "Ma ville" ? retirerCentre() : centrerSur(maPosition, "Ma ville"))}>
+                Ma ville
+              </Puce>
+              {brouillon.lieu && brouillon.lieu !== "Ma ville" && (
+                <Puce active onClick={retirerCentre} aria-label={`Retirer : autour de ${brouillon.lieu}`}>
+                  {brouillon.lieu}
+                </Puce>
+              )}
+            </div>
+            <div className="mt-3">
+              <ChampAdresse
+                id={`${titreId}-autour`}
+                etiquette="Une autre adresse"
+                surChoix={(adresse, position) =>
+                  Number.isFinite(position?.latitude) && centrerSur(position, `${adresse.codePostal} ${adresse.ville}`)
+                }
+              />
+            </div>
+            {brouillon.lieu && (
+              <div className="mt-3" role="group" aria-label="Rayon de recherche">
+                <p className="doneo-etiquette">Rayon</p>
+                <div className="mt-2.5 flex flex-wrap gap-2">
+                  {RAYONS_KM.map((km) => (
+                    <Puce
+                      key={km}
+                      active={Number(brouillon.rayonKm) === km}
+                      onClick={() => setBrouillon((b) => ({ ...b, rayonKm: km }))}>
+                      {km} km
+                    </Puce>
+                  ))}
+                </div>
+              </div>
+            )}
           </fieldset>
 
           <div className="mt-5">

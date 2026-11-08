@@ -9,7 +9,7 @@ const LYON = { lat: 45.76, lon: 4.84 };
 /**
  * @param {string} texte    ce que la personne a tape
  * @param {AbortSignal} [signal]
- * @returns {Promise<{label: string, numeroRue: string, rue: string, codePostal: string, ville: string}[]>}
+ * @returns {Promise<{label: string, numeroRue: string, rue: string, codePostal: string, ville: string, latitude?: number, longitude?: number}[]>}
  */
 export async function chercherAdresses(texte, signal) {
   const url = new URL(SERVICE);
@@ -26,12 +26,14 @@ export async function chercherAdresses(texte, signal) {
   const { features = [] } = await reponse.json();
 
   return features
-    .map(({ properties: p = {} }) => ({
+    .map(({ properties: p = {}, geometry }) => ({
       label: p.label,
       numeroRue: p.housenumber || "",
       rue: p.street || p.name || "",
       codePostal: p.postcode || "",
       ville: p.city || "",
+      longitude: geometry?.coordinates?.[0],
+      latitude: geometry?.coordinates?.[1],
     }))
     .filter((a) => a.label && a.rue && /^\d{5}$/.test(a.codePostal) && a.ville);
 }

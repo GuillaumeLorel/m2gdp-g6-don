@@ -429,7 +429,9 @@ paths:
           in: query
           description: >
             `proximite` exige `latitude` et `longitude`, ou un `codePostal` dont
-            on prend le centroïde ; sinon 422.
+            on prend le centre de la commune ; sinon 422. Une position fournie
+            prime sur le code postal. Elle vient de l'appli, arrondie à environ
+            1 km, et n'est jamais stockée.
           schema:
             type: string
             enum: [recent, proximite, participation, creneau]
