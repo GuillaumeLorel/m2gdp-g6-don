@@ -132,6 +132,29 @@ function entier(parametres, nom, defaut, min, max) {
   return { valeur: n };
 }
 
+const RAYON_TERRE_KM = 6371;
+const radians = (degres) => (degres * Math.PI) / 180;
+
+/**
+ * Distance en km entre deux points (formule de haversine), arrondie au demi
+ * kilometre. Elle se calcule sur la position APPROCHEE de l'annonce : une
+ * distance plus fine permettrait de retrouver l'adresse exacte (AGENTS.md).
+ */
+export function distanceApprochee(depuis, vers) {
+  const dLat = radians(vers.latitude - depuis.latitude);
+  const dLon = radians(vers.longitude - depuis.longitude);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(radians(depuis.latitude)) * Math.cos(radians(vers.latitude)) * Math.sin(dLon / 2) ** 2;
+  return Math.round(2 * RAYON_TERRE_KM * Math.asin(Math.sqrt(a)) * 2) / 2;
+}
+
+/** Nombre de la requete, ou null si absent ; NaN si ce n'est pas un nombre. */
+function nombre(parametres, nom) {
+  const brut = parametres.get(nom);
+  return brut === null || brut === '' ? null : Number(brut);
+}
+
 /**
  * GET /api/annonces : filtre, trie et pagine. Renvoie { erreurs } si un
  * parametre est invalide, sinon la page au format PageAnnonces.
@@ -156,10 +179,8 @@ export async function rechercherAnnonces(env, parametres) {
   if (etat && !ETATS.includes(etat)) erreurs.push(`« etat » doit valoir : ${ETATS.join(', ')}.`);
 
   const tri = parametres.get('tri') || 'recent';
-  if (tri === 'proximite') {
-    erreurs.push('Le tri par proximité n’est pas encore disponible.');
-  } else if (!TRIS[tri]) {
-    erreurs.push(`« tri » doit valoir : ${Object.keys(TRIS).join(', ')}.`);
+  if (tri !== 'proximite' && !TRIS[tri]) {
+    erreurs.push(`« tri » doit valoir : ${[...Object.keys(TRIS), 'proximite'].join(', ')}.`);
   }
 
   const brutMax = parametres.get('participationMax');
@@ -167,7 +188,26 @@ export async function rechercherAnnonces(env, parametres) {
   if (participationMax !== null && (!Number.isFinite(participationMax) || participationMax < 0)) {
     erreurs.push('La participation maximale doit être un nombre positif.');
   }
+
+  // #48 : autour d'une position. Elle sert a la requete et n'est jamais
+  // stockee. Sans position, ni filtre de distance ni tri par proximite.
+  const latitude = nombre(parametres, 'latitude');
+  const longitude = nombre(parametres, 'longitude');
+  const rayon = nombre(parametres, 'rayonKm');
+  if ((latitude === null) !== (longitude === null)) {
+    erreurs.push('« latitude » et « longitude » vont ensemble.');
+  } else if (latitude !== null && (!(latitude >= -90 && latitude <= 90) || !(longitude >= -180 && longitude <= 180))) {
+    erreurs.push('« latitude » doit être entre -90 et 90, « longitude » entre -180 et 180.');
+  }
+  if (rayon !== null && !(rayon >= 0.5 && rayon <= 50)) {
+    erreurs.push('« rayonKm » doit être entre 0,5 et 50.');
+  }
+  const depuis = latitude !== null && longitude !== null && !erreurs.length ? { latitude, longitude } : null;
+  if (tri === 'proximite' && latitude === null) {
+    erreurs.push('Le tri par proximité demande « latitude » et « longitude ».');
+  }
   if (erreurs.length) return { erreurs };
+  const rayonKm = rayon ?? 10;
 
   // Les filtres portent sur toute la collection, d'ou une lecture complete ;
   // les offrants, eux, ne sont lus que pour la page renvoyee.
@@ -181,14 +221,29 @@ export async function rechercherAnnonces(env, parametres) {
     .filter((a) => participationMax === null || a.participation <= participationMax)
     // Chaque mot doit figurer dans le titre ou la description, sans tenir
     // compte des accents ni de la casse : « etagere » trouve « Étagère ».
-    .filter((a) => !q || correspond(q, a.titre, a.description))
-    .sort(TRIS[tri]);
+    .filter((a) => !q || correspond(q, a.titre, a.description));
+
+  // Distance a l'annonce, sur sa position approchee. Une annonce sans position
+  // est ecartee du filtre : on ne peut pas dire qu'elle est a proximite.
+  const distances = new Map();
+  if (depuis) {
+    for (const a of retenues) {
+      if (Number.isFinite(a.latitudeApprochee) && Number.isFinite(a.longitudeApprochee)) {
+        distances.set(a.id, distanceApprochee(depuis, { latitude: a.latitudeApprochee, longitude: a.longitudeApprochee }));
+      }
+    }
+  }
+  const dansLeRayon = depuis ? retenues.filter((a) => distances.has(a.id) && distances.get(a.id) <= rayonKm) : retenues;
+  dansLeRayon.sort(
+    tri === 'proximite' ? (a, b) => distances.get(a.id) - distances.get(b.id) || plusRecente(a, b) : TRIS[tri],
+  );
 
   const debut = (page.valeur - 1) * parPage.valeur;
+  const publiques = await versAnnoncesPubliques(env, dansLeRayon.slice(debut, debut + parPage.valeur));
   return {
-    total: retenues.length,
+    total: dansLeRayon.length,
     page: page.valeur,
     parPage: parPage.valeur,
-    annonces: await versAnnoncesPubliques(env, retenues.slice(debut, debut + parPage.valeur)),
+    annonces: depuis ? publiques.map((a) => ({ ...a, distanceKm: distances.get(a.id) ?? null })) : publiques,
   };
 }

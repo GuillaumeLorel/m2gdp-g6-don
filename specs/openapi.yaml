@@ -428,8 +428,9 @@ paths:
         - name: tri
           in: query
           description: >
-            `proximite` exige `latitude` et `longitude`, ou un `codePostal` dont
-            on prend le centroïde ; sinon 422.
+            `proximite` exige `latitude` et `longitude` ; sinon 422. Le centroïde
+            d'un `codePostal` n'est pas encore pris en charge (#48 : la position
+            vient de l'appli, arrondie à environ 1 km, jamais stockée).
           schema:
             type: string
             enum: [recent, proximite, participation, creneau]
