@@ -472,9 +472,12 @@ n'a aucune raison d'ouvrir l'application d'elle-même :
    risque de passer au suivant avant que la personne sache qu'elle a été
    choisie. **À trancher avec le PO.**
 
-`evenement` des messages système : `demande_en_file`, `objet_propose`,
-`paiement_valide`, `refus`, `desistement`, `sans_reponse`, `objet_remis`,
-`attribuee_a_autrui`, `creneau_modifie`, `annonce_retiree`.
+`evenement` des messages système : `demande_recue`, `demande_en_file`,
+`demande_declinee`, `demande_annulee`, `objet_propose`, `paiement_valide`,
+`proposition_refusee`, `desistement`, `sans_reponse`, `objet_remis`,
+`attribuee_a_autrui`, `creneau_modifie`, `annonce_retiree`. Ce sont les noms
+écrits par le Worker et par les données de démo ; `refus`, `declinee` et
+`desistement` restent les valeurs de `motifAnnulation`, un autre champ.
 
 ## Commentaires publics
 

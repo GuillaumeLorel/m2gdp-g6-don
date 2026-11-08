@@ -1956,10 +1956,13 @@ components:
           nullable: true
           enum:
             [
+              demande_recue,
               demande_en_file,
+              demande_declinee,
+              demande_annulee,
               objet_propose,
               paiement_valide,
-              refus,
+              proposition_refusee,
               desistement,
               sans_reponse,
               objet_remis,
