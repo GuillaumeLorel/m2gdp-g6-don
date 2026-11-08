@@ -3,6 +3,7 @@ import { Camera, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { SEUIL_REDUCTION, TAILLE_MAX, reduire } from "@/components/PhotosAnnonce.jsx";
 import { rechercherParImage } from "@/lib/api.js";
+import { FONCTIONS_IA, consentementDonne, donnerConsentement, retirerConsentement } from "@/lib/consentementIA.js";
 
 const TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -16,7 +17,9 @@ const TYPES = ["image/jpeg", "image/png", "image/webp"];
 export default function RechercheParPhoto({ surResultat, surFermer }) {
   const id = useId();
   const entree = useRef(null);
-  const [accord, setAccord] = useState(false);
+  // Le consentement n'est demande que la premiere fois : ensuite il est retenu.
+  const [memorise, setMemorise] = useState(() => consentementDonne(FONCTIONS_IA.recherche));
+  const [accord, setAccord] = useState(memorise);
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
 
@@ -29,6 +32,7 @@ export default function RechercheParPhoto({ surResultat, surFermer }) {
       setErreur("Format non pris en charge : JPEG, PNG ou WebP.");
       return;
     }
+    donnerConsentement(FONCTIONS_IA.recherche);
     setEnvoi(true);
     try {
       const fichier = original.size > SEUIL_REDUCTION ? await reduire(original) : original;
@@ -58,19 +62,35 @@ export default function RechercheParPhoto({ surResultat, surFermer }) {
       <p className="text-sm leading-6 text-ardoise">
         Photographiez l’objet que vous cherchez : l’assistant le reconnaît et lance la recherche.
       </p>
-      <label htmlFor={`${id}-accord`} className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-ardoise">
-        <input
-          id={`${id}-accord`}
-          type="checkbox"
-          className="mt-0.5 size-5 shrink-0 accent-primary"
-          checked={accord}
-          onChange={(e) => setAccord(e.target.checked)}
-        />
-        <span>
-          J’accepte que cette photo soit envoyée à Google (Gemini) pour reconnaître l’objet. Elle peut être traitée hors de
-          l’Union européenne et n’est pas conservée par Donéo.
-        </span>
-      </label>
+      {memorise ? (
+        <p className="text-xs leading-5 text-muted-foreground">
+          La photo est envoyée à Google (Gemini) pour reconnaître l’objet, comme vous l’avez accepté.{" "}
+          <button
+            type="button"
+            className="font-semibold text-violet-fonce underline"
+            onClick={() => {
+              retirerConsentement(FONCTIONS_IA.recherche);
+              setMemorise(false);
+              setAccord(false);
+            }}>
+            Retirer mon accord
+          </button>
+        </p>
+      ) : (
+        <label htmlFor={`${id}-accord`} className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-ardoise">
+          <input
+            id={`${id}-accord`}
+            type="checkbox"
+            className="mt-0.5 size-5 shrink-0 accent-primary"
+            checked={accord}
+            onChange={(e) => setAccord(e.target.checked)}
+          />
+          <span>
+            J’accepte que cette photo soit envoyée à Google (Gemini) pour reconnaître l’objet. Elle peut être traitée hors de
+            l’Union européenne et n’est pas conservée par Donéo. Cet accord est demandé une seule fois.
+          </span>
+        </label>
+      )}
       <input
         ref={entree}
         type="file"

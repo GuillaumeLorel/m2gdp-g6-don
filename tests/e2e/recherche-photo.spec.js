@@ -68,3 +68,22 @@ test('Service IA en panne : la recherche par mots reste utilisable', async ({ pa
   await page.getByLabel('Photo de l’objet à chercher').setInputFiles(photo);
   await expect(page.getByRole('alert')).toContainText('n’a pas abouti');
 });
+
+test('Le consentement de la recherche par photo n’est demandé qu’une fois', async ({ page }) => {
+  await simuler(page);
+  await ouvrirConnecte(page, PROFILS.demandeurSeul, '/recherche');
+  await page.getByRole('button', { name: 'Chercher avec une photo' }).click();
+  await page.getByLabel(/J’accepte que cette photo/).check();
+  await page.getByLabel('Photo de l’objet à chercher').setInputFiles(photo);
+  await expect(page.getByRole('searchbox', { name: 'Rechercher un objet' })).toHaveValue('vélo');
+
+  // Nouvelle recherche : vider le champ, rouvrir : plus de case, bouton actif.
+  await page.getByRole('button', { name: 'Effacer la recherche' }).click();
+  await page.getByRole('button', { name: 'Chercher avec une photo' }).click();
+  await expect(page.getByLabel(/J’accepte que cette photo/)).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Prendre ou choisir une photo' })).toBeEnabled();
+
+  await page.getByRole('button', { name: 'Retirer mon accord' }).click();
+  await expect(page.getByLabel(/J’accepte que cette photo/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Prendre ou choisir une photo' })).toBeDisabled();
+});
