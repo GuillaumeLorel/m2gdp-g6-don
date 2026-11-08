@@ -144,6 +144,30 @@ const SCHEMA = (idsSousCategories) => ({
   },
 });
 
+/**
+ * Champs d'un JSON coupe en cours de route : ceux dont la valeur est complete,
+ * et le texte d'un champ long interrompu, rogne a la derniere phrase entiere.
+ * Renvoie null s'il n'en reste rien d'exploitable.
+ */
+function recuperer(brut) {
+  const sortie = {};
+  const champ = /"(\w+)"\s*:\s*("(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?|true|false)\s*[,}\n]/g;
+  for (const [, cle, valeur] of brut.matchAll(champ)) {
+    try {
+      sortie[cle] = JSON.parse(valeur);
+    } catch {
+      /* champ illisible : ignore */
+    }
+  }
+  const coupe = /"description"\s*:\s*"((?:[^"\\]|\\.)*)$/.exec(brut);
+  if (coupe && !sortie.description) {
+    const texte = coupe[1].replace(/\\n/g, ' ').replace(/\\"/g, '"').slice(0, 600);
+    const fin = texte.lastIndexOf('. ');
+    if (fin > 40) sortie.description = texte.slice(0, fin + 1);
+  }
+  return Object.keys(sortie).length ? sortie : null;
+}
+
 async function appelerGemini(env, parties, consigneSysteme, schema) {
   const reponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODELE}:generateContent`, {
     method: 'POST',
@@ -152,7 +176,7 @@ async function appelerGemini(env, parties, consigneSysteme, schema) {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: consigneSysteme }] },
       contents: [{ role: 'user', parts: parties }],
-      generationConfig: { responseMimeType: 'application/json', responseSchema: schema, temperature: 0.4, maxOutputTokens: 1500 },
+      generationConfig: { responseMimeType: 'application/json', responseSchema: schema, temperature: 0.3, maxOutputTokens: 1200 },
     }),
   });
   if (!reponse.ok) throw new Error(`Gemini ${reponse.status} : ${(await reponse.text()).slice(0, 300)}`);
@@ -161,6 +185,10 @@ async function appelerGemini(env, parties, consigneSysteme, schema) {
   try {
     return JSON.parse(brut);
   } catch (e) {
+    // Le modele s'est parfois emballe dans un champ et la reponse a ete
+    // coupee : on garde ce qui est termine plutot que de tout refuser.
+    const recuperee = recuperer(brut);
+    if (recuperee) return recuperee;
     console.error('Sortie IA illisible :', brut.slice(0, 400));
     throw e;
   }
