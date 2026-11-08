@@ -338,9 +338,10 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [brouillonAnnonce]
+                required: [brouillonAnnonce, rechercheImage]
                 properties:
                   brouillonAnnonce: { type: boolean }
+                  rechercheImage: { type: boolean }
 
   /api/ia/brouillon-annonce:
     post:
@@ -384,6 +385,64 @@ paths:
           description: >
             Service IA indisponible. Le front bascule sur le formulaire manuel :
             l'IA accélère la saisie, elle ne la conditionne pas.
+
+  /api/annonces/recherche-par-image:
+    post:
+      tags: ["IA"]
+      summary: "📷 Reconnaître un objet sur une photo, pour lancer la recherche"
+      description: >
+        Le demandeur envoie une photo au lieu de taper des mots. L'IA la
+        décrit (un nom d'objet et une sous-catégorie de NOTRE liste), et le
+        front passe cette description à `GET /api/annonces` (`q`,
+        `categorieId`, `sousCategorieId`) : aucune nouvelle entité.
+
+
+        **Rien n'est enregistré** : la photo n'est ni stockée ni jointe au
+        compte. Le Worker garde la clé du service tiers (Google Gemini
+        Flash-Lite) et applique un quota par utilisateur dans D1 (20 par
+        jour, compté à part des brouillons). L'identifiant de sous-catégorie
+        est validé comme une saisie. L'interface demande le consentement avant
+        l'envoi ; en cas d'échec, la recherche par mots reste disponible.
+      security: [{ jetonSupabase: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [fichier]
+              properties:
+                fichier:
+                  type: string
+                  format: binary
+                  description: "JPEG, PNG ou WebP, 5 Mo au plus"
+      responses:
+        "200":
+          description: "Objet reconnu"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [nom, categorieId, sousCategorieId]
+                properties:
+                  nom:
+                    type: string
+                    description: "Un mot, au singulier"
+                    example: "vélo"
+                  categorieId: { type: string, example: "sport" }
+                  sousCategorieId: { type: string, example: "sport-velos" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "413":
+          description: "Photo trop lourde (5 Mo au plus)"
+        "415":
+          description: "Format non pris en charge (JPEG, PNG ou WebP)"
+        "422":
+          description: "Aucune photo reçue, ou aucun objet identifiable sur la photo"
+        "429": { $ref: "#/components/responses/TropDeRequetes" }
+        "502":
+          description: "Service IA indisponible : la recherche par mots reste disponible"
+        "503":
+          description: "Fonction désactivée (interrupteur `IA_ACTIVEE`)"
 
   # --- Annonces -------------------------------------------------------------------
 
