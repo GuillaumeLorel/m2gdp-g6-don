@@ -121,3 +121,30 @@ test('Route du Worker : refusée sans connexion, texte trop court refusé', asyn
   // 422 si la fonction est active, 503 si l'interrupteur la coupe : jamais d'appel à Google ici.
   expect([422, 503]).toContain(court.statut);
 });
+
+test('Le consentement n’est demandé qu’une fois, et peut être retiré', async ({ page }) => {
+  await simuler(page);
+  await ouvrirConnecte(page, PROFILS.offrantEtDemandeur, '/creer');
+  await page.getByRole('button', { name: 'Remplir avec l’IA' }).click();
+  await page.getByLabel(/Décrivez l’objet en une phrase/).fill('vélo de ville bleu');
+  await page.getByLabel(/J’accepte que ce texte/).check();
+  await page.getByRole('button', { name: 'Générer un brouillon' }).click();
+  await expect(champ(page, 'Titre de l’objet')).toHaveValue('Vélo de ville bleu');
+
+  // Deuxième usage : plus de case à cocher, le bouton est actif d'emblée.
+  await page.getByRole('button', { name: 'Refaire un brouillon avec l’IA' }).click();
+  await page.getByLabel(/Décrivez l’objet en une phrase/).fill('lampe de bureau');
+  await expect(page.getByLabel(/J’accepte que ce texte/)).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Générer un brouillon' })).toBeEnabled();
+
+  // Même après rechargement de la page : l'accord est retenu.
+  await page.reload();
+  await page.getByRole('button', { name: 'Remplir avec l’IA' }).click();
+  await expect(page.getByLabel(/J’accepte que ce texte/)).toHaveCount(0);
+
+  // Le retirer ramène la case.
+  await page.getByRole('button', { name: 'Retirer mon accord' }).click();
+  await expect(page.getByLabel(/J’accepte que ce texte/)).toBeVisible();
+  await page.getByLabel(/Décrivez l’objet en une phrase/).fill('lampe de bureau');
+  await expect(page.getByRole('button', { name: 'Générer un brouillon' })).toBeDisabled();
+});
