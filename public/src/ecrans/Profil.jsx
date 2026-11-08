@@ -1,36 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { ChevronRight, CircleCheck, Heart, Pencil, Users } from "lucide-react";
+import Badge from "@/components/Badge.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { ErreurChargement } from "@/components/Etats.jsx";
 import { chargerMesReservations, chargerResumeProfil } from "@/lib/api.js";
 import { seDeconnecter } from "@/lib/auth.js";
-import { creneauPasse, formaterCreneau, formaterParticipation } from "@/lib/format.js";
+import { badgeAnnonce, badgeReservation } from "@/lib/badges.js";
+import { formaterCreneau, formaterParticipation } from "@/lib/format.js";
 import { libelleRoles } from "@/lib/membres.js";
 
 const mois = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" });
 
-/** Pastille de statut d'une annonce, du point de vue de son offrant. */
-function statutAnnonce(a) {
-  if (a.statut === "remis") return ["Remis", "bg-menthe"];
-  if (a.statut === "reserve") return ["Réservé", "bg-citron"];
-  if (creneauPasse(a.creneauRetrait)) return ["Créneau passé", "bg-destructive/10 text-destructive"];
-  return ["En ligne", "bg-pervenche"];
-}
-
-/** Pastille de statut d'une reservation, du point de vue du demandeur. */
-const STATUTS_RESERVATION = {
-  demandee: ["Demande envoyée", "bg-pervenche"],
-  liste_attente: ["En liste d’attente", "bg-pervenche"],
-  proposee: ["À payer", "bg-citron"],
-  confirmee: ["Confirmée", "bg-menthe"],
-  remise: ["Reçu", "bg-menthe"],
-  annulee: ["Close", "bg-muted text-muted-foreground"],
-};
-
 function Pastille({ valeur }) {
-  const [libelle, couleur] = valeur;
-  return <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise ${couleur}`}>{libelle}</span>;
+  return <Badge famille={valeur.famille} ton={valeur.ton}>{valeur.libelle}</Badge>;
 }
 
 /** Une ligne compacte : vignette, titre, detail, pastille. */
@@ -141,7 +124,7 @@ export default function Profil({ profil }) {
                   vers={`/annonces/${a.id}`}
                   annonce={a}
                   detail={`${formaterParticipation(a.participation)} · ${a.association?.nom || ""}`}
-                  pastille={statutAnnonce(a)}
+                  pastille={{ famille: "annonce", ...badgeAnnonce(a) }}
                 />
               ))}
             </ul>
@@ -164,7 +147,7 @@ export default function Profil({ profil }) {
                   vers={`/messages/${r.conversationId}`}
                   annonce={r.annonce}
                   detail={formaterCreneau(r.annonce.creneauRetrait, { court: true })}
-                  pastille={STATUTS_RESERVATION[r.statut] || STATUTS_RESERVATION.annulee}
+                  pastille={{ famille: "reservation", ...(badgeReservation(r.statut, "demandeur") || badgeReservation("annulee")) }}
                 />
               ))}
             </ul>

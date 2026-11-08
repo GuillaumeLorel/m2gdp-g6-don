@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { CalendarDays, CircleCheck, ChevronLeft, Gift, Heart, Loader2, Lock, MapPin, MessageCircle, Pencil, Trash2 } from "lucide-react";
+import Badge from "@/components/Badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import MeteoCreneau from "@/components/MeteoCreneau.jsx";
@@ -192,7 +193,7 @@ export default function FicheAnnonce({ profil }) {
           {annonce.sousCategorie && (
             <li className="rounded-full bg-pervenche px-3 py-1 text-ardoise">{annonce.sousCategorie.libelle}</li>
           )}
-          <li className="rounded-full bg-menthe px-3 py-1 text-ardoise">{LIBELLES_ETAT[annonce.etat]}</li>
+          <li><Badge famille="etat" className="px-3 py-1 text-sm">{LIBELLES_ETAT[annonce.etat]}</Badge></li>
           <li className="flex items-center gap-1 rounded-full border border-primary/15 bg-white px-3 py-1 text-ardoise">
             <MapPin className="size-3.5" aria-hidden="true" />
             {[lieuAnnonce(annonce), distance].filter(Boolean).join(" · ")}

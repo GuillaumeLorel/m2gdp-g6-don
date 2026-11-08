@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
+import Badge from "@/components/Badge.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { EtatVide, ErreurChargement, ListeEnChargement } from "@/components/Etats.jsx";
 import { chargerConversations } from "@/lib/api.js";
+import { badgeReservation } from "@/lib/badges.js";
 import { nomOffrant } from "@/lib/format.js";
 
 const heure = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
@@ -19,18 +21,6 @@ function quand(iso) {
   if (jours === 1) return "Hier";
   if (jours < 7) return semaine.format(d);
   return date.format(d);
-}
-
-/** Ou en est la reservation, en une pastille. */
-function etape(reservation, monRole) {
-  if (!reservation) return null;
-  const s = reservation.statut;
-  if (s === "demandee") return monRole === "offrant" ? ["Demande à valider", "bg-citron"] : ["Demande envoyée", "bg-pervenche"];
-  if (s === "liste_attente") return ["Liste d’attente", "bg-pervenche"];
-  if (s === "proposee") return monRole === "demandeur" ? ["À payer", "bg-citron"] : ["Réservé", "bg-pervenche"];
-  if (s === "confirmee") return ["Confirmé", "bg-menthe"];
-  if (s === "remise") return ["Remis", "bg-menthe"];
-  return null;
 }
 
 /**
@@ -76,7 +66,7 @@ export default function Messages() {
         {!erreur && conversations?.length > 0 && (
           <ul className="space-y-2.5">
             {conversations.map((c) => {
-              const pastille = etape(c.reservation, c.monRole);
+              const pastille = c.reservation && c.reservation.statut !== "annulee" ? badgeReservation(c.reservation.statut, c.monRole) : null;
               const dernier = c.dernierMessage;
               return (
                 <li key={c.id}>
@@ -99,9 +89,7 @@ export default function Messages() {
                           {dernier ? dernier.contenu : "Aucun message"}
                         </p>
                         {pastille && (
-                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise ${pastille[1]}`}>
-                            {pastille[0]}
-                          </span>
+                          <Badge famille="reservation" ton={pastille.ton}>{pastille.libelle}</Badge>
                         )}
                       </div>
                     </div>

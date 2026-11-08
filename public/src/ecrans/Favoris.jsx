@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Heart, Search } from "lucide-react";
+import Badge from "@/components/Badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import CarteAnnonce from "@/components/CarteAnnonce.jsx";
 import { EtatVide, ErreurChargement, ListeEnChargement } from "@/components/Etats.jsx";
@@ -59,9 +60,9 @@ export default function Favoris() {
               <li key={a.id} className="relative">
                 <CarteAnnonce annonce={a} grille />
                 {a.statut === "remis" && (
-                  <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-citron px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise">
+                  <Badge famille="annonce" ton="remis" className="pointer-events-none absolute bottom-3 left-3">
                     Déjà remis
-                  </span>
+                  </Badge>
                 )}
                 <button
                   type="button"

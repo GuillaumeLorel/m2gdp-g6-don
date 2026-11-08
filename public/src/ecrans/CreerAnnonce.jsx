@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { useNavigate } from "react-router";
 import { CalendarDays, ChevronDown, ChevronLeft, Heart, Loader2, Lock, MapPin } from "lucide-react";
+import Badge from "@/components/Badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import Champ, { CLASSES_CHAMP } from "@/components/Champ.jsx";
 import ChampAdresse from "@/components/ChampAdresse.jsx";
@@ -512,7 +513,7 @@ function Apercu({ annonce, etape }) {
             {annonce.sousCategorie && (
               <li className="rounded-full bg-pervenche px-2.5 py-1">{annonce.sousCategorie.libelle}</li>
             )}
-            {annonce.etat && <li className="rounded-full bg-menthe px-2.5 py-1">{LIBELLES_ETAT[annonce.etat]}</li>}
+            {annonce.etat && <li><Badge famille="etat">{LIBELLES_ETAT[annonce.etat]}</Badge></li>}
             {annonce.ville && (
               <li className="flex items-center gap-1 rounded-full border border-primary/15 bg-white px-2.5 py-1">
                 <MapPin className="size-3" aria-hidden="true" />
