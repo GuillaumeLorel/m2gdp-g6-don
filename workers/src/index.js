@@ -36,7 +36,7 @@ import { validerAdresse } from './adresse.js';
 import { chargerAnnonce, rechercherAnnonces } from './annonces.js';
 import { contacter, envoyerMessage, lireConversation, listerConversations } from './conversations.js';
 import { lireEdition, modifierAnnonce, retirerAnnonce } from './edition.js';
-import { brouillonAnnonce, iaActivee } from './ia.js';
+import { brouillonAnnonce, iaActivee, rechercheParImage } from './ia.js';
 import { ajouterFavori, listerFavoris, retirerFavori } from './favoris.js';
 import { supprimer, televerser, urlMedia } from './medias.js';
 import { resumeProfil } from './profil.js';
@@ -387,13 +387,20 @@ export default {
 
       /* --- IA : brouillon d'annonce (l'IA redige, elle ne publie jamais) --- */
       if (pathname === '/api/ia/statut' && request.method === 'GET') {
-        return json({ brouillonAnnonce: iaActivee(env) }, 200, cors);
+        return json({ brouillonAnnonce: iaActivee(env), rechercheImage: iaActivee(env) }, 200, cors);
       }
       if (pathname === '/api/ia/brouillon-annonce' && request.method === 'POST') {
         const utilisateur = await utilisateurConnecte(request, env);
         if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
         const corps = await request.json().catch(() => ({}));
         const { statut, corps: reponse } = await brouillonAnnonce(env, utilisateur.id, corps);
+        return json(reponse, statut, cors);
+      }
+
+      if (pathname === '/api/annonces/recherche-par-image' && request.method === 'POST') {
+        const utilisateur = await utilisateurConnecte(request, env);
+        if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
+        const { statut, corps: reponse } = await rechercheParImage(env, utilisateur.id, request);
         return json(reponse, statut, cors);
       }
 

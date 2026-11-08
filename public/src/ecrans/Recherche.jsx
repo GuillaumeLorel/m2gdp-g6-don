@@ -1,12 +1,13 @@
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { ListFilter, Loader2, Search, X } from "lucide-react";
+import { Camera, ListFilter, Loader2, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import CarteAnnonce from "@/components/CarteAnnonce.jsx";
 import { EtatVide, ErreurChargement, ListeEnChargement } from "@/components/Etats.jsx";
 import EnTeteCollant from "@/components/EnTeteCollant.jsx";
 import FeuilleFiltres, { FILTRES_VIDES } from "@/components/FeuilleFiltres.jsx";
-import { chargerCategories, chercherAnnonces } from "@/lib/api.js";
+import RechercheParPhoto from "@/components/RechercheParPhoto.jsx";
+import { chargerCategories, chercherAnnonces, rechercheImageDisponible } from "@/lib/api.js";
 import { useGrandEcran } from "@/lib/ecran.js";
 import { LIBELLES_ETAT, formaterParticipation } from "@/lib/format.js";
 
@@ -74,8 +75,13 @@ export default function Recherche() {
   const repereCarte = useRef(null);
   const [hautCarte, setHautCarte] = useState(null);
 
+  // Recherche par photo (#143) : proposee seulement si l'IA est activee.
+  const [photoDispo, setPhotoDispo] = useState(false);
+  const [photoOuverte, setPhotoOuverte] = useState(false);
+
   useEffect(() => {
     chargerCategories().then(setCategories).catch(() => {});
+    rechercheImageDisponible().then(setPhotoDispo);
   }, []);
 
   /** Remplace des criteres dans l'URL ; une valeur vide retire le critere. */
@@ -202,6 +208,17 @@ export default function Recherche() {
     };
   }, [surCarte, erreur]);
 
+  /** L'IA a reconnu l'objet : sa description alimente la recherche existante. */
+  function appliquerPhoto({ nom }) {
+    qEcrit.current = nom;
+    setSaisie(nom);
+    // Le mot seul : la sous-categorie devinee par l'IA ne correspond pas
+    // toujours au rangement choisi par l'offrant, et un filtre de trop
+    // viderait la liste. Les anciens filtres sont retires pour la meme raison.
+    modifierCriteres({ q: nom, categorieId: "", sousCategorieId: "" });
+    setPhotoOuverte(false);
+  }
+
   function effacer() {
     setSaisie("");
     champ.current?.focus();
@@ -250,6 +267,16 @@ export default function Recherche() {
               maxLength={100}
               className="h-13 w-full rounded-2xl border border-primary/10 bg-white pr-12 pl-12 text-base text-ardoise shadow-[0_6px_18px_-12px_rgb(155_77_219/35%)] outline-none placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 [&::-webkit-search-cancel-button]:hidden"
             />
+            {!saisie && photoDispo && (
+              <button
+                type="button"
+                onClick={() => setPhotoOuverte((o) => !o)}
+                aria-label="Chercher avec une photo"
+                aria-expanded={photoOuverte}
+                className="absolute top-1/2 right-3 grid size-8 -translate-y-1/2 place-items-center rounded-full bg-lavande text-violet-fonce">
+                <Camera className="size-4" aria-hidden="true" />
+              </button>
+            )}
             {saisie && (
               <button
                 type="button"
@@ -275,6 +302,8 @@ export default function Recherche() {
             )}
           </button>
         </div>
+
+        {photoOuverte && <RechercheParPhoto surResultat={appliquerPhoto} surFermer={() => setPhotoOuverte(false)} />}
 
         {actifs.length > 0 && (
           <ul
