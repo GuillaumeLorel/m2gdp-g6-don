@@ -1512,7 +1512,12 @@ components:
 
     BrouillonDemande:
       type: object
-      required: [texte]
+      description: >
+        Du texte, des photos, ou les deux : il faut au moins l'un des deux
+        (422 sinon).
+      anyOf:
+        - required: [texte]
+        - required: [mediaIds]
       properties:
         texte:
           type: string

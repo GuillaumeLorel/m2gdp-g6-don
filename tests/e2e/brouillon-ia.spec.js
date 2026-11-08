@@ -7,6 +7,12 @@
 import { expect, test } from '@playwright/test';
 import { PROFILS, appelApi, ouvrirConnecte } from './outils.js';
 
+// Une vraie image (PNG de 1 pixel) : le navigateur doit pouvoir la decoder.
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+  'base64',
+);
+
 const BROUILLON = {
   titre: 'Vélo de ville bleu',
   description: 'Vélo de ville de couleur bleue, en bon état de fonctionnement.',
@@ -55,6 +61,24 @@ test('Le consentement est exigé avant l’envoi, puis le formulaire est prérem
   await expect(champ(page, 'État')).not.toHaveClass(/border-alerte/);
   // Rien n'est publié : on reste sur le formulaire.
   await expect(page.getByText('Étape 1 sur 2')).toBeVisible();
+});
+
+test('Des photos suffisent : pas besoin de texte pour générer un brouillon', async ({ page }) => {
+  await simuler(page);
+  await ouvrirConnecte(page, PROFILS.offrantEtDemandeur, '/creer');
+  await page.getByRole('button', { name: 'Remplir avec l’IA' }).click();
+  const generer = page.getByRole('button', { name: 'Générer un brouillon' });
+  await page.getByLabel(/J’accepte que ce texte/).check();
+  // Ni texte ni photo : rien à envoyer.
+  await expect(generer).toBeDisabled();
+  await page.getByRole('button', { name: 'Annuler' }).click();
+  await page.locator('input[type="file"]').first().setInputFiles({ name: 'objet.png', mimeType: 'image/png', buffer: PNG });
+  await expect(page.getByRole('img', { name: 'Photo 1' })).toBeVisible();
+  await page.getByRole('button', { name: 'Remplir avec l’IA' }).click();
+  await page.getByLabel(/J’accepte que ce texte/).check();
+  await expect(generer).toBeEnabled();
+  await generer.click();
+  await expect(champ(page, 'Titre de l’objet')).toHaveValue('Vélo de ville bleu');
 });
 
 test('La participation est une suggestion que l’offrant garde la main sur', async ({ page }) => {

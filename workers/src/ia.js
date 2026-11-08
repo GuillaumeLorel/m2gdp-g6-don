@@ -219,11 +219,12 @@ export async function brouillonAnnonce(env, utilisateurId, corps) {
   const texte = typeof corps.texte === 'string' ? corps.texte.trim() : '';
   const mediaIds = corps.mediaIds ?? [];
   const erreurs = [];
-  if (texte.length < 3) erreurs.push('Décrivez l’objet en quelques mots (3 caractères au moins).');
+  const photosValides = Array.isArray(mediaIds) && mediaIds.length <= MEDIAS_MAX && new Set(mediaIds).size === mediaIds.length;
+  if (!photosValides) erreurs.push(`L’assistant lit ${MEDIAS_MAX} photos au plus.`);
+  // Le texte, les photos, ou les deux : il faut au moins l'un des deux.
+  const aDesPhotos = photosValides && mediaIds.length > 0;
   if (texte.length > 1000) erreurs.push('Le texte est trop long (1000 caractères au plus).');
-  if (!Array.isArray(mediaIds) || mediaIds.length > MEDIAS_MAX || new Set(mediaIds).size !== mediaIds.length) {
-    erreurs.push(`L’assistant lit ${MEDIAS_MAX} photos au plus.`);
-  }
+  else if (texte.length < 3 && !aDesPhotos) erreurs.push('Décrivez l’objet en quelques mots, ou ajoutez une photo.');
   if (erreurs.length) return { statut: 422, corps: { erreurs } };
 
   const { images, refus } = await chargerImages(env, mediaIds, utilisateurId).catch((e) => {
@@ -246,7 +247,7 @@ export async function brouillonAnnonce(env, utilisateurId, corps) {
 
     const sortie = await appelerGemini(
       env,
-      [{ text: `Objet à donner : ${texte}` }, ...images],
+      [{ text: texte.length >= 3 ? `Objet à donner : ${texte}` : "Objet à donner : voir les photos (aucun texte n'a été saisi)." }, ...images],
       consigne(sousCategories, maintenant),
       SCHEMA(sousCategories.map((s) => s.id)),
     );
