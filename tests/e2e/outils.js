@@ -119,6 +119,8 @@ async function sessionDepuisLien(email) {
 export const PROFILS = {
   offrantEtDemandeur: 'demo-u-005', // Bastien, 8 annonces
   demandeurSeul: 'demo-u-001', // Fatou, aucune annonce
+  deuxiemeDemandeur: 'demo-u-003', // Lina : file d'attente (file-attente.spec.js)
+  troisiemeDemandeur: 'demo-u-004', // Enzo : file d'attente (file-attente.spec.js)
   // Reserve a connexion.spec.js : un lien demande pour un profil invalide
   // les precedents, il ne faut pas gener les sessions des autres tests.
   connexion: 'demo-u-002',
