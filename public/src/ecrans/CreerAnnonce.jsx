@@ -586,7 +586,8 @@ function AssistantIA({ photos, surBrouillon, fait }) {
   const [accord, setAccord] = useState(false);
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
-  const pret = texte.trim().length >= 3 && accord && !envoi;
+  // Le texte, les photos, ou les deux.
+  const pret = (texte.trim().length >= 3 || photos.length > 0) && accord && !envoi;
 
   async function generer() {
     setEnvoi(true);
@@ -624,7 +625,7 @@ function AssistantIA({ photos, surBrouillon, fait }) {
         Remplir avec l’IA
       </p>
       <label htmlFor={`${id}-texte`} className="block text-sm leading-6 text-ardoise">
-        Décrivez l’objet en une phrase : l’assistant prépare un brouillon, que vous relisez avant de publier.
+        Décrivez l’objet en une phrase, ou ajoutez des photos, ou les deux : l’assistant prépare un brouillon, que vous relisez avant de publier.
       </label>
       <textarea
         id={`${id}-texte`}
@@ -644,7 +645,7 @@ function AssistantIA({ photos, surBrouillon, fait }) {
           onChange={(e) => setAccord(e.target.checked)}
         />
         <span>
-          J’accepte que ce texte et les photos ajoutées ({Math.min(photos.length, 3)} sur 3 au plus) soient envoyés à Google
+          J’accepte que ce texte et les photos ajoutées ({Math.min(photos.length, 3)} sur 3 au plus ; les 3 premières sont lues) soient envoyés à Google
           (Gemini) pour rédiger le brouillon. Ils peuvent être traités hors de l’Union européenne. Rien n’est publié sans
           mon accord.
         </span>
