@@ -6,6 +6,7 @@
  * plus simple que des requetes SQL dediees pour chaque filtre, et la base ne sait de
  * toute facon pas chercher du texte sans accents.
  */
+import { centroideCodePostal } from './adresse.js';
 import { lireLigne, lireLignes, listerTable } from './base.js';
 import { versMedia } from './medias.js';
 import { associations, categoriesAPlat } from './referentiels.js';
@@ -202,9 +203,20 @@ export async function rechercherAnnonces(env, parametres) {
   if (rayon !== null && !(rayon >= 0.5 && rayon <= 50)) {
     erreurs.push('« rayonKm » doit être entre 0,5 et 50.');
   }
-  const depuis = latitude !== null && longitude !== null && !erreurs.length ? { latitude, longitude } : null;
-  if (tri === 'proximite' && latitude === null) {
-    erreurs.push('Le tri par proximité demande « latitude » et « longitude ».');
+  // Sans position, un code postal donne le centre de sa commune.
+  const codePostal = (parametres.get('codePostal') || '').trim();
+  if (codePostal && !/^\d{5}$/.test(codePostal)) erreurs.push('« codePostal » doit comporter 5 chiffres.');
+  let depuis = latitude !== null && longitude !== null && !erreurs.length ? { latitude, longitude } : null;
+  if (!depuis && latitude === null && codePostal && !erreurs.length) {
+    try {
+      depuis = await centroideCodePostal(codePostal);
+      if (!depuis) erreurs.push('Ce code postal est introuvable.');
+    } catch {
+      erreurs.push('Le service d’adresses ne répond pas : réessayez, ou donnez une position.');
+    }
+  }
+  if (tri === 'proximite' && latitude === null && !codePostal) {
+    erreurs.push('Le tri par proximité demande « latitude » et « longitude », ou un « codePostal ».');
   }
   if (erreurs.length) return { erreurs };
   const rayonKm = rayon ?? 10;

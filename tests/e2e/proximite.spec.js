@@ -57,6 +57,27 @@ test.describe('API', () => {
     }
   });
 
+  test('Un code postal seul donne le centre de sa commune', async () => {
+    const { statut, corps } = await chercher('codePostal=69007&rayonKm=2&tri=proximite&parPage=50');
+    expect(statut).toBe(200);
+    expect(corps.annonces.length).toBeGreaterThan(0);
+    const distances = corps.annonces.map((a) => a.distanceKm);
+    expect(distances.every((d) => d <= 2)).toBe(true);
+    expect(distances).toEqual([...distances].sort((x, y) => x - y));
+  });
+
+  test('Une position prime sur le code postal', async () => {
+    const avecPosition = (await chercher(`${LYON}&codePostal=13001&rayonKm=2`)).corps.total; // Marseille ignoré
+    const sansCode = (await chercher(`${LYON}&rayonKm=2`)).corps.total;
+    expect(avecPosition).toBe(sansCode);
+  });
+
+  test('Code postal invalide ou inconnu : 422', async () => {
+    for (const requete of ['codePostal=abc', 'codePostal=1234', 'codePostal=99999']) {
+      expect((await chercher(requete)).statut, requete).toBe(422);
+    }
+  });
+
   test('Erreurs : position incomplète, rayon hors bornes, tri sans position', async () => {
     for (const requete of [
       'latitude=45.76',
