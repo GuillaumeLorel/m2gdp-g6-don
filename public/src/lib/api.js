@@ -147,6 +147,17 @@ export async function publierAnnonce(annonce) {
   throw erreur;
 }
 
+/** L'assistant de redaction est-il active ? Coupe, le front cache le bouton. */
+export const iaDisponible = () =>
+  appeler('/api/ia/statut').then((r) => r.ok && r.donnees.brouillonAnnonce === true).catch(() => false);
+
+/**
+ * Brouillon d'annonce redige par l'IA (texte et photos deja televersees).
+ * L'IA ne publie jamais : la reponse prerempli le formulaire.
+ */
+export const genererBrouillon = (texte, mediaIds) =>
+  appelConnecte('/api/ia/brouillon-annonce', { method: 'POST', body: { texte, mediaIds } }, 'L’assistant ne répond pas. Remplissez le formulaire à la main.');
+
 /* --- Echanges entre membres (J4) ------------------------------------------ */
 
 /**

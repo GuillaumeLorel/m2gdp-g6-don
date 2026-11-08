@@ -323,6 +323,25 @@ paths:
 
   # --- IA -----------------------------------------------------------------------
 
+  /api/ia/statut:
+    get:
+      tags: ["IA"]
+      summary: "✨ Les fonctions IA sont-elles activées ?"
+      description: >
+        Public. Le front s'en sert pour afficher ou cacher « Remplir avec
+        l'IA ». Lit l'interrupteur `IA_ACTIVEE` et la présence de la clé.
+      security: []
+      responses:
+        "200":
+          description: "État des fonctions IA"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [brouillonAnnonce]
+                properties:
+                  brouillonAnnonce: { type: boolean }
+
   /api/ia/brouillon-annonce:
     post:
       tags: ["IA"]
@@ -333,8 +352,8 @@ paths:
         `POST /api/annonces`.
 
 
-        Le Worker garde la clé du service tiers (OpenRouter) et applique un
-        quota par utilisateur dans D1. La sortie du modèle est validée comme
+        Le Worker garde la clé du service tiers (Google Gemini Flash-Lite) et
+        applique un quota par utilisateur dans D1 (20 brouillons par jour). La sortie du modèle est validée comme
         n'importe quelle saisie : tout champ invalide — catégorie inconnue,
         créneau incohérent — est écarté et listé dans `champsIncertains`.
         Aucune adresse ne doit figurer dans la description générée : le Worker
@@ -356,6 +375,11 @@ paths:
           description: "Réservé aux comptes ayant le rôle `offrant`"
         "422": { $ref: "#/components/responses/Invalide" }
         "429": { $ref: "#/components/responses/TropDeRequetes" }
+        "503":
+          description: >
+            Fonction désactivée (interrupteur `IA_ACTIVEE` du Worker) : l'IA
+            n'est pas appelée. `GET /api/ia/statut` l'annonce au front, qui
+            cache alors le bouton.
         "502":
           description: >
             Service IA indisponible. Le front bascule sur le formulaire manuel :
@@ -1488,7 +1512,12 @@ components:
 
     BrouillonDemande:
       type: object
-      required: [texte]
+      description: >
+        Du texte, des photos, ou les deux : il faut au moins l'un des deux
+        (422 sinon).
+      anyOf:
+        - required: [texte]
+        - required: [mediaIds]
       properties:
         texte:
           type: string

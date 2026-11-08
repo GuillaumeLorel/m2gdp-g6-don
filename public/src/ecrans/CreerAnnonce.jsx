@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from "react";
 import { useNavigate } from "react-router";
-import { CalendarDays, ChevronDown, ChevronLeft, Heart, Loader2, Lock, MapPin } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, Heart, Loader2, Lock, MapPin, Sparkles } from "lucide-react";
 import Badge from "@/components/Badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import Champ, { CLASSES_CHAMP } from "@/components/Champ.jsx";
@@ -8,9 +8,33 @@ import ChampAdresse from "@/components/ChampAdresse.jsx";
 import { EtatVide } from "@/components/Etats.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import PhotosAnnonce from "@/components/PhotosAnnonce.jsx";
-import { chargerAssociations, chargerCategories, enregistrerProfil, modifierAnnonce, publierAnnonce } from "@/lib/api.js";
+import {
+  chargerAssociations,
+  chargerCategories,
+  enregistrerProfil,
+  genererBrouillon,
+  iaDisponible,
+  modifierAnnonce,
+  publierAnnonce,
+} from "@/lib/api.js";
+import { FONCTIONS_IA, consentementDonne, donnerConsentement, retirerConsentement } from "@/lib/consentementIA.js";
 import { LIBELLES_ETAT, formaterCreneau, formaterParticipation } from "@/lib/format.js";
 import { cn } from "@/lib/utils.js";
+
+/** Champ du brouillon IA ou du formulaire -> zone mise en evidence quand elle est a verifier. */
+const ZONES = {
+  titre: "titre",
+  description: "description",
+  categorieId: "categorie",
+  sousCategorieId: "categorie",
+  etat: "etat",
+  participation: "participation",
+  participationConseillee: "participation",
+  creneauRetrait: "creneau",
+  date: "creneau",
+  heureDebut: "creneau",
+  heureFin: "creneau",
+};
 
 /** Montants proposes d'un geste : une participation se veut modeste. */
 const MONTANTS_SUGGERES = [1, 2, 5];
@@ -34,8 +58,11 @@ function champsCreneau(creneau) {
 /** « 2,50 » ou « 2.5 » -> 2.5 ; NaN si ce n'est pas un montant. */
 const lireMontant = (saisie) => (/^\d+([.,]\d{1,2})?$/.test(saisie.trim()) ? Number(saisie.trim().replace(",", ".")) : NaN);
 
+/** Champ prerempli par l'IA et a verifier : filet et halo citron-ocre. */
+const CLASSES_INCERTAIN = "border-alerte ring-4 ring-citron";
+
 /** Liste deroulante native : le selecteur du telephone est le plus pratique au pouce. */
-function ChampListe({ id, etiquette, aide, erreur, children, ...props }) {
+function ChampListe({ id, etiquette, aide, erreur, incertain, children, ...props }) {
   return (
     <div className="space-y-2">
       <label htmlFor={id} className="doneo-etiquette">
@@ -44,7 +71,7 @@ function ChampListe({ id, etiquette, aide, erreur, children, ...props }) {
       <div className="relative">
         <select
           id={id}
-          className={cn(CLASSES_CHAMP, "appearance-none pr-11 disabled:opacity-50")}
+          className={cn(CLASSES_CHAMP, "appearance-none pr-11 disabled:opacity-50", incertain && CLASSES_INCERTAIN)}
           aria-invalid={erreur ? "true" : undefined}
           {...props}>
           {children}
@@ -92,6 +119,10 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
   const [touches, setTouches] = useState({});
   const [envoi, setEnvoi] = useState(false);
   const [erreurs, setErreurs] = useState(null);
+  // Assistant de redaction : disponible ou non, zones a verifier, brouillon utilise.
+  const [iaOk, setIaOk] = useState(false);
+  const [incertains, setIncertains] = useState(() => new Set());
+  const [assistee, setAssistee] = useState(false);
   const [champs, setChamps] = useState(() =>
     edition
       ? {
@@ -133,14 +164,35 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
   useEffect(() => {
     chargerCategories().then(setCategories).catch(() => {});
     chargerAssociations().then(setAssociations).catch(() => {});
-  }, []);
+    if (!edition) iaDisponible().then(setIaOk);
+  }, [edition]);
 
   // Chaque etape commence en haut de l'ecran.
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [etape]);
 
-  const modifier = (cle) => (e) => setChamps((p) => ({ ...p, [cle]: e.target.value }));
+  // Corriger un champ prerempli par l'IA lui retire sa mise en evidence.
+  const valide = (cle) => setIncertains((s) => (s.has(ZONES[cle]) ? new Set([...s].filter((z) => z !== ZONES[cle])) : s));
+  const modifier = (cle) => (e) => {
+    setChamps((p) => ({ ...p, [cle]: e.target.value }));
+    valide(cle);
+  };
+
+  /** Applique le brouillon de l'IA : il prerempli le formulaire, rien n'est publie. */
+  function appliquerBrouillon(b) {
+    setChamps((p) => ({
+      ...p,
+      ...(b.titre ? { titre: b.titre } : {}),
+      ...(b.description ? { description: b.description } : {}),
+      ...(b.sousCategorieId ? { categorieId: b.categorieId, sousCategorieId: b.sousCategorieId } : {}),
+      ...(b.etat ? { etat: b.etat } : {}),
+      ...(b.participationConseillee ? { participation: String(b.participationConseillee).replace(".", ",") } : {}),
+      ...(b.creneauRetrait ? champsCreneau(b.creneauRetrait) : {}),
+    }));
+    setIncertains(new Set((b.champsIncertains || []).map((c) => ZONES[c]).filter(Boolean)));
+    setAssistee(true);
+  }
   const toucher = (cle) => () => setTouches((t) => ({ ...t, [cle]: true }));
 
   if (!profil.roles?.includes("offrant")) {
@@ -194,6 +246,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
         codePostal: champs.codePostal.trim(),
         ville: champs.ville.trim(),
         mediaIds: photos.map((p) => p.id),
+        ...(assistee && !edition ? { assisteeParIA: true } : {}),
       });
       // replace : « Retour » depuis la fiche ne rouvre pas le formulaire vide.
       naviguer(`/annonces/${annonce.id}`, { replace: true, state: edition ? { modifiee: true } : { publiee: true } });
@@ -242,6 +295,8 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
           }}>
           <PhotosAnnonce photos={photos} surChangement={setPhotos} publiees={(edition?.medias || []).map((m) => m.id)} />
 
+          {iaOk && <AssistantIA photos={photos} surBrouillon={appliquerBrouillon} fait={assistee} />}
+
           <div className="space-y-2">
             <Champ
               id={`${id}-titre`}
@@ -251,6 +306,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               value={champs.titre}
               onChange={modifier("titre")}
               onBlur={toucher("titre")}
+              className={incertains.has("titre") ? CLASSES_INCERTAIN : undefined}
               aria-invalid={touches.titre && titreManquant ? "true" : undefined}
             />
             {touches.titre && titreManquant && <ErreurChamp>Le titre est obligatoire</ErreurChamp>}
@@ -260,7 +316,11 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
             id={`${id}-categorie`}
             etiquette="Catégorie"
             value={champs.categorieId}
-            onChange={(e) => setChamps((p) => ({ ...p, categorieId: e.target.value, sousCategorieId: "" }))}>
+            incertain={incertains.has("categorie")}
+            onChange={(e) => {
+              setChamps((p) => ({ ...p, categorieId: e.target.value, sousCategorieId: "" }));
+              valide("categorieId");
+            }}>
             <option value="" disabled>
               Choisir une catégorie
             </option>
@@ -276,6 +336,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
             id={`${id}-sous-categorie`}
             etiquette="Sous-catégorie"
             disabled={!categorie}
+            incertain={incertains.has("categorie")}
             value={champs.sousCategorieId}
             onChange={modifier("sousCategorieId")}>
             <option value="" disabled>
@@ -288,7 +349,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
             ))}
           </ChampListe>
 
-          <ChampListe id={`${id}-etat`} etiquette="État" value={champs.etat} onChange={modifier("etat")}>
+          <ChampListe id={`${id}-etat`} etiquette="État" incertain={incertains.has("etat")} value={champs.etat} onChange={modifier("etat")}>
             <option value="" disabled>
               Choisir l’état
             </option>
@@ -308,7 +369,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               rows={4}
               maxLength={1000}
               placeholder="Décrivez l’objet, ses dimensions et son état…"
-              className={cn(CLASSES_CHAMP, "h-auto min-h-28 resize-y py-3")}
+              className={cn(CLASSES_CHAMP, "h-auto min-h-28 resize-y py-3", incertains.has("description") && CLASSES_INCERTAIN)}
               value={champs.description}
               onChange={modifier("description")}
             />
@@ -330,6 +391,15 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               </span>
             </p>
           )}
+          {assistee && (
+            <p className="flex gap-2.5 rounded-2xl bg-lavande/50 p-3.5 text-xs leading-5 text-ardoise">
+              <Sparkles className="mt-0.5 size-4 shrink-0 text-violet-fonce" aria-hidden="true" />
+              <span>
+                La participation et le créneau viennent de l’assistant, à titre de suggestion : vous décidez.
+                {incertains.has("participation") || incertains.has("creneau") ? " Les champs encadrés sont à vérifier." : ""}
+              </span>
+            </p>
+          )}
           {/* US-7 : participation fixee par l'offrant, versee a l'association. */}
           <fieldset className="space-y-2" disabled={figes.has("participation")}>
             <Champ
@@ -341,6 +411,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               onChange={modifier("participation")}
               onBlur={toucher("participation")}
               aria-invalid={touches.participation && !participationValide ? "true" : undefined}
+              className={incertains.has("participation") ? CLASSES_INCERTAIN : undefined}
               aide="Montant modeste, versé en entier à l’association : vous ne touchez rien."
             />
             <div className="flex gap-2" role="group" aria-label="Montants suggérés">
@@ -370,6 +441,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               etiquette="Jour"
               type="date"
               min={jourLocal()}
+              className={incertains.has("creneau") ? CLASSES_INCERTAIN : undefined}
               value={champs.date}
               onChange={modifier("date")}
             />
@@ -378,10 +450,18 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
                 id={`${id}-debut`}
                 etiquette="De"
                 type="time"
+                className={incertains.has("creneau") ? CLASSES_INCERTAIN : undefined}
                 value={champs.heureDebut}
                 onChange={modifier("heureDebut")}
               />
-              <Champ id={`${id}-fin`} etiquette="À" type="time" value={champs.heureFin} onChange={modifier("heureFin")} />
+              <Champ
+                id={`${id}-fin`}
+                etiquette="À"
+                type="time"
+                className={incertains.has("creneau") ? CLASSES_INCERTAIN : undefined}
+                value={champs.heureFin}
+                onChange={modifier("heureFin")}
+              />
             </div>
             {erreurCreneau && <ErreurChamp>{erreurCreneau}</ErreurChamp>}
           </fieldset>
@@ -491,6 +571,122 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
         />
       </aside>
     </section>
+  );
+}
+
+/**
+ * « Remplir avec l'IA » (EPIC 12, #29) : l'offrant tape une phrase, l'assistant
+ * prerempli le formulaire. L'IA ne publie jamais ; si elle echoue, le
+ * formulaire manuel reste la. Le texte et les photos partent chez un tiers :
+ * l'envoi est subordonne a un consentement explicite.
+ */
+function AssistantIA({ photos, surBrouillon, fait }) {
+  const id = useId();
+  const [ouvert, setOuvert] = useState(false);
+  const [texte, setTexte] = useState("");
+  // Le consentement n'est demande que la premiere fois : ensuite il est retenu.
+  const [memorise, setMemorise] = useState(() => consentementDonne(FONCTIONS_IA.brouillon));
+  const [accord, setAccord] = useState(memorise);
+  const [envoi, setEnvoi] = useState(false);
+  const [erreur, setErreur] = useState(null);
+  // Le texte, les photos, ou les deux.
+  const pret = (texte.trim().length >= 3 || photos.length > 0) && accord && !envoi;
+
+  async function generer() {
+    donnerConsentement(FONCTIONS_IA.brouillon);
+    setMemorise(true);
+    setEnvoi(true);
+    setErreur(null);
+    try {
+      surBrouillon(await genererBrouillon(texte.trim(), photos.slice(0, 3).map((p) => p.id)));
+      setOuvert(false);
+    } catch (e) {
+      setErreur(e.message);
+    } finally {
+      setEnvoi(false);
+    }
+  }
+
+  if (!ouvert) {
+    return (
+      <div className="space-y-2">
+        <Button type="button" variant="doneoSecondaire" size="pilule" className="w-full" onClick={() => setOuvert(true)}>
+          <Sparkles className="size-5" aria-hidden="true" />
+          {fait ? "Refaire un brouillon avec l’IA" : "Remplir avec l’IA"}
+        </Button>
+        {fait && (
+          <p className="text-xs leading-5 text-muted-foreground">
+            Brouillon prêt : relisez-le. Les champs encadrés sont à vérifier.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="doneo-carte space-y-3 p-4" role="group" aria-labelledby={`${id}-titre`}>
+      <p id={`${id}-titre`} className="doneo-etiquette flex items-center gap-2">
+        <Sparkles className="size-4 text-violet-fonce" aria-hidden="true" />
+        Remplir avec l’IA
+      </p>
+      <label htmlFor={`${id}-texte`} className="block text-sm leading-6 text-ardoise">
+        Décrivez l’objet en une phrase, ou ajoutez des photos, ou les deux : l’assistant prépare un brouillon, que vous relisez avant de publier.
+      </label>
+      <textarea
+        id={`${id}-texte`}
+        rows={3}
+        maxLength={1000}
+        placeholder="Vélo de ville bleu, bon état, samedi entre 14 h et 16 h"
+        className={cn(CLASSES_CHAMP, "h-auto min-h-24 resize-y py-3")}
+        value={texte}
+        onChange={(e) => setTexte(e.target.value)}
+      />
+      {memorise ? (
+        <p className="text-xs leading-5 text-muted-foreground">
+          Le texte et les 3 premières photos sont envoyés à Google (Gemini) pour rédiger le brouillon, comme vous l’avez
+          accepté. Rien n’est publié sans votre accord.{" "}
+          <button
+            type="button"
+            className="font-semibold text-violet-fonce underline"
+            onClick={() => {
+              retirerConsentement(FONCTIONS_IA.brouillon);
+              setMemorise(false);
+              setAccord(false);
+            }}>
+            Retirer mon accord
+          </button>
+        </p>
+      ) : (
+        <label htmlFor={`${id}-accord`} className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-ardoise">
+          <input
+            id={`${id}-accord`}
+            type="checkbox"
+            className="mt-0.5 size-5 shrink-0 accent-primary"
+            checked={accord}
+            onChange={(e) => setAccord(e.target.checked)}
+          />
+          <span>
+            J’accepte que ce texte et les photos ajoutées ({Math.min(photos.length, 3)} sur 3 au plus ; les 3 premières sont lues) soient envoyés à Google
+            (Gemini) pour rédiger le brouillon. Ils peuvent être traités hors de l’Union européenne. Rien n’est publié sans
+            mon accord. Cet accord est demandé une seule fois.
+          </span>
+        </label>
+      )}
+      {erreur && (
+        <p role="alert" className="text-sm text-destructive">
+          {erreur}
+        </p>
+      )}
+      <div className="flex gap-2">
+        <Button type="button" variant="doneo" size="pilule" className="flex-1" disabled={!pret} onClick={generer}>
+          {envoi ? <Loader2 className="size-5 animate-spin" aria-hidden="true" /> : <Sparkles className="size-5" aria-hidden="true" />}
+          {envoi ? "Rédaction…" : "Générer un brouillon"}
+        </Button>
+        <Button type="button" variant="doneoSecondaire" size="pilule" disabled={envoi} onClick={() => setOuvert(false)}>
+          Annuler
+        </Button>
+      </div>
+    </div>
   );
 }
 

@@ -17,6 +17,10 @@ ALLOWED_ORIGIN = "https://doneo-app.vercel.app,https://doneo-*-guillaumelorels-p
 # des profils, annonces, categories et associations. L'URL est publique ; la
 # cle secrete est un secret.
 SUPABASE_URL = "https://ocapkeuidpuhcsnerkse.supabase.co"
+# Interrupteur des fonctions IA (brouillon d'annonce) : "false" = la route
+# repond « desactive » sans appeler Google, le front cache le bouton. Pour
+# l'activer en ligne : passer a "true" et definir le secret GEMINI_API_KEY.
+IA_ACTIVEE = "false"
 
 # Base D1 (sessions, SQL) — creee le 16/09/2026, region WEUR.
 # Le binding reste DB_SESSIONS : c'est le nom lu par le code, il ne suit pas
@@ -31,3 +35,4 @@ database_id = "83153df8-eded-4ac6-b35b-749f7efe3a9c"
 
 # Secrets a definir via `wrangler secret put` (JAMAIS en clair ici) :
 #   SUPABASE_SECRET_KEY        -> cle secrete (sb_secret_...) du projet Supabase
+#   GEMINI_API_KEY             -> cle Google AI Studio (Gemini), fonctions IA
