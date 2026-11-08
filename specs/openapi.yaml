@@ -391,7 +391,9 @@ paths:
       tags: ["IA"]
       summary: "📷 Reconnaître un objet sur une photo, pour lancer la recherche"
       description: >
-        Le demandeur envoie une photo au lieu de taper des mots. L'IA la
+        Le demandeur envoie une photo au lieu de taper des mots. Le front lui
+        permet d'entourer l'objet dans sa photo : seule la zone choisie est
+        envoyée (recadrage côté front, l'API reçoit déjà l'image recadrée). L'IA la
         décrit (un nom d'objet et une sous-catégorie de NOTRE liste), et le
         front passe le mot à `GET /api/annonces` (`q`) : aucune nouvelle
         entité. Il n'applique pas la sous-catégorie comme filtre, car celle que

@@ -1,7 +1,8 @@
 import { useId, useRef, useState } from "react";
 import { Camera, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
-import { SEUIL_REDUCTION, TAILLE_MAX, reduire } from "@/components/PhotosAnnonce.jsx";
+import RecadrageImage from "@/components/RecadrageImage.jsx";
+import { TAILLE_MAX } from "@/components/PhotosAnnonce.jsx";
 import { rechercherParImage } from "@/lib/api.js";
 import { FONCTIONS_IA, consentementDonne, donnerConsentement, retirerConsentement } from "@/lib/consentementIA.js";
 
@@ -23,7 +24,11 @@ export default function RechercheParPhoto({ surResultat, surFermer }) {
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
 
-  async function analyser(evenement) {
+  // La photo choisie s'ouvre dans la fenetre de recadrage : on y entoure
+  // l'objet a chercher, puis seule cette zone est envoyee.
+  const [aRecadrer, setARecadrer] = useState(null);
+
+  function choisir(evenement) {
     const original = evenement.target.files[0];
     evenement.target.value = "";
     if (!original) return;
@@ -32,11 +37,15 @@ export default function RechercheParPhoto({ surResultat, surFermer }) {
       setErreur("Format non pris en charge : JPEG, PNG ou WebP.");
       return;
     }
+    setARecadrer(original);
+  }
+
+  async function envoyer(fichier) {
+    setARecadrer(null);
     donnerConsentement(FONCTIONS_IA.recherche);
     setEnvoi(true);
     try {
-      const fichier = original.size > SEUIL_REDUCTION ? await reduire(original) : original;
-      if (!fichier || fichier.size > TAILLE_MAX) throw new Error("Cette photo est trop lourde (5 Mo au plus).");
+      if (fichier.size > TAILLE_MAX) throw new Error("Cette photo est trop lourde (5 Mo au plus).");
       surResultat(await rechercherParImage(fichier));
     } catch (e) {
       setErreur(e.message);
@@ -99,12 +108,13 @@ export default function RechercheParPhoto({ surResultat, surFermer }) {
         className="sr-only"
         tabIndex={-1}
         aria-label="Photo de l’objet à chercher"
-        onChange={analyser}
+        onChange={choisir}
       />
       <Button type="button" variant="doneo" size="pilule" className="w-full" disabled={!accord || envoi} onClick={() => entree.current?.click()}>
         {envoi ? <Loader2 className="size-5 animate-spin" aria-hidden="true" /> : <Camera className="size-5" aria-hidden="true" />}
         {envoi ? "Analyse de la photo…" : "Prendre ou choisir une photo"}
       </Button>
+      {aRecadrer && <RecadrageImage fichier={aRecadrer} surValider={envoyer} surAnnuler={() => setARecadrer(null)} />}
       {erreur && (
         <p role="alert" className="text-sm text-destructive">
           {erreur}
