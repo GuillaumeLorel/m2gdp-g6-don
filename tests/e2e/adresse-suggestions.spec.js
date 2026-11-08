@@ -51,7 +51,7 @@ test('Choisir une suggestion (cas nominal)', async ({ page }) => {
   await ouvrirEtape2(page);
   await taper(page, '12 rue de la rep');
 
-  const options = page.getByRole('option');
+  const options = page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option');
   await expect(options).toHaveCount(2);
   await expect(options.first()).toHaveText('12 Rue de la République 69002 Lyon');
   // La recherche est centrée sur Lyon : sans cela, la première suggestion est à Toulouse.
@@ -59,22 +59,24 @@ test('Choisir une suggestion (cas nominal)', async ({ page }) => {
   expect(requete.searchParams.get('lon')).toBe('4.84');
   expect(requete.searchParams.get('autocomplete')).toBe('1');
 
+  // Le complément (prérempli depuis le profil) n'est jamais écrasé par une suggestion.
+  const complement = await champ(page, 'Complément (facultatif)').inputValue();
   await options.first().click();
   await expect(champ(page, 'N°')).toHaveValue('12');
   await expect(champ(page, 'Rue')).toHaveValue('Rue de la République');
   await expect(champ(page, 'Code postal')).toHaveValue('69002');
   await expect(champ(page, 'Ville')).toHaveValue('Lyon');
-  await expect(champ(page, 'Complément (facultatif)')).toHaveValue('');
-  await expect(page.getByRole('option')).toHaveCount(0);
+  await expect(champ(page, 'Complément (facultatif)')).toHaveValue(complement);
+  await expect(page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option')).toHaveCount(0);
 });
 
 test('Mêmes suggestions à l’inscription et à la modification du profil', async ({ page }) => {
   await page.route(SERVICE, (route) => route.fulfill({ json: SUGGESTIONS }));
   await ouvrirConnecte(page, PROFILS.offrantEtDemandeur, '/profil/modifier');
   await taper(page, '12 rue de la rep');
-  await expect(page.getByRole('option')).toHaveCount(2);
+  await expect(page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option')).toHaveCount(2);
 
-  await page.getByRole('option').nth(1).click();
+  await page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option').nth(1).click();
   await expect(champ(page, 'N°')).toHaveValue('12');
   await expect(champ(page, 'Rue')).toHaveValue('Rue de la République');
   await expect(champ(page, 'Code postal')).toHaveValue('69330');
@@ -87,7 +89,7 @@ test('Adresse introuvable : les champs se remplissent à la main', async ({ page
   const demande = page.waitForRequest(SERVICE);
   await taper(page, 'Chemin des Lutins 99');
   await demande;
-  await expect(page.getByRole('option')).toHaveCount(0);
+  await expect(page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option')).toHaveCount(0);
 
   await champ(page, 'N°').fill('99');
   await champ(page, 'Rue').fill('Chemin des Lutins');
@@ -101,7 +103,7 @@ test('Service indisponible : saisie à la main, sans erreur bloquante', async ({
   await page.route(SERVICE, (route) => route.abort());
   await ouvrirEtape2(page);
   await taper(page, '12 rue de la rep');
-  await expect(page.getByRole('option')).toHaveCount(0);
+  await expect(page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option')).toHaveCount(0);
   await expect(page.getByRole('alert')).toHaveCount(0);
 
   await champ(page, 'N°').fill('12');
@@ -116,8 +118,8 @@ test.describe('Petit écran', () => {
     await page.route(SERVICE, (route) => route.fulfill({ json: SUGGESTIONS }));
     await ouvrirEtape2(page);
     await taper(page, '12 rue de la rep');
-    await expect(page.getByRole('option')).toHaveCount(2);
-    await expect(page.getByRole('option').first()).toBeVisible();
+    await expect(page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option')).toHaveCount(2);
+    await expect(page.getByRole('listbox', { name: 'Adresses suggérées' }).getByRole('option').first()).toBeVisible();
     await attendrePasDeDefilementHorizontal(page);
   });
 });
