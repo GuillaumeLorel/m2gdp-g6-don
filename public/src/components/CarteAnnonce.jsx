@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { CalendarDays, Heart } from "lucide-react";
+import Badge from "@/components/Badge.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { useDistance } from "@/lib/distance.js";
 import {
@@ -78,9 +79,7 @@ export default function CarteAnnonce({ annonce, variante = "accueil", grille = f
         <p className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-2 text-xs text-muted-foreground">
           {enPastille ? (
             <>
-              <span className="rounded-full bg-menthe px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise">
-                {LIBELLES_ETAT[annonce.etat]}
-              </span>
+              <Badge famille="etat">{LIBELLES_ETAT[annonce.etat]}</Badge>
               <span>{[lieuAnnonce(annonce), distance].filter(Boolean).join(" · ")}</span>
             </>
           ) : (
@@ -89,9 +88,9 @@ export default function CarteAnnonce({ annonce, variante = "accueil", grille = f
             </span>
           )}
           {reservee && (
-            <span className="rounded-full bg-citron px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise">
+            <Badge famille="annonce" ton="reserve">
               Liste d’attente ouverte
-            </span>
+            </Badge>
           )}
         </p>
       </div>
