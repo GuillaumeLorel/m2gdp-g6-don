@@ -102,6 +102,7 @@ test('Se désister de la liste d’attente : place affichée, bouton de désiste
   await expect(page.getByText('Vous êtes en liste d’attente (place 2)')).toBeVisible();
   await page.getByRole('button', { name: 'Me désister' }).click();
   expect(envoyee).toBe(true);
+  await page.unrouteAll({ behavior: 'ignoreErrors' });
 });
 
 test('L’offrant passe au suivant faute de réponse, l’objet redevient disponible', async () => {

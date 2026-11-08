@@ -33,6 +33,7 @@ test('L’adresse exacte n’apparaît jamais avant la participation', async ({ 
   });
   await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${disponible.id}`);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByText('L’adresse exacte vous est communiquée une fois votre participation validée.')).toBeVisible();
 
   const texte = await page.locator('body').innerText();
   expect(texte).not.toContain(disponible.rue);

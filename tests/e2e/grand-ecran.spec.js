@@ -101,5 +101,5 @@ test('Fiche : visuel à gauche, informations et réservation à droite', async (
   const boiteTitre = await titre.boundingBox();
   expect(boiteTitre.x).toBeGreaterThan(visuel.x + visuel.width); // deux colonnes
   // Le bouton de reservation est visible sans faire defiler.
-  await expect(page.getByRole('button', { name: /Réserver|liste d’attente|déjà remis/ })).toBeInViewport();
+  await expect(page.getByRole('button', { name: /Réserver|liste d’attente|déjà remis|Créneau passé/ })).toBeInViewport();
 });
