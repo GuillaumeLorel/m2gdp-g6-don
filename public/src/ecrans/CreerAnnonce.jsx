@@ -17,6 +17,7 @@ import {
   modifierAnnonce,
   publierAnnonce,
 } from "@/lib/api.js";
+import { FONCTIONS_IA, consentementDonne, donnerConsentement, retirerConsentement } from "@/lib/consentementIA.js";
 import { LIBELLES_ETAT, formaterCreneau, formaterParticipation } from "@/lib/format.js";
 import { cn } from "@/lib/utils.js";
 
@@ -583,13 +584,17 @@ function AssistantIA({ photos, surBrouillon, fait }) {
   const id = useId();
   const [ouvert, setOuvert] = useState(false);
   const [texte, setTexte] = useState("");
-  const [accord, setAccord] = useState(false);
+  // Le consentement n'est demande que la premiere fois : ensuite il est retenu.
+  const [memorise, setMemorise] = useState(() => consentementDonne(FONCTIONS_IA.brouillon));
+  const [accord, setAccord] = useState(memorise);
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
   // Le texte, les photos, ou les deux.
   const pret = (texte.trim().length >= 3 || photos.length > 0) && accord && !envoi;
 
   async function generer() {
+    donnerConsentement(FONCTIONS_IA.brouillon);
+    setMemorise(true);
     setEnvoi(true);
     setErreur(null);
     try {
@@ -636,20 +641,37 @@ function AssistantIA({ photos, surBrouillon, fait }) {
         value={texte}
         onChange={(e) => setTexte(e.target.value)}
       />
-      <label htmlFor={`${id}-accord`} className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-ardoise">
-        <input
-          id={`${id}-accord`}
-          type="checkbox"
-          className="mt-0.5 size-5 shrink-0 accent-primary"
-          checked={accord}
-          onChange={(e) => setAccord(e.target.checked)}
-        />
-        <span>
-          J’accepte que ce texte et les photos ajoutées ({Math.min(photos.length, 3)} sur 3 au plus ; les 3 premières sont lues) soient envoyés à Google
-          (Gemini) pour rédiger le brouillon. Ils peuvent être traités hors de l’Union européenne. Rien n’est publié sans
-          mon accord.
-        </span>
-      </label>
+      {memorise ? (
+        <p className="text-xs leading-5 text-muted-foreground">
+          Le texte et les 3 premières photos sont envoyés à Google (Gemini) pour rédiger le brouillon, comme vous l’avez
+          accepté. Rien n’est publié sans votre accord.{" "}
+          <button
+            type="button"
+            className="font-semibold text-violet-fonce underline"
+            onClick={() => {
+              retirerConsentement(FONCTIONS_IA.brouillon);
+              setMemorise(false);
+              setAccord(false);
+            }}>
+            Retirer mon accord
+          </button>
+        </p>
+      ) : (
+        <label htmlFor={`${id}-accord`} className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-ardoise">
+          <input
+            id={`${id}-accord`}
+            type="checkbox"
+            className="mt-0.5 size-5 shrink-0 accent-primary"
+            checked={accord}
+            onChange={(e) => setAccord(e.target.checked)}
+          />
+          <span>
+            J’accepte que ce texte et les photos ajoutées ({Math.min(photos.length, 3)} sur 3 au plus ; les 3 premières sont lues) soient envoyés à Google
+            (Gemini) pour rédiger le brouillon. Ils peuvent être traités hors de l’Union européenne. Rien n’est publié sans
+            mon accord. Cet accord est demandé une seule fois.
+          </span>
+        </label>
+      )}
       {erreur && (
         <p role="alert" className="text-sm text-destructive">
           {erreur}
