@@ -137,8 +137,8 @@ const SCHEMA = (idsSousCategories) => ({
     etat: { type: 'STRING', enum: ETATS },
     participationConseillee: { type: 'NUMBER', description: 'Euros, entre 1 et 5' },
     jour: { type: 'STRING', description: 'AAAA-MM-JJ, ou vide si le texte ne donne pas de jour' },
-    heureDebut: { type: 'STRING', description: 'HH:MM, ou vide' },
-    heureFin: { type: 'STRING', description: 'HH:MM, ou vide' },
+    heureDebut: { type: 'STRING', description: "HH:MM, ou vide si aucune heure n'est donnée" },
+    heureFin: { type: 'STRING', description: "HH:MM, ou vide si l'heure de fin n'est pas donnée : ne jamais l'inventer" },
     titre: { type: 'STRING', maxLength: 80, description: "Court : le nom de l'objet et une qualité, 60 caractères environ. Jamais de lieu, de jour ni d'heure." },
     description: { type: 'STRING', maxLength: 1000, description: 'Deux à quatre phrases, sans lieu, jour ni heure.' },
   },
@@ -223,10 +223,23 @@ function validerSortie(sortie, categories, profil) {
   if (typeof p === 'number' && Number.isFinite(p) && p > 0) brouillon.participationConseillee = Math.round(p * 100) / 100;
   else incertains.push('participationConseillee');
 
-  const debut = instantParis(texte(sortie.jour), texte(sortie.heureDebut));
-  const fin = instantParis(texte(sortie.jour), texte(sortie.heureFin));
-  if (debut && fin && Date.parse(debut) > Date.now() && Date.parse(fin) > Date.parse(debut)) {
+  // Le jour est l'essentiel. Une heure manquante est completee par une valeur
+  // par defaut (18 h-20 h, comme le formulaire ; fin = debut + 2 h), et le
+  // creneau est alors signale a verifier : on ne perd pas un jour compris
+  // parce que l'heure de fin n'a pas ete donnee.
+  const jour = texte(sortie.jour);
+  const heure = (h) => (/^\d{2}:\d{2}$/.test(texte(h)) ? texte(h) : null);
+  const heureDebut = heure(sortie.heureDebut);
+  const debut = jour ? instantParis(jour, heureDebut ?? '18:00') : null;
+  if (debut && Date.parse(debut) > Date.now()) {
+    let fin = heureDebut && heure(sortie.heureFin) ? instantParis(jour, heure(sortie.heureFin)) : null;
+    let devine = !heureDebut;
+    if (!fin || Date.parse(fin) <= Date.parse(debut)) {
+      fin = new Date(Date.parse(debut) + 2 * 3600 * 1000).toISOString();
+      devine = true;
+    }
     brouillon.creneauRetrait = { debut, fin };
+    if (devine) incertains.push('creneauRetrait');
   } else incertains.push('creneauRetrait');
 
   return { ...brouillon, champsIncertains: incertains };
