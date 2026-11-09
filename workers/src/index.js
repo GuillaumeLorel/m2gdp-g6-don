@@ -226,7 +226,9 @@ async function routerEchanges(request, env, pathname, cors) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    // Taches qui continuent apres la reponse (e-mails, voir email.js).
+    env = { ...env, enArrierePlan: (promesse) => ctx.waitUntil(promesse) };
     const cors = entetesCors(request, env);
 
     if (request.method === 'OPTIONS') {

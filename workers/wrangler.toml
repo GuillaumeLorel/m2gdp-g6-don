@@ -21,6 +21,10 @@ SUPABASE_URL = "https://ocapkeuidpuhcsnerkse.supabase.co"
 # repond « desactive » sans appeler Google, le front cache le bouton. Pour
 # l'activer en ligne : passer a "true" et definir le secret GEMINI_API_KEY.
 IA_ACTIVEE = "false"
+# Interrupteur de l'e-mail « objet propose » (#61) : "false" = rien ne part.
+# Pour l'activer : passer a "true" et definir les secrets SMTP_UTILISATEUR et
+# SMTP_MOT_DE_PASSE.
+EMAILS_ACTIFS = "false"
 
 # Base D1 (sessions, SQL) — creee le 16/09/2026, region WEUR.
 # Le binding reste DB_SESSIONS : c'est le nom lu par le code, il ne suit pas
@@ -36,3 +40,5 @@ database_id = "83153df8-eded-4ac6-b35b-749f7efe3a9c"
 # Secrets a definir via `wrangler secret put` (JAMAIS en clair ici) :
 #   SUPABASE_SECRET_KEY        -> cle secrete (sb_secret_...) du projet Supabase
 #   GEMINI_API_KEY             -> cle Google AI Studio (Gemini), fonctions IA
+#   SMTP_UTILISATEUR           -> adresse Gmail qui envoie les e-mails (#61)
+#   SMTP_MOT_DE_PASSE          -> mot de passe d'application de cette adresse
