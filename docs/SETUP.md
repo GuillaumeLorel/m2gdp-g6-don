@@ -75,7 +75,7 @@ Worker en ligne : **https://doneo-api.guillaume-lorel.workers.dev**
 | --- | --- |
 | D1 `doneo-sessions` | région WEUR, `database_id` dans `wrangler.toml` |
 | R2 `doneo-fichiers` | **plus utilisé** depuis le 25/10/2026 : les photos sont dans Supabase Storage (§ 3 bis) |
-| Secrets | `SUPABASE_SECRET_KEY` ; `STRIPE_SECRET_KEY` (clé **de test** `sk_test_…`, paiement des participations : une clé de production est refusée par le code) |
+| Secrets | `SUPABASE_SECRET_KEY` ; `STRIPE_SECRET_KEY` (clé **de test** `sk_test_…`, paiement des participations : une clé de production est refusée par le code) ; `GEMINI_API_KEY` (clé Google AI Studio, fonctions IA, voir § « Fonctions IA ») |
 
 Pour reposer le secret (rotation de clé), depuis `workers/` — en pipant le
 contenu plutôt qu'en le collant, pour qu'il ne reste pas dans l'historique du
@@ -165,15 +165,49 @@ Pour tester une route du Worker avant qu'elle soit déployée :
    ```
    SUPABASE_SECRET_KEY='sb_secret_...'
    STRIPE_SECRET_KEY='sk_test_...'
+   GEMINI_API_KEY='...'
+   IA_ACTIVEE=true
    ```
    Sans clé Stripe, tout fonctionne sauf le paiement de test (« pas encore
    configuré »).
+   Sans clé Gemini ou avec `IA_ACTIVEE` absent, les boutons IA sont cachés
+   (voir « Fonctions IA »).
 2. Lancer le Worker : `cd workers && npx wrangler dev --port 8787`.
 3. Créer `public/.env.development.local` (git-ignoré) :
    `VITE_API_BASE=http://localhost:8787`, puis relancer `npm run dev`.
 
 Sans ce fichier, le front local appelle le Worker **en ligne**. Le Worker local
 lit et écrit la **vraie** base Supabase.
+
+### Fonctions IA (brouillon d'annonce, recherche par photo)
+
+Deux fonctions s'appuient sur **Google Gemini Flash-Lite** (`gemini-3.1-flash-lite`),
+appelé par le Worker : « Remplir avec l'IA » (création d'annonce, à partir de
+texte, de photos, ou des deux) et la recherche par photo (avec recadrage de la
+zone). La clé ne quitte jamais le Worker.
+
+| Réglage | Où | Effet |
+| --- | --- | --- |
+| `GEMINI_API_KEY` | secret du Worker (`.dev.vars` en local, `wrangler secret put` en ligne) | Sans elle, la fonction est désactivée |
+| `IA_ACTIVEE` | variable du Worker (`"false"` dans `wrangler.toml`, `true` dans `.dev.vars`) | Interrupteur : coupé, les routes répondent 503 sans appeler Google et le front cache les boutons |
+
+- **Quota** : 20 par jour et par utilisateur, compté séparément pour les
+  brouillons et pour les recherches par photo, dans D1 (table `usagesIA`, créée
+  au premier appel). Une requête que Google n'a pas pu traiter ne consomme rien.
+  Le chiffre est la constante `QUOTA_PAR_JOUR` de `workers/src/ia.js`.
+- **Consentement** : le texte et les photos partent chez un tiers. L'interface
+  le demande **une seule fois** par fonction, puis le retient dans le
+  navigateur (`public/src/lib/consentementIA.js`), avec un lien « Retirer mon
+  accord ».
+- **Mise en ligne** : depuis `workers/`, `npx wrangler secret put GEMINI_API_KEY`
+  (la valeur est demandée ensuite, ne pas l'écrire dans la commande), puis
+  `IA_ACTIVEE = "true"` dans `wrangler.toml` et déploiement depuis `main`.
+- **Données** : l'API Gemini peut traiter les données hors de l'Union
+  européenne, alors que le projet vise des services hébergés en France ou dans
+  l'UE : le texte de consentement le dit.
+- **Essayer en local** : un Worker lancé avant l'ajout de `IA_ACTIVEE` ne le
+  prend pas en compte, il faut le relancer. Les tests e2e simulent les appels
+  IA : aucun quota n'est consommé.
 
 ### Tester sur un téléphone (même Wi-Fi)
 

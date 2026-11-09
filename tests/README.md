@@ -42,6 +42,8 @@ appels réseau, sans toucher aux données.
 | `e2e/adresse-suggestions.spec.js` | US-49 — Suggestions d'adresses à la saisie, service de l'IGN simulé (#129) |
 | `e2e/creer-annonce.spec.js` | US-6, US-7, US-8 — Créer une annonce en deux étapes, participation et créneau, adresse préremplie (#34, #35, #36) |
 | `e2e/en-cours.spec.js` | US-5 — Dons et demandes en cours sur l’accueil (#33) |
+| `e2e/brouillon-ia.spec.js` | EPIC 12 (#29) — « Remplir avec l’IA » : texte ou photos, consentement demandé une fois, champs à vérifier encadrés, service en panne. Appels IA simulés |
+| `e2e/recherche-photo.spec.js` | #143 — Recherche par photo : recadrage de la zone, consentement demandé une fois, objet non reconnu, service en panne. Appels IA simulés |
 | `e2e/accueil.spec.js` | US-4 — Accueil, menu du bas, derniers objets (#32) |
 | `e2e/illustration-par-defaut.spec.js` | US-12 — Illustration des annonces sans photo (#40) |
 | `e2e/fiche-annonce.spec.js` | US-9 — Fiche d’annonce, adresse jamais exposée (#37) |
