@@ -122,7 +122,8 @@ export async function jetonIdentite() {
   return data.session?.access_token ?? null;
 }
 
-export const seDeconnecter = () => supabase.auth.signOut();
+/** Deconnecte cet appareil seulement : les autres sessions du compte restent ouvertes. */
+export const seDeconnecter = () => supabase.auth.signOut({ scope: 'local' });
 
 /** Appelle `rappel(utilisateur | null)` a chaque changement ; renvoie de quoi se desabonner. */
 export function surChangementAuth(rappel) {

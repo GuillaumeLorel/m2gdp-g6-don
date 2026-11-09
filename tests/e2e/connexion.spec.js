@@ -57,3 +57,24 @@ test('Un code faux est refusé avec un message clair', async ({ page }) => {
   await expect(page.getByRole('alert')).toHaveText(/incorrect ou a expiré/);
   await expect(navigation(page)).toHaveCount(0);
 });
+
+test('Se déconnecter depuis le profil, puis se reconnecter : retour à l’accueil', async ({ page }) => {
+  const seConnecter = async () => {
+    await demanderUnLien(page);
+    const { code } = await contenuEmailDeConnexion(PROFILS.connexion);
+    await page.getByLabel('Code reçu par e-mail').fill(code);
+    await page.getByRole('button', { name: 'Valider le code' }).click();
+    await expect(navigation(page)).toBeVisible();
+  };
+  await seConnecter();
+  await navigation(page).getByRole('link', { name: 'Profil' }).click();
+  await expect(page).toHaveURL(/\/profil$/);
+
+  await page.getByRole('button', { name: 'Se déconnecter' }).click();
+  await expect(navigation(page)).toHaveCount(0);
+  await expect(page).toHaveURL(/\/$/);
+
+  // Reconnexion : l'accueil, et non le profil quitte.
+  await seConnecter();
+  await expect(page).toHaveURL(/\/$/);
+});
