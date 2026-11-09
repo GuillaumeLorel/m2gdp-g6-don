@@ -20,6 +20,7 @@ import { chercherLignes, insererLigne, lireLigne, lireLignes, mettreAJour } from
 import { versAnnoncesPubliques } from './annonces.js';
 import { ajouterMessage, conversationPour, erreurContenu } from './conversations.js';
 import { prevenir } from './email.js';
+import { repartition } from './commission.js';
 import { associations } from './referentiels.js';
 import { creerSessionPaiement, lireSessionPaiement, paiementDisponible } from './stripe.js';
 
@@ -40,6 +41,9 @@ const maintenant = () => new Date().toISOString();
 const euros = (montant) =>
   `${Number(montant).toLocaleString('fr-FR', { minimumFractionDigits: Number.isInteger(Number(montant)) ? 0 : 2, maximumFractionDigits: 2 })} €`;
 const refus = (statut, erreur) => ({ statut, corps: { erreur } });
+/** « 2 €, dont 1,90 € pour l'association » : la commission de 5 % est prelevee dessus (#54). */
+const montantEtPart = (participation) =>
+  `${euros(participation)}, dont ${euros(repartition(participation).partAssociation)} pour l’association`;
 
 /**
  * Forme publique d'une reservation, vue par `lecteurId`. `adresseRetrait`
@@ -110,7 +114,7 @@ async function proposerAuSuivant(env, annonceId) {
     });
     if (!proposee) continue; // elle vient de se desister : on passe a la suivante
     await messageSysteme(env, proposee, 'objet_propose',
-      `L’objet est libre et vous est proposé : versez ${euros(annonce.participation)} à l’association pour le réserver, ou refusez.`);
+      `L’objet est libre et vous est proposé : versez la participation de ${montantEtPart(annonce.participation)}, pour le réserver, ou refusez.`);
     prevenir(env, 'objet_propose', proposee, annonce);
     return proposee;
   }
@@ -207,7 +211,7 @@ export async function valider(env, utilisateurId, id) {
     return refus(409, 'Cette demande a déjà reçu une réponse.');
   }
   await messageSysteme(env, proposee, 'objet_propose',
-    `Demande acceptée : l’objet vous est réservé. Versez la participation de ${euros(annonce.participation)} pour confirmer et recevoir l’adresse exacte.`);
+    `Demande acceptée : l’objet vous est réservé. Versez la participation de ${montantEtPart(annonce.participation)}, pour confirmer et recevoir l’adresse exacte.`);
   prevenir(env, 'objet_propose', proposee, annonce);
   return { statut: 200, corps: versReservation(proposee, utilisateurId) };
 }
@@ -268,10 +272,12 @@ export async function payer(env, utilisateurId, id, origineFront) {
   const annonce = await lireLigne(env, 'annonces', r.annonceId);
   const association = (await associations(env)).find((a) => a.id === annonce.associationId);
   const retour = `${origineFront}/messages/${r.conversationId}?reservation=${r.id}`;
+  // Le demandeur voit sur la page de paiement ce que recoit l'association (#54).
+  const { commission, partAssociation } = repartition(r.participationDemandee);
   const session = await creerSessionPaiement(env, {
     montant: Number(r.participationDemandee),
     libelle: `Participation solidaire — ${annonce.titre}`,
-    description: `Reversée à ${association?.nom || 'l’association choisie'}. Paiement de test : aucun montant n’est débité.`,
+    description: `${euros(partAssociation)} reversés à ${association?.nom || 'l’association choisie'}, ${euros(commission)} de commission Donéo. Paiement de test : aucun montant n’est débité.`,
     reservationId: r.id,
     urlSucces: `${retour}&paiement=ok`,
     urlAnnulation: `${retour}&paiement=annule`,

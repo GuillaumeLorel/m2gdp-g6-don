@@ -19,6 +19,7 @@ import {
 } from "@/lib/api.js";
 import { formaterCreneau, formaterParticipation, nomOffrant } from "@/lib/format.js";
 import { rafraichirNonLus } from "@/lib/nonLus.js";
+import { repartition } from "@/lib/commission.js";
 
 const heure = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
 const jour = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
@@ -48,6 +49,7 @@ function BandeauReservation({ conversation, surAction }) {
   const [action, setAction] = useState(null);
   const [erreur, setErreur] = useState(null);
   const montant = formaterParticipation(r?.participationDemandee ?? annonce?.participation);
+  const part = repartition(r?.participationDemandee ?? annonce?.participation ?? 0);
 
   async function agir(nom, appel) {
     setAction(nom);
@@ -119,7 +121,8 @@ function BandeauReservation({ conversation, surAction }) {
     }
   } else if (r.statut === "proposee") {
     if (monRole === "demandeur") {
-      texte = `Objet réservé : versez ${montant} à l’association pour voir l’adresse exacte.`;
+      // #54 : avant de payer, ce que recoit l'association et la commission.
+      texte = `Objet réservé : versez ${montant} pour voir l’adresse exacte. ${formaterParticipation(part.partAssociation)} iront à l’association, ${formaterParticipation(part.commission)} de commission Donéo.`;
       actions = [
         bouton("payer", `Verser ${montant}`, payer, "doneo", CreditCard),
         bouton("renoncer", "Renoncer", () => agir("renoncer", () => renoncerReservation(r.id)), "doneoSecondaire", X),

@@ -21,6 +21,7 @@
  * SMTP_MOT_DE_PASSE (voir smtp.js).
  */
 import { lireLigne, lireLignes } from './base.js';
+import { repartition } from './commission.js';
 import { associations } from './referentiels.js';
 import { envoyerSmtp } from './smtp.js';
 
@@ -61,7 +62,9 @@ const SIGNATURE = ['', 'L’équipe Donéo'];
 export function composerEmail(evenement, { prenom, autre, titre, participation, association, creneau }) {
   const quand = formatCreneau(creneau);
   const montant = euros(participation);
-  const pourAssociation = association ? `, reversée à ${association}` : '';
+  // La commission de Doneo est prelevee sur la participation (#54).
+  const part = euros(repartition(participation).partAssociation);
+  const pourAssociation = `, dont ${part} reversés à ${association || 'l’association choisie'}`;
   const bonjour = [`Bonjour ${prenom},`, ''];
   switch (evenement) {
     case 'demande_recue':

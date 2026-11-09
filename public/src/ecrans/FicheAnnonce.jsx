@@ -10,6 +10,7 @@ import { useDistance } from "@/lib/distance.js";
 import { EtatVide, ErreurChargement } from "@/components/Etats.jsx";
 import { chargerAnnonce, chargerMesReservations, contacterOffrant, demanderObjet, retirerAnnonce } from "@/lib/api.js";
 import { basculerFavori, useFavoris } from "@/lib/favoris.js";
+import { libelleTaux, repartition } from "@/lib/commission.js";
 import {
   LIBELLES_ETAT,
   creneauPasse,
@@ -150,6 +151,7 @@ export default function FicheAnnonce({ profil }) {
   const reservee = annonce.statut === "reserve";
   const termine = creneauPasse(annonce.creneauRetrait);
   const montant = formaterParticipation(annonce.participation);
+  const part = repartition(annonce.participation);
   const estFavori = Boolean(favoris?.has(annonce.id));
 
   return (
@@ -218,8 +220,14 @@ export default function FicheAnnonce({ profil }) {
               {montant} <span className="text-base font-medium text-violet-fonce">— participation</span>
             </p>
             {annonce.association && (
-              <p className="mt-0.5 text-sm text-ardoise">Reversée à {annonce.association.nom}</p>
+              <p className="mt-0.5 text-sm text-ardoise">
+                {formaterParticipation(part.partAssociation)} reversés à {annonce.association.nom}
+              </p>
             )}
+            {/* #54 : la commission, visible avant de demander l'objet. */}
+            <p className="text-xs text-muted-foreground">
+              dont {formaterParticipation(part.commission)} de commission Donéo ({libelleTaux})
+            </p>
           </div>
         </div>
 
@@ -297,8 +305,8 @@ export default function FicheAnnonce({ profil }) {
                 className="w-full resize-none rounded-[1.25rem] border-[1.5px] border-primary/20 bg-white px-4 py-3 text-base outline-none focus-visible:border-primary"
               />
               <p className="text-xs leading-5 text-muted-foreground">
-                L’offrant valide votre demande, puis vous versez {montant} à l’association. L’adresse exacte vous est
-                alors donnée.
+                L’offrant valide votre demande, puis vous versez {montant}, dont{" "}
+                {formaterParticipation(part.partAssociation)} pour l’association. L’adresse exacte vous est alors donnée.
               </p>
               <Button variant="doneo" size="pilule" className="w-full" disabled={Boolean(action)} onClick={demander}>
                 {action === "demande" ? (

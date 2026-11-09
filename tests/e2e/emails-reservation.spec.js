@@ -35,7 +35,8 @@ test('Objet proposé : l’objet, la participation, l’association et le créne
   expect(objet).toContain('Étagère bois 3 niveaux');
   expect(texte).toContain('Bonjour Fatou');
   expect(texte).toContain('2 €');
-  expect(texte).toContain('Les Restos du Cœur du Rhône');
+  // #54 : la part de l'association, commission de Doneo deduite.
+  expect(texte).toContain('dont 1,90 € reversés à Les Restos du Cœur du Rhône');
   // 14 h UTC = 15 h a Paris en novembre.
   expect(texte).toContain('le samedi 14 novembre, de 15h00 à 18h00');
 });
