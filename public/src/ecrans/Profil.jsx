@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { ChevronRight, CircleCheck, Heart, Pencil, Users } from "lucide-react";
 import Badge from "@/components/Badge.jsx";
+import Avatar from "@/components/Avatar.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { ErreurChargement } from "@/components/Etats.jsx";
 import { chargerMesReservations, chargerResumeProfil } from "@/lib/api.js";
@@ -39,7 +40,6 @@ function Ligne({ vers, annonce, detail, pastille }) {
  * /profil/modifier.
  */
 export default function Profil({ profil }) {
-  const initiales = `${profil.prenom?.[0] || ""}${profil.nom?.[0] || ""}`.toUpperCase();
   const etat = useLocation().state;
   const [resume, setResume] = useState(null);
   const [reservations, setReservations] = useState(null);
@@ -70,11 +70,7 @@ export default function Profil({ profil }) {
   return (
     <section className="lg:mx-auto lg:max-w-2xl">
       <header className="flex items-center gap-4">
-        <span
-          aria-hidden="true"
-          className="grid size-18 shrink-0 place-items-center rounded-full border-4 border-white bg-lavande font-titre text-2xl font-semibold text-violet-fonce shadow-sm">
-          {initiales}
-        </span>
+        <Avatar membre={profil} className="size-18 border-4 border-white text-2xl shadow-sm" />
         <div className="min-w-0">
           <h1 className="doneo-titre truncate text-2xl">
             {profil.prenom} {profil.nom}

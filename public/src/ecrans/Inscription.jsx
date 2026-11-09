@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Heart, Loader2, Pencil } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import Champ from "@/components/Champ.jsx";
 import ChampAdresse from "@/components/ChampAdresse.jsx";
+import PhotoProfil from "@/components/PhotoProfil.jsx";
 import { enregistrerProfil } from "@/lib/api.js";
 
 /** Aujourd'hui, borne haute du champ : on ne naît pas dans le futur. */
@@ -47,6 +48,7 @@ export default function Inscription({ email, surTermine, profil = null }) {
     complementAdresse: profil?.complementAdresse || "",
     codePostal: profil?.codePostal || "",
     ville: profil?.ville || "",
+    photoUrl: profil?.photoUrl || "",
   }));
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
@@ -79,7 +81,7 @@ export default function Inscription({ email, surTermine, profil = null }) {
     setErreur(null);
     setEnvoi(true);
     try {
-      surTermine(await enregistrerProfil({ ...champs, photoUrl: profil?.photoUrl || "" }));
+      surTermine(await enregistrerProfil(champs));
       if (profil) naviguer("/profil", { replace: true, state: { profilModifie: true } });
     } catch (e) {
       setErreur(e.message);
@@ -118,25 +120,10 @@ export default function Inscription({ email, surTermine, profil = null }) {
       </header>
 
       <form onSubmit={soumettre} className="mt-7 space-y-4" noValidate>
-        {/* Emplacement photo : l'envoi de fichier vers R2 viendra plus tard,
-            la pastille tient la place pour ne pas deplacer la mise en page. */}
-        <div className="flex justify-center pb-2">
-          <div className="relative">
-            <div className="grid size-24 place-items-center overflow-hidden rounded-full border-2 border-primary/20 bg-white">
-              <img
-                src="/illustrations/objet-coeur.svg"
-                alt=""
-                aria-hidden="true"
-                className="size-14"
-              />
-            </div>
-            <span
-              className="absolute right-0 bottom-0 grid size-8 place-items-center rounded-full border-[2.5px] border-background bg-primary text-white shadow-lg shadow-primary/40"
-              aria-hidden="true">
-              <Pencil className="size-3.5" />
-            </span>
-          </div>
-        </div>
+        <PhotoProfil
+          photoUrl={champs.photoUrl}
+          surChangement={(url) => setChamps((precedent) => ({ ...precedent, photoUrl: url }))}
+        />
 
         <Champ
           id="nom"

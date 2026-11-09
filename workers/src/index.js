@@ -318,7 +318,11 @@ export default {
               codePostal: corps.codePostal.trim(),
               ville: corps.ville.trim(),
               dateNaissance: corps.dateNaissance.trim(),
-              photoUrl: typeof corps.photoUrl === 'string' ? corps.photoUrl : '',
+              // Seule une photo deposee dans notre stockage (POST /api/medias) est acceptee.
+              photoUrl:
+                typeof corps.photoUrl === 'string' && corps.photoUrl.startsWith(urlMedia(env, ''))
+                  ? corps.photoUrl
+                  : '',
               creeLe: existant?.creeLe || new Date().toISOString(),
               misAJourLe: new Date().toISOString(),
           });
