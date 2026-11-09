@@ -86,14 +86,17 @@ export async function supprimerLigne(env, table, id) {
 
 /**
  * Filtre PostgREST a partir d'un objet : { statut: 'proposee', annonceId: 'x' }
- * donne `statut=eq.proposee&annonceId=eq.x`. Une liste donne un `in.(...)`.
+ * donne `statut=eq.proposee&annonceId=eq.x`. Une liste donne un `in.(...)`,
+ * `{ apres: date }` un `gt.date`.
  */
 function filtre(criteres) {
   return Object.entries(criteres)
     .map(([champ, valeur]) =>
       Array.isArray(valeur)
         ? `${champ}=in.(${encodeURIComponent(valeur.map((v) => `"${String(v).replace(/"/g, '')}"`).join(','))})`
-        : `${champ}=eq.${encodeURIComponent(valeur)}`,
+        : valeur?.apres !== undefined
+          ? `${champ}=gt.${encodeURIComponent(valeur.apres)}`
+          : `${champ}=eq.${encodeURIComponent(valeur)}`,
     )
     .join('&');
 }

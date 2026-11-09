@@ -38,8 +38,7 @@ export default function PanneauMarque() {
           Donnez vos objets, soutenez une association.
         </p>
         <p className="mt-3 max-w-md text-white/85 text-pretty">
-          Chaque objet cédé contre une participation modeste aide une association lyonnaise — et
-          rend service à un étudiant ou à une personne dans le besoin.
+          Chaque objet donné aide une association et une personne dans le besoin.
         </p>
       </div>
     </aside>

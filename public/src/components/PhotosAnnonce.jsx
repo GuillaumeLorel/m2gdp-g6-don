@@ -4,14 +4,14 @@ import { supprimerPhoto, televerserPhoto } from "@/lib/api.js";
 
 export const PHOTOS_MAX = 8;
 const TYPES = ["image/jpeg", "image/png", "image/webp"];
-const TAILLE_MAX = 5 * 1024 * 1024;
+export const TAILLE_MAX = 5 * 1024 * 1024;
 // Au-dela, la photo est reduite avant l'envoi : celles d'un telephone
 // depassent souvent 5 Mo, et 1600 px suffisent largement a une fiche.
 const COTE_MAX = 1600;
-const SEUIL_REDUCTION = 1.5 * 1024 * 1024;
+export const SEUIL_REDUCTION = 1.5 * 1024 * 1024;
 
 /** Reduit une photo trop grande en JPEG ; null si elle ne se decode pas. */
-async function reduire(fichier) {
+export async function reduire(fichier) {
   try {
     const image = await createImageBitmap(fichier);
     const echelle = Math.min(1, COTE_MAX / Math.max(image.width, image.height));

@@ -1,11 +1,13 @@
 import { NavLink } from "react-router";
-import { Heart, Home, Plus, Search, User } from "lucide-react";
+import { Home, MessageCircle, Plus, Search, User } from "lucide-react";
+import PastilleNonLus from "@/components/PastilleNonLus.jsx";
+import { libelleMessages, useNonLus } from "@/lib/nonLus.js";
 
 const ONGLETS = [
   { vers: "/", libelle: "Accueil", Icone: Home, exact: true },
   { vers: "/recherche", libelle: "Recherche", Icone: Search },
   { vers: "/creer", libelle: "Créer", Icone: Plus, central: true },
-  { vers: "/favoris", libelle: "Favoris", Icone: Heart },
+  { vers: "/messages", libelle: "Messages", Icone: MessageCircle },
   { vers: "/profil", libelle: "Profil", Icone: User },
 ];
 
@@ -13,8 +15,10 @@ const ONGLETS = [
  * Menu du bas, partage par tous les ecrans connectes. Fixe : il reste visible
  * quand la page defile. L'onglet actif est en violet, icone pleine et point
  * dessous, comme sur la maquette ; « Creer » est le bouton rond central.
+ * Messages porte le nombre de conversations non lues.
  */
 export default function MenuBas() {
+  const nonLus = useNonLus();
   return (
     <nav
       aria-label="Navigation principale"
@@ -24,6 +28,7 @@ export default function MenuBas() {
           key={vers}
           to={vers}
           end={exact}
+          aria-label={vers === "/messages" ? libelleMessages(nonLus) : undefined}
           className="flex flex-1 flex-col items-center gap-1 text-[0.6875rem] font-medium">
           {({ isActive }) =>
             central ? (
@@ -37,12 +42,15 @@ export default function MenuBas() {
               </>
             ) : (
               <>
-                <Icone
-                  className={`size-5.5 ${isActive ? "text-primary" : "text-ardoise"}`}
-                  fill={isActive ? "currentColor" : "none"}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                />
+                <span className="relative">
+                  <Icone
+                    className={`size-5.5 ${isActive ? "text-primary" : "text-ardoise"}`}
+                    fill={isActive ? "currentColor" : "none"}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                  {vers === "/messages" && <PastilleNonLus nombre={nonLus} className="absolute -top-1.5 -right-2.5" />}
+                </span>
                 <span
                   aria-hidden="true"
                   className={`size-1 rounded-full ${isActive ? "bg-primary" : "bg-transparent"}`}

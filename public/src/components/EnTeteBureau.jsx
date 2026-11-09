@@ -1,12 +1,14 @@
 import { Link, NavLink } from "react-router";
 import { Heart, Home, MessageCircle, Plus, Search } from "lucide-react";
 import { Marque } from "@/components/Logo.jsx";
+import PastilleNonLus from "@/components/PastilleNonLus.jsx";
+import { libelleMessages, useNonLus } from "@/lib/nonLus.js";
 
 const LIENS = [
   { vers: "/", libelle: "Accueil", Icone: Home, exact: true },
   { vers: "/recherche", libelle: "Recherche", Icone: Search },
-  { vers: "/favoris", libelle: "Favoris", Icone: Heart },
   { vers: "/messages", libelle: "Messages", Icone: MessageCircle },
+  { vers: "/favoris", libelle: "Favoris", Icone: Heart },
 ];
 
 /**
@@ -17,6 +19,7 @@ const LIENS = [
  */
 export default function EnTeteBureau({ profil }) {
   const initiales = `${profil?.prenom?.[0] || ""}${profil?.nom?.[0] || ""}`.toUpperCase();
+  const nonLus = useNonLus();
 
   return (
     <header className="sticky top-0 z-30 hidden border-b border-primary/10 bg-white/92 backdrop-blur-md lg:block">
@@ -34,12 +37,16 @@ export default function EnTeteBureau({ profil }) {
               key={vers}
               to={vers}
               end={exact}
+              aria-label={vers === "/messages" ? libelleMessages(nonLus) : undefined}
               className={({ isActive }) =>
                 `flex h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors ${
                   isActive ? "bg-lavande text-violet-fonce" : "text-ardoise hover:bg-lilas"
                 }`
               }>
-              <Icone className="size-4.5" aria-hidden="true" />
+              <span className="relative">
+                <Icone className="size-4.5" aria-hidden="true" />
+                {vers === "/messages" && <PastilleNonLus nombre={nonLus} className="absolute -top-2 -right-2.5" />}
+              </span>
               {libelle}
             </NavLink>
           ))}

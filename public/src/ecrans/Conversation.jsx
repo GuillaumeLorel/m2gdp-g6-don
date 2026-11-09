@@ -7,14 +7,19 @@ import { ErreurChargement } from "@/components/Etats.jsx";
 import {
   chargerConversation,
   confirmerPaiement,
+  confirmerRemise,
   declinerDemande,
   demanderObjet,
   envoyerMessage,
   ouvrirPaiement,
+  passerAuSuivant,
   renoncerReservation,
+  seDesister,
   validerDemande,
 } from "@/lib/api.js";
 import { formaterCreneau, formaterParticipation, nomOffrant } from "@/lib/format.js";
+import { rafraichirNonLus } from "@/lib/nonLus.js";
+import { repartition } from "@/lib/commission.js";
 
 const heure = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
 const jour = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
@@ -44,6 +49,7 @@ function BandeauReservation({ conversation, surAction }) {
   const [action, setAction] = useState(null);
   const [erreur, setErreur] = useState(null);
   const montant = formaterParticipation(r?.participationDemandee ?? annonce?.participation);
+  const part = repartition(r?.participationDemandee ?? annonce?.participation ?? 0);
 
   async function agir(nom, appel) {
     setAction(nom);
@@ -96,30 +102,43 @@ function BandeauReservation({ conversation, surAction }) {
     }
   } else if (r.statut === "demandee") {
     if (monRole === "offrant") {
-      texte = `${interlocuteur.prenom} souhaite récupérer cet objet. Validez pour le lui réserver : ${interlocuteur.prenom} versera alors ${montant} à l’association.`;
+      texte = `${interlocuteur.prenom} souhaite récupérer cet objet : validez pour le lui réserver.`;
       actions = [
         bouton("valider", "Valider la demande", () => agir("valider", () => validerDemande(r.id))),
         bouton("decliner", "Décliner", () => agir("decliner", () => declinerDemande(r.id)), "doneoSecondaire", X),
       ];
     } else {
-      texte = "Demande envoyée : l’offrant doit la valider. Vous verserez ensuite la participation.";
+      texte = "Demande envoyée : l’offrant doit la valider avant le paiement.";
       actions = [bouton("renoncer", "Annuler ma demande", () => agir("renoncer", () => renoncerReservation(r.id)), "doneoSecondaire", X)];
+    }
+  } else if (r.statut === "liste_attente") {
+    const place = r.position ? ` (place ${r.position})` : "";
+    if (monRole === "demandeur") {
+      texte = `Vous êtes en liste d’attente${place} : l’objet est déjà réservé.`;
+      actions = [bouton("desister", "Me désister", () => agir("desister", () => seDesister(r.id)), "doneoSecondaire", X)];
+    } else {
+      texte = `${interlocuteur.prenom} est en liste d’attente${place}.`;
     }
   } else if (r.statut === "proposee") {
     if (monRole === "demandeur") {
-      texte = `L’objet vous est réservé ! Versez ${montant} à l’association pour confirmer et recevoir l’adresse exacte. Paiement de test : rien n’est débité.`;
+      // #54 : avant de payer, ce que recoit l'association et la commission.
+      texte = `Objet réservé : versez ${montant} pour voir l’adresse exacte. ${formaterParticipation(part.partAssociation)} iront à l’association, ${formaterParticipation(part.commission)} de commission Donéo.`;
       actions = [
         bouton("payer", `Verser ${montant}`, payer, "doneo", CreditCard),
         bouton("renoncer", "Renoncer", () => agir("renoncer", () => renoncerReservation(r.id)), "doneoSecondaire", X),
       ];
     } else {
       texte = `Objet réservé pour ${interlocuteur.prenom} : en attente de sa participation de ${montant}.`;
+      actions = [bouton("suivant", "Passer au suivant", () => agir("suivant", () => passerAuSuivant(r.id)), "doneoSecondaire", X)];
     }
   } else if (r.statut === "confirmee") {
     texte = monRole === "demandeur"
       ? `Réservation confirmée : ${montant} versés à l’association. Rendez-vous au créneau prévu.`
-      : `Participation de ${montant} validée. ${interlocuteur.prenom} a reçu votre adresse et vient au créneau prévu.`;
+      : `Participation de ${montant} validée : confirmez la remise une fois l’objet donné.`;
     adresse = r.adresseRetrait;
+    actions = monRole === "offrant"
+      ? [bouton("remettre", "Confirmer la remise", () => agir("remettre", () => confirmerRemise(r.id)), "doneo", CircleCheck)]
+      : [bouton("desister", "Me désister", () => agir("desister", () => seDesister(r.id)), "doneoSecondaire", X)];
   } else if (r.statut === "remise") {
     texte = "L’objet a été remis. Merci pour l’association !";
   }
@@ -150,6 +169,9 @@ function BandeauReservation({ conversation, surAction }) {
           )}
           <span>{texte}</span>
         </p>
+      )}
+      {r?.statut === "proposee" && monRole === "demandeur" && (
+        <p className="px-1 text-xs text-muted-foreground">Paiement de test : rien n’est débité.</p>
       )}
       {adresse && (
         <div className="rounded-2xl border border-succes/30 bg-white p-3.5">
@@ -233,6 +255,8 @@ export default function Conversation({ profil }) {
         .then((c) => {
           setConversation(c);
           setErreur(null);
+          // La lire l'a marquee comme lue : le compteur du menu suit.
+          rafraichirNonLus();
         })
         .catch((e) => setErreur(e.message)),
     [id],

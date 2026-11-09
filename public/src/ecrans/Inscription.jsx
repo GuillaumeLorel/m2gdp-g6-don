@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Heart, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import Champ from "@/components/Champ.jsx";
+import ChampAdresse from "@/components/ChampAdresse.jsx";
 import { enregistrerProfil } from "@/lib/api.js";
 
 /** Aujourd'hui, borne haute du champ : on ne naît pas dans le futur. */
@@ -111,8 +112,8 @@ export default function Inscription({ email, surTermine, profil = null }) {
           {profil ? "Compte" : "Vous êtes identifié·e comme"}{" "}
           <strong className="font-semibold text-foreground">{email}</strong>.
           {profil
-            ? " Vos rôles se changent à tout moment : vous pouvez donner, demander, ou les deux."
-            : " Encore quelques informations et vous pourrez donner ou demander vos premiers objets."}
+            ? " Vous pouvez changer vos rôles à tout moment."
+            : " Encore une étape avant de donner ou demander."}
         </p>
       </header>
 
@@ -166,6 +167,11 @@ export default function Inscription({ email, surTermine, profil = null }) {
           max={aujourdhui()}
           value={champs.dateNaissance}
           onChange={modifier("dateNaissance")}
+        />
+
+        <ChampAdresse
+          id="recherche-adresse"
+          surChoix={(adresse) => setChamps((p) => ({ ...p, ...adresse }))}
         />
 
         {/* Numero et rue sur une meme ligne : c'est ainsi qu'on ecrit une
@@ -231,16 +237,13 @@ export default function Inscription({ email, surTermine, profil = null }) {
         </div>
 
         <p className="text-xs leading-5 text-muted-foreground text-pretty">
-          Les objets se récupèrent en main propre : votre ville et votre code
-          postal sont visibles par les autres membres. Votre adresse exacte,
-          elle, reste privée.
+          Votre ville et code postal sont visibles ; votre adresse exacte reste privée.
         </p>
 
         <fieldset className="space-y-3 pt-2">
           <legend className="doneo-etiquette">{profil ? "Mes rôles" : "Je m’inscris en tant que"}</legend>
           <p className="text-xs leading-5 text-muted-foreground text-pretty">
-            Les deux sont possibles : on peut donner ce dont on n’a plus l’usage
-            et chercher autre chose.
+            Vous pouvez donner, demander, ou les deux.
           </p>
 
           {/* Case native masquee plutot que le Checkbox de shadcn : la carte

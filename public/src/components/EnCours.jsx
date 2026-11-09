@@ -1,32 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { CalendarDays, Plus, Search } from "lucide-react";
+import Badge from "@/components/Badge.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { chargerMesReservations, chercherAnnonces } from "@/lib/api.js";
-import { creneauPasse, formaterCreneau, formaterParticipation } from "@/lib/format.js";
+import { badgeAnnonce, badgeReservation } from "@/lib/badges.js";
+import { formaterCreneau, formaterParticipation } from "@/lib/format.js";
 
 /** Statut d'un don, du point de vue de son offrant. */
-const statutDon = (annonce) =>
-  creneauPasse(annonce.creneauRetrait)
-    ? ["Créneau passé", "bg-destructive/10 text-destructive"]
-    : annonce.statut === "reserve"
-      ? ["Réservé", "bg-citron"]
-      : ["Disponible", "bg-menthe"];
+const statutDon = (annonce) => ({ famille: "annonce", ...badgeAnnonce(annonce) });
 
 /** Statut d'une demande, du point de vue du demandeur : ce qu'il a a faire. */
-const STATUTS_DEMANDE = {
-  demandee: ["En attente de l’offrant", "bg-pervenche"],
-  proposee: ["À payer", "bg-citron"],
-  confirmee: ["Confirmée", "bg-menthe"],
-};
+const STATUTS_DEMANDE = ["demandee", "liste_attente", "proposee", "confirmee"];
+const statutDemande = (reservation) => ({ famille: "reservation", ...badgeReservation(reservation.statut, "demandeur") });
 
 function Statut({ valeur }) {
-  const [libelle, couleur] = valeur;
-  return (
-    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise ${couleur}`}>
-      {libelle}
-    </span>
-  );
+  return <Badge famille={valeur.famille} ton={valeur.ton}>{valeur.libelle}</Badge>;
 }
 
 /** Ligne compacte d'un objet : vignette, titre, statut, participation et creneau. */
@@ -89,7 +78,7 @@ export default function EnCours({ profil }) {
   useEffect(() => {
     if (!demandeur) return;
     chargerMesReservations("demandeur")
-      .then((liste) => setDemandes(liste.filter((r) => STATUTS_DEMANDE[r.statut] && r.annonce)))
+      .then((liste) => setDemandes(liste.filter((r) => STATUTS_DEMANDE.includes(r.statut) && r.annonce)))
       .catch(() => setDemandes([]));
   }, [demandeur]);
 
@@ -156,13 +145,13 @@ export default function EnCours({ profil }) {
               <div className="h-[5.25rem] w-[min(18rem,82vw)] animate-pulse rounded-3xl bg-lavande" aria-label="Chargement de vos demandes" />
             ) : demandes.length === 0 ? (
               <Vide lien="/recherche" libelle="Chercher" Icone={Search}>
-                Aucune demande en cours. Les objets que vous demanderez apparaîtront ici.
+                Aucune demande en cours : vos demandes apparaîtront ici.
               </Vide>
             ) : (
               <ul className="-mx-5 flex gap-3 overflow-x-auto px-5 pt-1 pb-3 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
                 {demandes.map((r) => (
                   <li key={r.id} className="flex">
-                    <CarteDon annonce={r.annonce} vers={`/messages/${r.conversationId}`} statut={STATUTS_DEMANDE[r.statut]} />
+                    <CarteDon annonce={r.annonce} vers={`/messages/${r.conversationId}`} statut={statutDemande(r)} />
                   </li>
                 ))}
               </ul>

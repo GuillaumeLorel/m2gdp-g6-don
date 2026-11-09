@@ -119,6 +119,8 @@ async function sessionDepuisLien(email) {
 export const PROFILS = {
   offrantEtDemandeur: 'demo-u-005', // Bastien, 8 annonces
   demandeurSeul: 'demo-u-001', // Fatou, aucune annonce
+  deuxiemeDemandeur: 'demo-u-003', // Lina : file d'attente (file-attente.spec.js)
+  troisiemeDemandeur: 'demo-u-004', // Enzo : file d'attente (file-attente.spec.js)
   // Reserve a connexion.spec.js : un lien demande pour un profil invalide
   // les precedents, il ne faut pas gener les sessions des autres tests.
   connexion: 'demo-u-002',
@@ -194,6 +196,7 @@ export async function remettreEnEtatLesProfilsDeTest() {
     await fetch(`${URL_SUPABASE}/rest/v1/conversations?fictif=is.false&${champ}=in.(${liste})`, { method: 'DELETE', headers: entetes });
   }
   await fetch(`${URL_SUPABASE}/rest/v1/favoris?utilisateurId=in.(${liste})`, { method: 'DELETE', headers: entetes });
+  await fetch(`${URL_SUPABASE}/rest/v1/commentaires?fictif=is.false&auteurId=in.(${liste})`, { method: 'DELETE', headers: entetes });
   const annonces = JSON.parse(readFileSync(path.join(RACINE, 'specs/donnees/demo/annonces.json'), 'utf8'));
   for (const a of annonces.filter((x) => x.offrantId === PROFILS.offrantEtDemandeur)) {
     await fetch(`${URL_SUPABASE}/rest/v1/annonces?id=eq.${a.id}`, {

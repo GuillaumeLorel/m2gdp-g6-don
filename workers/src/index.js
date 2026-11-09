@@ -27,21 +27,32 @@
  *   GET|POST /api/conversations/{id}/messages
  *   POST /api/annonces/{id}/reservations, GET /api/reservations?role=,
  *   GET /api/reservations/{id}, POST /api/reservations/{id}/(validation|
- *   declin|renonciation|paiement|paiement/confirmation)
+ *   declin|renonciation|remise|desistement|sans-reponse|paiement|paiement/confirmation)
  *   GET /api/profil/resume
  */
 
 import { ecrireLigne, lireLigne, listerTable, profilExistePourEmail, utilisateurDuJeton } from './base.js';
 import { validerAdresse } from './adresse.js';
 import { chargerAnnonce, rechercherAnnonces } from './annonces.js';
-import { contacter, envoyerMessage, lireConversation, listerConversations } from './conversations.js';
+import {
+  listerCommentaires,
+  masquer,
+  poserQuestion,
+  repondre as repondreQuestion,
+  supprimerCommentaire,
+} from './commentaires.js';
+import { compterNonLus, contacter, envoyerMessage, lireConversation, listerConversations } from './conversations.js';
 import { lireEdition, modifierAnnonce, retirerAnnonce } from './edition.js';
+import { brouillonAnnonce, iaActivee, rechercheParImage } from './ia.js';
 import { ajouterFavori, listerFavoris, retirerFavori } from './favoris.js';
 import { supprimer, televerser, urlMedia } from './medias.js';
 import { resumeProfil } from './profil.js';
 import { publierAnnonce } from './publication.js';
 import {
   confirmerPaiement,
+  remettre,
+  passerAuSuivant,
+  seDesister,
   decliner,
   demander,
   lireReservation,
@@ -159,11 +170,16 @@ async function routerEchanges(request, env, pathname, cors) {
     [/^\/api\/annonces\/([\w-]{1,64})$/, ['PATCH', 'DELETE']],
     [/^\/api\/annonces\/([\w-]{1,64})\/conversation$/, ['POST']],
     [/^\/api\/conversations$/, ['GET']],
+    [/^\/api\/notifications$/, ['GET']],
     [/^\/api\/conversations\/([\w-]{1,64})\/messages$/, ['GET', 'POST']],
     [/^\/api\/annonces\/([\w-]{1,64})\/reservations$/, ['POST']],
     [/^\/api\/reservations$/, ['GET']],
-    [/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|paiement|paiement\/confirmation))?$/, ['GET', 'POST']],
+    [/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|remise|desistement|sans-reponse|paiement|paiement\/confirmation))?$/, ['GET', 'POST']],
     [/^\/api\/profil\/resume$/, ['GET']],
+    [/^\/api\/annonces\/([\w-]{1,64})\/commentaires$/, ['POST']],
+    [/^\/api\/commentaires\/([\w-]{1,64})$/, ['DELETE']],
+    [/^\/api\/commentaires\/([\w-]{1,64})\/reponse$/, ['PUT']],
+    [/^\/api\/commentaires\/([\w-]{1,64})\/masquage$/, ['POST']],
   ];
   if (!routes.some(([motif, methodes]) => motif.test(pathname) && methodes.includes(methode))) return null;
 
@@ -193,6 +209,7 @@ async function routerEchanges(request, env, pathname, cors) {
   }
   if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/conversation$/))) return repondre(await contacter(env, uid, r[1], corps.contenu));
   if (pathname === '/api/conversations') return json({ conversations: await listerConversations(env, uid) }, 200, cors);
+  if (pathname === '/api/notifications') return json(await compterNonLus(env, uid), 200, cors);
   if ((r = m(/^\/api\/conversations\/([\w-]{1,64})\/messages$/))) {
     return repondre(methode === 'GET' ? await lireConversation(env, uid, r[1]) : await envoyerMessage(env, uid, r[1], corps.contenu));
   }
@@ -202,7 +219,7 @@ async function routerEchanges(request, env, pathname, cors) {
     if (!['demandeur', 'offrant'].includes(role)) return json({ erreurs: ['« role » doit valoir demandeur ou offrant.'] }, 422, cors);
     return json({ reservations: await listerReservations(env, uid, role) }, 200, cors);
   }
-  if ((r = m(/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|paiement|paiement\/confirmation))?$/))) {
+  if ((r = m(/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|remise|desistement|sans-reponse|paiement|paiement\/confirmation))?$/))) {
     const [, id, action] = r;
     if (!action) return methode === 'GET' ? repondre(await lireReservation(env, uid, id)) : null;
     if (methode !== 'POST') return null;
@@ -210,16 +227,25 @@ async function routerEchanges(request, env, pathname, cors) {
     if (action === 'declin') return repondre(await decliner(env, uid, id));
     if (action === 'renonciation') return repondre(await renoncer(env, uid, id));
     if (action === 'paiement/confirmation') return repondre(await confirmerPaiement(env, uid, id));
+    if (action === 'remise') return repondre(await remettre(env, uid, id));
+    if (action === 'desistement') return repondre(await seDesister(env, uid, id));
+    if (action === 'sans-reponse') return repondre(await passerAuSuivant(env, uid, id));
     // Retour du tunnel de paiement sur le front qui l'a ouvert.
     const origine = origineAutorisee(request.headers.get('Origin'), env) || 'https://doneo-app.vercel.app';
     return repondre(await payer(env, uid, id, origine));
   }
   if (pathname === '/api/profil/resume') return json(await resumeProfil(env, uid), 200, cors);
+  if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/commentaires$/))) return repondre(await poserQuestion(env, uid, r[1], corps.contenu));
+  if ((r = m(/^\/api\/commentaires\/([\w-]{1,64})$/))) return repondre(await supprimerCommentaire(env, uid, r[1]));
+  if ((r = m(/^\/api\/commentaires\/([\w-]{1,64})\/reponse$/))) return repondre(await repondreQuestion(env, uid, r[1], corps.contenu));
+  if ((r = m(/^\/api\/commentaires\/([\w-]{1,64})\/masquage$/))) return repondre(await masquer(env, uid, r[1], corps.masque));
   return null;
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    // Taches qui continuent apres la reponse (e-mails, voir email.js).
+    env = { ...env, enArrierePlan: (promesse) => ctx.waitUntil(promesse) };
     const cors = entetesCors(request, env);
 
     if (request.method === 'OPTIONS') {
@@ -374,9 +400,41 @@ export default {
           : json({ erreur: 'Cette annonce n’existe pas ou a été retirée.' }, 404, cors);
       }
 
+      /* --- Questions publiques : lisibles sans etre connecte ------------- */
+      const routeCommentaires = /^\/api\/annonces\/([\w-]{1,64})\/commentaires$/.exec(pathname);
+      if (routeCommentaires && request.method === 'GET') {
+        const lecteur = await utilisateurConnecte(request, env);
+        const parametres = new URL(request.url).searchParams;
+        const borne = (nom, defaut, max) => Math.min(max, Math.max(1, Number.parseInt(parametres.get(nom), 10) || defaut));
+        const { statut, corps } = await listerCommentaires(env, lecteur?.id ?? null, routeCommentaires[1], {
+          page: borne('page', 1, 1000),
+          parPage: borne('parPage', 20, 50),
+        });
+        return json(corps, statut, cors);
+      }
+
       /* --- Echanges entre membres (J4) : tout exige d'etre connecte ------ */
       const echanges = await routerEchanges(request, env, pathname, cors);
       if (echanges) return echanges;
+
+      /* --- IA : brouillon d'annonce (l'IA redige, elle ne publie jamais) --- */
+      if (pathname === '/api/ia/statut' && request.method === 'GET') {
+        return json({ brouillonAnnonce: iaActivee(env), rechercheImage: iaActivee(env) }, 200, cors);
+      }
+      if (pathname === '/api/ia/brouillon-annonce' && request.method === 'POST') {
+        const utilisateur = await utilisateurConnecte(request, env);
+        if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
+        const corps = await request.json().catch(() => ({}));
+        const { statut, corps: reponse } = await brouillonAnnonce(env, utilisateur.id, corps);
+        return json(reponse, statut, cors);
+      }
+
+      if (pathname === '/api/annonces/recherche-par-image' && request.method === 'POST') {
+        const utilisateur = await utilisateurConnecte(request, env);
+        if (!utilisateur) return json({ erreur: 'Authentification requise.' }, 401, cors);
+        const { statut, corps: reponse } = await rechercheParImage(env, utilisateur.id, request);
+        return json(reponse, statut, cors);
+      }
 
       /* --- Medias (photos des annonces) --------------------------------- */
       if (pathname === '/api/medias' && request.method === 'POST') {

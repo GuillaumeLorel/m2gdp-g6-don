@@ -20,19 +20,24 @@ test('Consulter une annonce (cas nominal)', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: disponible.titre })).toBeVisible();
   await expect(page.getByText(disponible.description)).toBeVisible();
   await expect(page.getByText('— participation')).toBeVisible();
-  await expect(page.getByText(/^Reversée à /)).toBeVisible();
+  await expect(page.getByText(/ reversés à /)).toBeVisible();
   await expect(page.getByText('Créneau de retrait')).toBeVisible();
   await expect(page.getByText(disponible.codePostal, { exact: false })).toBeVisible();
   await expect(page.getByRole('button', { name: /Réserver pour/ })).toBeVisible();
 });
 
 test('L’adresse exacte n’apparaît jamais avant la participation', async ({ page }) => {
-  const reponses = [];
-  page.on('response', async (r) => {
-    if (r.url().includes(`/api/annonces/${disponible.id}`)) reponses.push(await r.text());
+  // La fiche et ses questions publiques : on attend toutes les lectures, sans
+  // quoi une reponse arrivee tard serait lue apres la fin du test.
+  const lectures = [];
+  page.on('response', (r) => {
+    if (r.url().includes(`/api/annonces/${disponible.id}`)) lectures.push(r.text().catch(() => ''));
   });
   await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${disponible.id}`);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByText('L’adresse exacte vous est communiquée une fois votre participation validée.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Questions publiques/ })).toBeVisible();
+  const reponses = await Promise.all(lectures);
 
   const texte = await page.locator('body').innerText();
   expect(texte).not.toContain(disponible.rue);
@@ -59,7 +64,7 @@ test('Ouvrir une fiche depuis l’accueil, puis revenir', async ({ page }) => {
 
 test('Annonce réservée : signalée, mais la demande reste possible', async ({ page }) => {
   await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${reservee.id}`);
-  await expect(page.getByText('Cet objet est déjà réservé.', { exact: false })).toBeVisible();
+  await expect(page.getByText('Déjà réservé : demandez-le')).toBeVisible();
   // Si la personne renonce, l'offrant pourra proposer l'objet a quelqu'un d'autre.
   await expect(page.getByRole('button', { name: /Réserver pour/ })).toBeEnabled();
 });
@@ -92,4 +97,23 @@ test('Affichage sur mobile', async ({ page }) => {
   await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${disponible.id}`);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await attendrePasDeDefilementHorizontal(page);
+});
+
+test.describe('Très petit écran', () => {
+  test.use({ viewport: { width: 320, height: 700 } });
+
+  test('Barre du bas : réserver et écrire restent entiers à 320 px', async ({ page }) => {
+    // Le prix le plus long de la démo : le bouton ne doit pas pousser « Écrire » hors de l'écran.
+    const chere = annonces.filter((a) => a.statut === 'disponible' && a.offrantId !== PROFILS.demandeurSeul)
+      .sort((a, b) => String(b.participation).length - String(a.participation).length)[0];
+    await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${chere.id}`);
+    const reserver = page.getByRole('button', { name: /^Réserver pour/ });
+    const ecrire = page.getByRole('button', { name: /^Écrire à/ });
+    await expect(reserver).toBeVisible();
+    const largeur = page.viewportSize().width;
+    expect((await ecrire.boundingBox()).x + (await ecrire.boundingBox()).width).toBeLessThanOrEqual(largeur);
+    // Le montant n'est pas coupé par des points de suspension.
+    expect(await reserver.locator('span.truncate').evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true);
+    await attendrePasDeDefilementHorizontal(page);
+  });
 });

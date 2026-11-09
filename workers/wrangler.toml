@@ -17,6 +17,14 @@ ALLOWED_ORIGIN = "https://doneo-app.vercel.app,https://doneo-*-guillaumelorels-p
 # des profils, annonces, categories et associations. L'URL est publique ; la
 # cle secrete est un secret.
 SUPABASE_URL = "https://ocapkeuidpuhcsnerkse.supabase.co"
+# Interrupteur des fonctions IA (brouillon d'annonce) : "false" = la route
+# repond « desactive » sans appeler Google, le front cache le bouton. Pour
+# l'activer en ligne : passer a "true" et definir le secret GEMINI_API_KEY.
+IA_ACTIVEE = "true"
+# Interrupteur des e-mails de reservation (#61) : "false" = rien ne part.
+# Meme a "true", rien ne part tant que les secrets SMTP_UTILISATEUR et
+# SMTP_MOT_DE_PASSE ne sont pas definis (voir workers/src/email.js).
+EMAILS_ACTIFS = "true"
 
 # Base D1 (sessions, SQL) — creee le 16/09/2026, region WEUR.
 # Le binding reste DB_SESSIONS : c'est le nom lu par le code, il ne suit pas
@@ -31,3 +39,6 @@ database_id = "83153df8-eded-4ac6-b35b-749f7efe3a9c"
 
 # Secrets a definir via `wrangler secret put` (JAMAIS en clair ici) :
 #   SUPABASE_SECRET_KEY        -> cle secrete (sb_secret_...) du projet Supabase
+#   GEMINI_API_KEY             -> cle Google AI Studio (Gemini), fonctions IA
+#   SMTP_UTILISATEUR           -> adresse Gmail qui envoie les e-mails (#61)
+#   SMTP_MOT_DE_PASSE          -> mot de passe d'application de cette adresse

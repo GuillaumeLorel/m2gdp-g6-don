@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
+import Badge from "@/components/Badge.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import { EtatVide, ErreurChargement, ListeEnChargement } from "@/components/Etats.jsx";
 import { chargerConversations } from "@/lib/api.js";
+import { badgeReservation } from "@/lib/badges.js";
 import { nomOffrant } from "@/lib/format.js";
 
 const heure = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
@@ -19,17 +21,6 @@ function quand(iso) {
   if (jours === 1) return "Hier";
   if (jours < 7) return semaine.format(d);
   return date.format(d);
-}
-
-/** Ou en est la reservation, en une pastille. */
-function etape(reservation, monRole) {
-  if (!reservation) return null;
-  const s = reservation.statut;
-  if (s === "demandee") return monRole === "offrant" ? ["Demande à valider", "bg-citron"] : ["Demande envoyée", "bg-pervenche"];
-  if (s === "proposee") return monRole === "demandeur" ? ["À payer", "bg-citron"] : ["Réservé", "bg-pervenche"];
-  if (s === "confirmee") return ["Confirmé", "bg-menthe"];
-  if (s === "remise") return ["Remis", "bg-menthe"];
-  return null;
 }
 
 /**
@@ -75,13 +66,16 @@ export default function Messages() {
         {!erreur && conversations?.length > 0 && (
           <ul className="space-y-2.5">
             {conversations.map((c) => {
-              const pastille = etape(c.reservation, c.monRole);
+              const pastille = c.reservation && c.reservation.statut !== "annulee" ? badgeReservation(c.reservation.statut, c.monRole) : null;
               const dernier = c.dernierMessage;
+              const nonLus = c.nonLus || 0;
               return (
                 <li key={c.id}>
                   <Link
                     to={`/messages/${c.id}`}
-                    className="doneo-carte flex items-center gap-3 p-3 focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:outline-none">
+                    className={`doneo-carte flex items-center gap-3 p-3 focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:outline-none ${
+                      nonLus ? "ring-2 ring-primary/30" : ""
+                    }`}>
                     {c.annonce ? (
                       <ImageAnnonce annonce={c.annonce} className="size-14 shrink-0 rounded-xl" />
                     ) : (
@@ -89,18 +83,28 @@ export default function Messages() {
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline justify-between gap-2">
-                        <p className="truncate font-semibold text-ardoise">{nomOffrant(c.interlocuteur)}</p>
-                        {dernier && <span className="shrink-0 text-xs text-muted-foreground">{quand(dernier.creeLe)}</span>}
+                        <p className={`truncate text-ardoise ${nonLus ? "font-bold" : "font-semibold"}`}>{nomOffrant(c.interlocuteur)}</p>
+                        <span className="flex shrink-0 items-center gap-1.5">
+                          {dernier && (
+                            <span className={`text-xs ${nonLus ? "font-semibold text-violet-fonce" : "text-muted-foreground"}`}>
+                              {quand(dernier.creeLe)}
+                            </span>
+                          )}
+                          {nonLus > 0 && (
+                            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-violet-fonce px-1.5 text-[0.6875rem] font-bold text-white">
+                              {nonLus}
+                              <span className="sr-only"> {nonLus > 1 ? "messages non lus" : "message non lu"}</span>
+                            </span>
+                          )}
+                        </span>
                       </div>
                       <p className="truncate text-xs font-semibold text-violet-fonce">{c.annonce?.titre}</p>
                       <div className="mt-0.5 flex items-center gap-2">
-                        <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+                        <p className={`min-w-0 flex-1 truncate text-sm ${nonLus ? "font-medium text-ardoise" : "text-muted-foreground"}`}>
                           {dernier ? dernier.contenu : "Aucun message"}
                         </p>
                         {pastille && (
-                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold text-ardoise ${pastille[1]}`}>
-                            {pastille[0]}
-                          </span>
+                          <Badge famille="reservation" ton={pastille.ton}>{pastille.libelle}</Badge>
                         )}
                       </div>
                     </div>

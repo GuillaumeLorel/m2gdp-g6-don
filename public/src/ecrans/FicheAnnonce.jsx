@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { CalendarDays, CircleCheck, ChevronLeft, Gift, Heart, Loader2, Lock, MapPin, MessageCircle, Pencil, Trash2 } from "lucide-react";
+import Badge from "@/components/Badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
+import MeteoCreneau from "@/components/MeteoCreneau.jsx";
+import QuestionsPubliques from "@/components/QuestionsPubliques.jsx";
+import { useDistance } from "@/lib/distance.js";
 import { EtatVide, ErreurChargement } from "@/components/Etats.jsx";
 import { chargerAnnonce, chargerMesReservations, contacterOffrant, demanderObjet, retirerAnnonce } from "@/lib/api.js";
 import { basculerFavori, useFavoris } from "@/lib/favoris.js";
+import { libelleTaux, repartition } from "@/lib/commission.js";
 import {
   LIBELLES_ETAT,
   creneauPasse,
@@ -56,6 +61,7 @@ export default function FicheAnnonce({ profil }) {
   const [mot, setMot] = useState("");
   const [action, setAction] = useState(null);
   const [erreurAction, setErreurAction] = useState(null);
+  const distance = useDistance(annonce);
 
   useEffect(() => {
     if (!profil.roles?.includes("demandeur")) {
@@ -145,6 +151,7 @@ export default function FicheAnnonce({ profil }) {
   const reservee = annonce.statut === "reserve";
   const termine = creneauPasse(annonce.creneauRetrait);
   const montant = formaterParticipation(annonce.participation);
+  const part = repartition(annonce.participation);
   const estFavori = Boolean(favoris?.has(annonce.id));
 
   return (
@@ -189,10 +196,10 @@ export default function FicheAnnonce({ profil }) {
           {annonce.sousCategorie && (
             <li className="rounded-full bg-pervenche px-3 py-1 text-ardoise">{annonce.sousCategorie.libelle}</li>
           )}
-          <li className="rounded-full bg-menthe px-3 py-1 text-ardoise">{LIBELLES_ETAT[annonce.etat]}</li>
+          <li><Badge famille="etat" className="px-3 py-1 text-sm">{LIBELLES_ETAT[annonce.etat]}</Badge></li>
           <li className="flex items-center gap-1 rounded-full border border-primary/15 bg-white px-3 py-1 text-ardoise">
             <MapPin className="size-3.5" aria-hidden="true" />
-            {lieuAnnonce(annonce)}
+            {[lieuAnnonce(annonce), distance].filter(Boolean).join(" · ")}
           </li>
         </ul>
 
@@ -201,8 +208,8 @@ export default function FicheAnnonce({ profil }) {
             {remise
               ? "Cet objet a déjà trouvé preneur. Merci pour l’association !"
               : estLaMienne
-                ? "Vous avez réservé cet objet à un demandeur : suivez l’échange dans vos messages."
-                : "Cet objet est déjà réservé. Vous pouvez quand même le demander : si la personne renonce, l’offrant pourra vous le proposer."}
+                ? "Objet réservé à un demandeur : suivez l’échange dans vos messages."
+                : "Déjà réservé : demandez-le, vous passerez après si la personne renonce."}
           </p>
         )}
 
@@ -213,8 +220,14 @@ export default function FicheAnnonce({ profil }) {
               {montant} <span className="text-base font-medium text-violet-fonce">— participation</span>
             </p>
             {annonce.association && (
-              <p className="mt-0.5 text-sm text-ardoise">Reversée à {annonce.association.nom}</p>
+              <p className="mt-0.5 text-sm text-ardoise">
+                {formaterParticipation(part.partAssociation)} reversés à {annonce.association.nom}
+              </p>
             )}
+            {/* #54 : la commission, visible avant de demander l'objet. */}
+            <p className="text-xs text-muted-foreground">
+              dont {formaterParticipation(part.commission)} de commission Donéo ({libelleTaux})
+            </p>
           </div>
         </div>
 
@@ -292,8 +305,8 @@ export default function FicheAnnonce({ profil }) {
                 className="w-full resize-none rounded-[1.25rem] border-[1.5px] border-primary/20 bg-white px-4 py-3 text-base outline-none focus-visible:border-primary"
               />
               <p className="text-xs leading-5 text-muted-foreground">
-                L’offrant valide votre demande, puis vous versez {montant} à l’association. L’adresse exacte vous est
-                alors donnée.
+                L’offrant valide votre demande, puis vous versez {montant}, dont{" "}
+                {formaterParticipation(part.partAssociation)} pour l’association. L’adresse exacte vous est alors donnée.
               </p>
               <Button variant="doneo" size="pilule" className="w-full" disabled={Boolean(action)} onClick={demander}>
                 {action === "demande" ? (
@@ -315,11 +328,13 @@ export default function FicheAnnonce({ profil }) {
               <Button
                 variant="doneo"
                 size="pilule"
-                className="flex-1"
+                className="min-w-0 flex-1 px-3 text-sm min-[360px]:px-4 min-[360px]:text-base"
                 disabled={remise || termine || maDemande === undefined}
                 onClick={() => setPanneau("demande")}>
-                <Heart className="size-5 fill-current" aria-hidden="true" />
-                {remise ? "Objet déjà remis" : termine ? "Créneau passé" : `Réserver pour ${montant}`}
+                <Heart className="hidden size-5 shrink-0 fill-current min-[360px]:block" aria-hidden="true" />
+                <span className="truncate">
+                  {remise ? "Objet déjà remis" : termine ? "Créneau passé" : `Réserver pour ${montant}`}
+                </span>
               </Button>
               {/* US-30 : contacter l'offrant, sans s'engager. */}
               {!remise && (
@@ -370,6 +385,7 @@ export default function FicheAnnonce({ profil }) {
           <CalendarDays className="size-5 text-primary" aria-hidden="true" />
           {formaterCreneau(annonce.creneauRetrait)}
         </p>
+        {!termine && <MeteoCreneau annonce={annonce} />}
         {termine && !remise && (
           <p className="mt-1 text-sm text-muted-foreground">
             Ce créneau est passé : l’offrant doit en proposer un nouveau.
@@ -385,6 +401,8 @@ export default function FicheAnnonce({ profil }) {
           <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
           L’adresse exacte vous est communiquée une fois votre participation validée.
         </p>
+
+        <QuestionsPubliques annonce={annonce} profil={profil} estLaMienne={estLaMienne} />
       </div>
 
     </article>

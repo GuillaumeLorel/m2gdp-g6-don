@@ -7,7 +7,8 @@ info:
     L'offrant cède un objet, fixe une participation solidaire — un montant
     modeste — et choisit une association. Le demandeur, étudiant ou personne
     dans le besoin, verse cette participation et repart avec l'objet à petit
-    prix, tandis que l'argent va intégralement à l'association.
+    prix, tandis que l'argent va à l'association, moins une commission de 5 %
+    pour Donéo.
 
 
     **Version 0.3** — intègre les retours clients du 17/09/2026 : médias,
@@ -323,6 +324,26 @@ paths:
 
   # --- IA -----------------------------------------------------------------------
 
+  /api/ia/statut:
+    get:
+      tags: ["IA"]
+      summary: "✨ Les fonctions IA sont-elles activées ?"
+      description: >
+        Public. Le front s'en sert pour afficher ou cacher « Remplir avec
+        l'IA ». Lit l'interrupteur `IA_ACTIVEE` et la présence de la clé.
+      security: []
+      responses:
+        "200":
+          description: "État des fonctions IA"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [brouillonAnnonce, rechercheImage]
+                properties:
+                  brouillonAnnonce: { type: boolean }
+                  rechercheImage: { type: boolean }
+
   /api/ia/brouillon-annonce:
     post:
       tags: ["IA"]
@@ -333,8 +354,8 @@ paths:
         `POST /api/annonces`.
 
 
-        Le Worker garde la clé du service tiers (OpenRouter) et applique un
-        quota par utilisateur dans D1. La sortie du modèle est validée comme
+        Le Worker garde la clé du service tiers (Google Gemini Flash-Lite) et
+        applique un quota par utilisateur dans D1 (20 brouillons par jour). La sortie du modèle est validée comme
         n'importe quelle saisie : tout champ invalide — catégorie inconnue,
         créneau incohérent — est écarté et listé dans `champsIncertains`.
         Aucune adresse ne doit figurer dans la description générée : le Worker
@@ -356,10 +377,77 @@ paths:
           description: "Réservé aux comptes ayant le rôle `offrant`"
         "422": { $ref: "#/components/responses/Invalide" }
         "429": { $ref: "#/components/responses/TropDeRequetes" }
+        "503":
+          description: >
+            Fonction désactivée (interrupteur `IA_ACTIVEE` du Worker) : l'IA
+            n'est pas appelée. `GET /api/ia/statut` l'annonce au front, qui
+            cache alors le bouton.
         "502":
           description: >
             Service IA indisponible. Le front bascule sur le formulaire manuel :
             l'IA accélère la saisie, elle ne la conditionne pas.
+
+  /api/annonces/recherche-par-image:
+    post:
+      tags: ["IA"]
+      summary: "📷 Reconnaître un objet sur une photo, pour lancer la recherche"
+      description: >
+        Le demandeur envoie une photo au lieu de taper des mots. Le front lui
+        permet d'entourer l'objet dans sa photo : seule la zone choisie est
+        envoyée (recadrage côté front, l'API reçoit déjà l'image recadrée). L'IA la
+        décrit (un nom d'objet et une sous-catégorie de NOTRE liste), et le
+        front passe le mot à `GET /api/annonces` (`q`) : aucune nouvelle
+        entité. Il n'applique pas la sous-catégorie comme filtre, car celle que
+        l'IA devine ne correspond pas toujours au rangement choisi par
+        l'offrant, et un filtre de trop viderait la liste.
+
+
+        **Rien n'est enregistré** : la photo n'est ni stockée ni jointe au
+        compte. Le Worker garde la clé du service tiers (Google Gemini
+        Flash-Lite) et applique un quota par utilisateur dans D1 (20 par
+        jour, compté à part des brouillons). L'identifiant de sous-catégorie
+        est validé comme une saisie. L'interface demande le consentement avant
+        l'envoi ; en cas d'échec, la recherche par mots reste disponible.
+      security: [{ jetonSupabase: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [fichier]
+              properties:
+                fichier:
+                  type: string
+                  format: binary
+                  description: "JPEG, PNG ou WebP, 5 Mo au plus"
+      responses:
+        "200":
+          description: "Objet reconnu"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [nom, categorieId, sousCategorieId]
+                properties:
+                  nom:
+                    type: string
+                    description: "Un mot, au singulier"
+                    example: "vélo"
+                  categorieId: { type: string, example: "sport" }
+                  sousCategorieId: { type: string, example: "sport-velos" }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+        "413":
+          description: "Photo trop lourde (5 Mo au plus)"
+        "415":
+          description: "Format non pris en charge (JPEG, PNG ou WebP)"
+        "422":
+          description: "Aucune photo reçue, ou aucun objet identifiable sur la photo"
+        "429": { $ref: "#/components/responses/TropDeRequetes" }
+        "502":
+          description: "Service IA indisponible : la recherche par mots reste disponible"
+        "503":
+          description: "Fonction désactivée (interrupteur `IA_ACTIVEE`)"
 
   # --- Annonces -------------------------------------------------------------------
 
@@ -429,7 +517,9 @@ paths:
           in: query
           description: >
             `proximite` exige `latitude` et `longitude`, ou un `codePostal` dont
-            on prend le centroïde ; sinon 422.
+            on prend le centre de la commune ; sinon 422. Une position fournie
+            prime sur le code postal. Elle vient de l'appli, arrondie à environ
+            1 km, et n'est jamais stockée.
           schema:
             type: string
             enum: [recent, proximite, participation, creneau]
@@ -826,6 +916,30 @@ paths:
                     items: { $ref: "#/components/schemas/Conversation" }
         "401": { $ref: "#/components/responses/NonAuthentifie" }
 
+  /api/notifications:
+    get:
+      tags: ["Conversations"]
+      summary: "🔔 Compteur des messages non lus"
+      description: >
+        Le compteur de l'onglet Messages. Est non lu ce qui est arrivé après la
+        dernière lecture de la conversation : un message de l'autre partie, ou
+        un message système qui s'adresse au lecteur. Ses propres messages ne
+        comptent jamais. Lire une conversation (`GET
+        /api/conversations/{id}/messages`) la marque comme lue.
+      security: [{ jetonSupabase: [] }]
+      responses:
+        "200":
+          description: "Conversations et messages non lus"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [conversationsNonLues, messagesNonLus]
+                properties:
+                  conversationsNonLues: { type: integer, minimum: 0 }
+                  messagesNonLus: { type: integer, minimum: 0 }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
   /api/annonces/{id}/conversation:
     post:
       tags: ["Conversations"]
@@ -925,8 +1039,10 @@ paths:
 
         La conversation (annonce, demandeur) est créée si besoin et reçoit un
         message système `demande_recue` ; `message` (facultatif, dans le
-        corps) y est ajouté. Aucun paiement à ce stade. La liste d'attente
-        ordonnée (`liste_attente`) vient en J5.
+        corps) y est ajouté. Aucun paiement à ce stade. Si l'objet est déjà
+        tenu (proposé ou confirmé), la demande entre en liste d'attente
+        (`liste_attente`, 5 personnes au plus) et reçoit un message système
+        `demande_en_file`.
       security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
@@ -1074,7 +1190,8 @@ paths:
       description: >
         Sur une réservation `demandee` (motif `desistement`) ou `proposee`
         (motif `refus` : l'annonce redevient `disponible`), par son
-        demandeur. Une réservation déjà payée relève du désistement (J5).
+        demandeur. Une réservation déjà payée relève du désistement
+        (`/desistement`).
       security: [{ jetonSupabase: [] }]
       parameters: [{ $ref: "#/components/parameters/Id" }]
       responses:
@@ -1390,7 +1507,8 @@ components:
       description: >
         `demandee` : en attente de la réponse de l'offrant. `proposee` :
         validée par l'offrant, le demandeur doit payer. `confirmee` : payée,
-        l'adresse exacte est donnée. `liste_attente` et `remise` : J5.
+        l'adresse exacte est donnée. `liste_attente` : inscrit derrière celui qui
+        tient l'objet. `remise` : l'objet a changé de mains.
 
     ProfilResume:
       type: object
@@ -1482,7 +1600,12 @@ components:
 
     BrouillonDemande:
       type: object
-      required: [texte]
+      description: >
+        Du texte, des photos, ou les deux : il faut au moins l'un des deux
+        (422 sinon).
+      anyOf:
+        - required: [texte]
+        - required: [mediaIds]
       properties:
         texte:
           type: string
@@ -1556,7 +1679,8 @@ components:
           minimum: 0.01
           description: >
             Participation solidaire en euros 💶, fixée par l'offrant.
-            Obligatoire et versée intégralement à l'association. Elle se veut
+            Obligatoire et reversée à l'association, moins une commission de
+            5 % prélevée par Donéo (#54). Elle se veut
             **modeste** — c'est une contribution à une cause, pas le prix de
             l'objet — mais aucun plafond n'est imposé techniquement.
         associationId:
@@ -1894,6 +2018,10 @@ components:
             participation: { type: number }
             creneauRetrait: { $ref: "#/components/schemas/Creneau" }
         interlocuteur: { $ref: "#/components/schemas/ProfilResume" }
+        nonLus:
+          type: integer
+          minimum: 0
+          description: "Messages arrivés depuis la dernière lecture du lecteur (0 une fois la conversation ouverte)"
         reservation:
           allOf:
             - $ref: "#/components/schemas/Reservation"
@@ -1952,10 +2080,13 @@ components:
           nullable: true
           enum:
             [
+              demande_recue,
               demande_en_file,
+              demande_declinee,
+              demande_annulee,
               objet_propose,
               paiement_valide,
-              refus,
+              proposition_refusee,
               desistement,
               sans_reponse,
               objet_remis,

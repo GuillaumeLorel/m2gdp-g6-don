@@ -147,6 +147,39 @@ export async function publierAnnonce(annonce) {
   throw erreur;
 }
 
+/** Etat des fonctions IA ({ brouillonAnnonce, rechercheImage }). Coupees, le front cache les boutons. */
+const statutIA = () => appeler('/api/ia/statut').then((r) => (r.ok ? r.donnees : {})).catch(() => ({}));
+export const iaDisponible = () => statutIA().then((s) => s.brouillonAnnonce === true);
+export const rechercheImageDisponible = () => statutIA().then((s) => s.rechercheImage === true);
+
+/**
+ * Brouillon d'annonce redige par l'IA (texte et photos deja televersees).
+ * L'IA ne publie jamais : la reponse prerempli le formulaire.
+ */
+export const genererBrouillon = (texte, mediaIds) =>
+  appelConnecte('/api/ia/brouillon-annonce', { method: 'POST', body: { texte, mediaIds } }, 'L’assistant ne répond pas. Remplissez le formulaire à la main.');
+
+/**
+ * Recherche par image : la photo est decrite par l'IA, rien n'est enregistre.
+ * Renvoie { nom, categorieId, sousCategorieId } ; sinon une erreur au message
+ * lisible (photo non reconnue, quota, service en panne).
+ */
+export async function rechercherParImage(fichier) {
+  const jeton = await jetonIdentite();
+  if (!jeton) throw new Error('Non connecté.');
+  const formulaire = new FormData();
+  formulaire.append('fichier', fichier, fichier.name || 'photo.jpg');
+  const reponse = await fetch(`${API_BASE}/api/annonces/recherche-par-image`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${jeton}` },
+    body: formulaire,
+  }).catch(() => null);
+  if (!reponse) throw new Error('Envoi de la photo impossible : vérifiez votre connexion. La recherche par mots reste disponible.');
+  const donnees = await reponse.json().catch(() => ({}));
+  if (!reponse.ok) throw new Error(donnees.erreur || donnees.erreurs?.join(' ') || 'L’analyse de la photo a échoué.');
+  return donnees;
+}
+
 /* --- Echanges entre membres (J4) ------------------------------------------ */
 
 /**
@@ -170,6 +203,7 @@ export const retirerFavori = (annonceId) =>
   appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/favori`, { method: 'DELETE' });
 
 /** Messagerie. */
+export const chargerNotifications = () => appelConnecte('/api/notifications', {}, 'Chargement des notifications impossible.');
 export const chargerConversations = () =>
   appelConnecte('/api/conversations', {}, 'Chargement des conversations impossible.').then((d) => d.conversations);
 export const chargerConversation = (id) =>
@@ -194,6 +228,12 @@ export const renoncerReservation = (id) => actionReservation(id, 'renonciation')
 /** Ouvre le tunnel de paiement de test ; renvoie l'adresse de la page Stripe. */
 export const ouvrirPaiement = (id) => actionReservation(id, 'paiement').then((d) => d.urlPaiement);
 export const confirmerPaiement = (id) => actionReservation(id, 'paiement/confirmation');
+/** Le demandeur se désiste : l'objet passe au suivant de la file. */
+export const seDesister = (id) => actionReservation(id, 'desistement');
+/** L'offrant passe au suivant, faute de réponse. */
+export const passerAuSuivant = (id) => actionReservation(id, 'sans-reponse');
+/** L'offrant confirme que l'objet a changé de mains. */
+export const confirmerRemise = (id) => actionReservation(id, 'remise');
 
 /** Modifier ou retirer son annonce. */
 export const chargerEdition = (id) =>
@@ -207,6 +247,19 @@ export async function modifierAnnonce(id, champs) {
 }
 export const retirerAnnonce = (id) =>
   appelConnecte(`/api/annonces/${encodeURIComponent(id)}`, { method: 'DELETE' }, 'Retrait impossible.');
+
+/** Questions publiques d'une annonce (EPIC 9). */
+export const chargerQuestions = (annonceId) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/commentaires?parPage=50`, {}, 'Chargement des questions impossible.')
+    .then((d) => d.commentaires);
+export const poserQuestion = (annonceId, contenu) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/commentaires`, { method: 'POST', body: { contenu } }, 'Publication impossible.');
+export const repondreQuestion = (id, contenu) =>
+  appelConnecte(`/api/commentaires/${encodeURIComponent(id)}/reponse`, { method: 'PUT', body: { contenu } }, 'Réponse impossible.');
+export const masquerQuestion = (id, masque) =>
+  appelConnecte(`/api/commentaires/${encodeURIComponent(id)}/masquage`, { method: 'POST', body: { masque } });
+export const supprimerQuestion = (id) =>
+  appelConnecte(`/api/commentaires/${encodeURIComponent(id)}`, { method: 'DELETE' }, 'Suppression impossible.');
 
 /** Profil : statistiques et toutes mes annonces. */
 export const chargerResumeProfil = () => appelConnecte('/api/profil/resume', {}, 'Chargement du profil impossible.');

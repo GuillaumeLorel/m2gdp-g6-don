@@ -4,13 +4,51 @@
  * Une conversation est privee, entre l'offrant d'une annonce et un demandeur,
  * et unique par couple (annonce, demandeur). Elle porte aussi les messages
  * systeme des reservations : « demande recue », « objet propose »... C'est la
- * messagerie actionnable des maquettes, sans notifications (WON'T).
+ * messagerie actionnable des maquettes.
+ *
+ * Non lus (demande du 09/11/2026) : chaque participant retient quand il a lu
+ * la conversation (luParOffrantLe, luParDemandeurLe). Compte comme non lu ce
+ * qui est arrive apres : un message de l'autre, ou un message systeme qui
+ * s'adresse a lui (« demande recue » pour l'offrant, « objet propose » pour le
+ * demandeur...). Ses propres messages ne comptent jamais.
  */
 import { chercherLignes, insererLigne, lireLigne, lireLignes, mettreAJour } from './base.js';
 import { versAnnoncesPubliques, versProfilResume } from './annonces.js';
-import { versReservation } from './reservations.js';
+import { rangFile, versReservation } from './reservations.js';
 
 export const LONGUEUR_MAX_MESSAGE = 1000;
+
+/** A qui s'adresse chaque message systeme ; absent = aux deux. */
+const DESTINATAIRE_SYSTEME = {
+  demande_recue: 'offrant',
+  demande_en_file: 'offrant',
+  demande_annulee: 'offrant',
+  paiement_valide: 'offrant',
+  proposition_refusee: 'offrant',
+  desistement: 'offrant',
+  demande_declinee: 'demandeur',
+  objet_propose: 'demandeur',
+  sans_reponse: 'demandeur',
+  objet_remis: 'demandeur',
+  attribuee_a_autrui: 'demandeur',
+  creneau_modifie: 'demandeur',
+  annonce_retiree: 'demandeur',
+};
+
+const roleDans = (conversation, utilisateurId) => (conversation.offrantId === utilisateurId ? 'offrant' : 'demandeur');
+const champLu = (role) => (role === 'offrant' ? 'luParOffrantLe' : 'luParDemandeurLe');
+
+/** Nombre de messages de `conversation` que `utilisateurId` n'a pas encore lus. */
+function nonLus(conversation, messages, utilisateurId) {
+  const role = roleDans(conversation, utilisateurId);
+  const lu = Date.parse(conversation[champLu(role)]) || 0;
+  return messages.filter(
+    (m) =>
+      m.conversationId === conversation.id &&
+      Date.parse(m.creeLe) > lu &&
+      (m.type === 'systeme' ? (DESTINATAIRE_SYSTEME[m.evenement] ?? role) === role : m.auteurId !== utilisateurId),
+  ).length;
+}
 
 /** Forme publique d'un message. */
 export const versMessage = ({ id, conversationId, type, auteurId, reservationId, evenement, contenu, creeLe }) => ({
@@ -133,6 +171,7 @@ async function versConversations(env, conversations, utilisateurId, deja = {}) {
           quartier: annonce.quartier,
         },
         interlocuteur: versProfilResume(membres.get(monRole === 'offrant' ? c.demandeurId : c.offrantId)),
+        nonLus: nonLus(c, messages, utilisateurId),
         // Absents plutot que null (contrat : allOf sans type, voir openapi.yaml).
         ...(dernier ? { dernierMessage: versMessage(dernier) } : {}),
         ...(reservation ? { reservation: versReservation(reservation, utilisateurId) } : {}),
@@ -144,12 +183,37 @@ async function versConversations(env, conversations, utilisateurId, deja = {}) {
 }
 
 /** Mes conversations, la plus active d'abord (#65). */
-export async function listerConversations(env, utilisateurId) {
+async function mesConversations(env, utilisateurId) {
   const [commeOffrant, commeDemandeur] = await Promise.all([
     chercherLignes(env, 'conversations', { offrantId: utilisateurId }),
     chercherLignes(env, 'conversations', { demandeurId: utilisateurId }),
   ]);
-  return versConversations(env, [...commeOffrant, ...commeDemandeur], utilisateurId);
+  return [...commeOffrant, ...commeDemandeur];
+}
+
+export async function listerConversations(env, utilisateurId) {
+  return versConversations(env, await mesConversations(env, utilisateurId), utilisateurId);
+}
+
+/**
+ * Le compteur de l'onglet Messages : conversations et messages non lus. Appele
+ * souvent, il ne lit que les messages arrives depuis la plus ancienne lecture.
+ */
+export async function compterNonLus(env, utilisateurId) {
+  const conversations = await mesConversations(env, utilisateurId);
+  if (conversations.length === 0) return { conversationsNonLues: 0, messagesNonLus: 0 };
+  const depuis = conversations
+    .map((c) => c[champLu(roleDans(c, utilisateurId))])
+    .reduce((a, b) => (a < b ? a : b));
+  const messages = await chercherLignes(env, 'messages', {
+    conversationId: conversations.map((c) => c.id),
+    creeLe: { apres: depuis },
+  });
+  const parConversation = conversations.map((c) => nonLus(c, messages, utilisateurId));
+  return {
+    conversationsNonLues: parConversation.filter((n) => n > 0).length,
+    messagesNonLus: parConversation.reduce((a, b) => a + b, 0),
+  };
 }
 
 /** Une conversation et ses messages, pour ses deux participants seulement (#64). */
@@ -163,6 +227,9 @@ export async function lireConversation(env, utilisateurId, conversationId) {
     chercherLignes(env, 'messages', { conversationId }, { ordre: 'creeLe.asc' }),
     chercherLignes(env, 'reservations', { conversationId }, { ordre: 'creeLe.desc' }),
   ]);
+  await mettreAJour(env, 'conversations', { id: conversationId }, {
+    [champLu(roleDans(conversation, utilisateurId))]: new Date().toISOString(),
+  });
   const [resume] = await versConversations(env, [conversation], utilisateurId, { messages, reservations });
   // La reservation qui commande les actions : celle en cours, sinon la derniere.
   const enCours = reservations.find((r) => r.statut !== 'annulee') || reservations[0];
@@ -171,7 +238,8 @@ export async function lireConversation(env, utilisateurId, conversationId) {
     statut: 200,
     corps: {
       ...resume,
-      ...(enCours ? { reservation: versReservation(enCours, utilisateurId, annonce) } : {}),
+      nonLus: 0,
+      ...(enCours ? { reservation: versReservation(enCours, utilisateurId, annonce, await rangFile(env, enCours)) } : {}),
       messages: messages.map(versMessage),
     },
   };

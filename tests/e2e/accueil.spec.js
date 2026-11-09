@@ -27,14 +27,34 @@ test('Afficher les derniers objets (cas nominal)', async ({ page }) => {
 test('Naviguer avec le menu du bas (cas nominal)', async ({ page }) => {
   await ouvrirConnecte(page, PROFILS.offrantEtDemandeur);
   const menu = page.getByRole('navigation', { name: 'Navigation principale' });
-  for (const entree of ['Accueil', 'Recherche', 'Créer', 'Favoris', 'Profil']) {
+  for (const entree of ['Accueil', 'Recherche', 'Créer', 'Messages', 'Profil']) {
     await expect(menu.getByRole('link', { name: entree })).toBeVisible();
   }
+  await expect(menu.getByRole('link', { name: 'Favoris' })).toHaveCount(0);
   await expect(menu.getByRole('link', { name: 'Accueil' })).toHaveAttribute('aria-current', 'page');
+
+  // Messages (#131) : la liste des conversations s'ouvre et l'onglet est actif.
+  await menu.getByRole('link', { name: 'Messages' }).click();
+  await expect(page).toHaveURL(/\/messages$/);
+  await expect(menu.getByRole('link', { name: 'Messages' })).toHaveAttribute('aria-current', 'page');
 
   // Le menu reste visible quand la page defile.
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(menu).toBeInViewport();
+});
+
+test('Les favoris restent accessibles (#131)', async ({ page }) => {
+  // Depuis le cœur en haut de l'accueil.
+  await ouvrirConnecte(page, PROFILS.demandeurSeul);
+  await page.getByRole('main').getByRole('link', { name: 'Favoris' }).click();
+  await expect(page).toHaveURL(/\/favoris$/);
+  await expect(page.getByRole('heading', { name: 'Mes favoris' })).toBeVisible();
+
+  // Depuis le profil, où « Mes messages » n'est plus : le menu du bas suffit.
+  await page.getByRole('navigation', { name: 'Navigation principale' }).getByRole('link', { name: 'Profil' }).click();
+  await expect(page.getByRole('link', { name: 'Mes messages' })).toHaveCount(0);
+  await page.getByRole('link', { name: 'Mes favoris' }).click();
+  await expect(page).toHaveURL(/\/favoris$/);
 });
 
 test('Filtrer par catégorie depuis une puce', async ({ page }) => {
