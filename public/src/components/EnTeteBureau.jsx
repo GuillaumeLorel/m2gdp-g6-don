@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router";
 import { Heart, Home, MessageCircle, Plus, Search } from "lucide-react";
 import { Marque } from "@/components/Logo.jsx";
+import Avatar from "@/components/Avatar.jsx";
 import PastilleNonLus from "@/components/PastilleNonLus.jsx";
 import { libelleMessages, useNonLus } from "@/lib/nonLus.js";
 
@@ -15,10 +16,9 @@ const LIENS = [
  * Barre de navigation du grand ecran, a la place du menu du bas : sur un
  * ordinateur, on cherche la navigation en haut. Memes destinations que le
  * menu mobile, avec « Creer une annonce » en bouton d'appel et le profil en
- * pastille d'initiales.
+ * pastille de sa photo, ou de ses initiales.
  */
 export default function EnTeteBureau({ profil }) {
-  const initiales = `${profil?.prenom?.[0] || ""}${profil?.nom?.[0] || ""}`.toUpperCase();
   const nonLus = useNonLus();
 
   return (
@@ -63,11 +63,9 @@ export default function EnTeteBureau({ profil }) {
             to="/profil"
             aria-label="Profil"
             className={({ isActive }) =>
-              `grid size-11 place-items-center rounded-full font-titre font-semibold transition-shadow ${
-                isActive ? "bg-primary text-white" : "bg-lavande text-violet-fonce hover:ring-4 hover:ring-lavande/60"
-              }`
+              `rounded-full transition-shadow ${isActive ? "ring-4 ring-primary/40" : "hover:ring-4 hover:ring-lavande/60"}`
             }>
-            {initiales || "?"}
+            <Avatar membre={profil} className="size-11" />
           </NavLink>
         </div>
       </div>

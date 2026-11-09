@@ -450,7 +450,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               value={champs.date}
               onChange={modifier("date")}
             />
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 [&>*]:min-w-0">
               <Champ
                 id={`${id}-debut`}
                 etiquette="De"
@@ -682,13 +682,13 @@ function AssistantIA({ photos, surBrouillon, fait }) {
           {erreur}
         </p>
       )}
-      {/* Sur un petit ecran, « Annuler » passe sous le bouton principal plutot que de deborder. */}
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="doneo" size="pilule" className="min-w-48 flex-1" disabled={!pret} onClick={generer}>
+      {/* L'un sous l'autre : cote a cote, le libelle debordait du bouton sur iPhone. */}
+      <div className="flex flex-col gap-2">
+        <Button type="button" variant="doneo" size="pilule" className="w-full" disabled={!pret} onClick={generer}>
           {envoi ? <Loader2 className="size-5 animate-spin" aria-hidden="true" /> : <Sparkles className="size-5" aria-hidden="true" />}
           {envoi ? "Rédaction…" : "Générer un brouillon"}
         </Button>
-        <Button type="button" variant="doneoSecondaire" size="pilule" className="flex-1" disabled={envoi} onClick={() => setOuvert(false)}>
+        <Button type="button" variant="doneoSecondaire" size="pilule" className="w-full" disabled={envoi} onClick={() => setOuvert(false)}>
           Annuler
         </Button>
       </div>

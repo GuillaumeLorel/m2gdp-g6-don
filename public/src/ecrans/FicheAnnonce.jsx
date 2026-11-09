@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import MeteoCreneau from "@/components/MeteoCreneau.jsx";
 import QuestionsPubliques from "@/components/QuestionsPubliques.jsx";
+import Avatar from "@/components/Avatar.jsx";
 import { useDistance } from "@/lib/distance.js";
 import { EtatVide, ErreurChargement } from "@/components/Etats.jsx";
 import { chargerAnnonce, chargerMesReservations, contacterOffrant, demanderObjet, retirerAnnonce } from "@/lib/api.js";
@@ -391,11 +392,7 @@ export default function FicheAnnonce({ profil }) {
         )}
 
         <div className="doneo-carte mt-5 flex items-center gap-3.5 p-4">
-          <span
-            aria-hidden="true"
-            className="grid size-12 shrink-0 place-items-center rounded-full bg-lavande font-titre text-lg font-semibold text-violet-fonce">
-            {`${annonce.offrant?.prenom?.[0] || ""}${annonce.offrant?.initialeNom?.[0] || ""}`.toUpperCase()}
-          </span>
+          <Avatar membre={annonce.offrant} className="size-12 text-lg" />
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-ardoise">{nomOffrant(annonce.offrant)}</p>
             <p className="text-sm text-muted-foreground">
