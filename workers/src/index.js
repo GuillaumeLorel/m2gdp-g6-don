@@ -41,7 +41,7 @@ import {
   repondre as repondreQuestion,
   supprimerCommentaire,
 } from './commentaires.js';
-import { contacter, envoyerMessage, lireConversation, listerConversations } from './conversations.js';
+import { compterNonLus, contacter, envoyerMessage, lireConversation, listerConversations } from './conversations.js';
 import { lireEdition, modifierAnnonce, retirerAnnonce } from './edition.js';
 import { brouillonAnnonce, iaActivee, rechercheParImage } from './ia.js';
 import { ajouterFavori, listerFavoris, retirerFavori } from './favoris.js';
@@ -170,6 +170,7 @@ async function routerEchanges(request, env, pathname, cors) {
     [/^\/api\/annonces\/([\w-]{1,64})$/, ['PATCH', 'DELETE']],
     [/^\/api\/annonces\/([\w-]{1,64})\/conversation$/, ['POST']],
     [/^\/api\/conversations$/, ['GET']],
+    [/^\/api\/notifications$/, ['GET']],
     [/^\/api\/conversations\/([\w-]{1,64})\/messages$/, ['GET', 'POST']],
     [/^\/api\/annonces\/([\w-]{1,64})\/reservations$/, ['POST']],
     [/^\/api\/reservations$/, ['GET']],
@@ -208,6 +209,7 @@ async function routerEchanges(request, env, pathname, cors) {
   }
   if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/conversation$/))) return repondre(await contacter(env, uid, r[1], corps.contenu));
   if (pathname === '/api/conversations') return json({ conversations: await listerConversations(env, uid) }, 200, cors);
+  if (pathname === '/api/notifications') return json(await compterNonLus(env, uid), 200, cors);
   if ((r = m(/^\/api\/conversations\/([\w-]{1,64})\/messages$/))) {
     return repondre(methode === 'GET' ? await lireConversation(env, uid, r[1]) : await envoyerMessage(env, uid, r[1], corps.contenu));
   }

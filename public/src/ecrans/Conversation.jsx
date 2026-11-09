@@ -18,6 +18,7 @@ import {
   validerDemande,
 } from "@/lib/api.js";
 import { formaterCreneau, formaterParticipation, nomOffrant } from "@/lib/format.js";
+import { rafraichirNonLus } from "@/lib/nonLus.js";
 
 const heure = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
 const jour = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
@@ -251,6 +252,8 @@ export default function Conversation({ profil }) {
         .then((c) => {
           setConversation(c);
           setErreur(null);
+          // La lire l'a marquee comme lue : le compteur du menu suit.
+          rafraichirNonLus();
         })
         .catch((e) => setErreur(e.message)),
     [id],

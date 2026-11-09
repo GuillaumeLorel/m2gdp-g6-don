@@ -203,6 +203,7 @@ export const retirerFavori = (annonceId) =>
   appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/favori`, { method: 'DELETE' });
 
 /** Messagerie. */
+export const chargerNotifications = () => appelConnecte('/api/notifications', {}, 'Chargement des notifications impossible.');
 export const chargerConversations = () =>
   appelConnecte('/api/conversations', {}, 'Chargement des conversations impossible.').then((d) => d.conversations);
 export const chargerConversation = (id) =>

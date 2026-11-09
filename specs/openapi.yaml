@@ -915,6 +915,30 @@ paths:
                     items: { $ref: "#/components/schemas/Conversation" }
         "401": { $ref: "#/components/responses/NonAuthentifie" }
 
+  /api/notifications:
+    get:
+      tags: ["Conversations"]
+      summary: "🔔 Compteur des messages non lus"
+      description: >
+        Le compteur de l'onglet Messages. Est non lu ce qui est arrivé après la
+        dernière lecture de la conversation : un message de l'autre partie, ou
+        un message système qui s'adresse au lecteur. Ses propres messages ne
+        comptent jamais. Lire une conversation (`GET
+        /api/conversations/{id}/messages`) la marque comme lue.
+      security: [{ jetonSupabase: [] }]
+      responses:
+        "200":
+          description: "Conversations et messages non lus"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [conversationsNonLues, messagesNonLus]
+                properties:
+                  conversationsNonLues: { type: integer, minimum: 0 }
+                  messagesNonLus: { type: integer, minimum: 0 }
+        "401": { $ref: "#/components/responses/NonAuthentifie" }
+
   /api/annonces/{id}/conversation:
     post:
       tags: ["Conversations"]
@@ -1992,6 +2016,10 @@ components:
             participation: { type: number }
             creneauRetrait: { $ref: "#/components/schemas/Creneau" }
         interlocuteur: { $ref: "#/components/schemas/ProfilResume" }
+        nonLus:
+          type: integer
+          minimum: 0
+          description: "Messages arrivés depuis la dernière lecture du lecteur (0 une fois la conversation ouverte)"
         reservation:
           allOf:
             - $ref: "#/components/schemas/Reservation"
