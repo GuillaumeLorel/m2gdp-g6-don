@@ -90,9 +90,9 @@ export default function Accueil({ profil }) {
           </Link>
           <Link
             to="/recherche"
-            className="flex h-12 flex-1 items-center gap-2.5 rounded-2xl border border-primary/10 bg-white px-4 text-[0.95rem] text-muted-foreground shadow-[0_6px_18px_-12px_rgb(155_77_219/35%)]">
-            <Search className="size-5 text-ardoise" aria-hidden="true" />
-            Chercher une pépite…
+            className="flex h-12 min-w-0 flex-1 items-center gap-2.5 rounded-2xl border border-primary/10 bg-white px-4 text-[0.95rem] text-muted-foreground shadow-[0_6px_18px_-12px_rgb(155_77_219/35%)]">
+            <Search className="size-5 shrink-0 text-ardoise" aria-hidden="true" />
+            <span className="truncate">Chercher une pépite…</span>
           </Link>
           {/* Favoris : plus d'onglet dans le menu du bas (Messages l'a remplacé) ;
               on y accède d'ici, ou depuis le profil. */}

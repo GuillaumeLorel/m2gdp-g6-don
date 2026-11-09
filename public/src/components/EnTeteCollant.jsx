@@ -20,7 +20,9 @@ export default function EnTeteCollant({ children, className = "" }) {
     // Grand ecran : en-tete ordinaire. La barre de navigation du haut reste
     // deja a l'ecran, et la place ne manque pas.
     <div
-      className={`sticky top-0 z-20 -mx-5 -mt-5 bg-lilas/92 px-5 pt-5 pb-3 backdrop-blur-md transition-shadow lg:static lg:m-0 lg:bg-transparent lg:p-0 lg:pb-4 lg:shadow-none lg:backdrop-blur-none ${
+      // Fond opaque : sur Safari (iPhone), le flou d'arriere-plan ne masque pas
+      // toujours le contenu, qui se lisait a travers la recherche et les filtres.
+      className={`sticky top-0 z-20 -mx-5 -mt-5 bg-lilas px-5 pt-5 pb-3 transition-shadow lg:static lg:m-0 lg:bg-transparent lg:p-0 lg:pb-4 lg:shadow-none ${
         decolle ? "shadow-[0_10px_24px_-18px_rgb(47_79_92/45%)]" : ""
       } ${className}`}>
       {children}

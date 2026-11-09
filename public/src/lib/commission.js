@@ -19,5 +19,5 @@ export function repartition(participation) {
   };
 }
 
-/** « 5 % » */
-export const libelleTaux = `${Math.round(TAUX_COMMISSION * 100)} %`;
+/** « 5 % », avec une espace insecable : le « % » ne part jamais seul a la ligne. */
+export const libelleTaux = `${Math.round(TAUX_COMMISSION * 100)} %`;

@@ -22,7 +22,7 @@ export default function EnTeteBureau({ profil }) {
   const nonLus = useNonLus();
 
   return (
-    <header className="sticky top-0 z-30 hidden border-b border-primary/10 bg-white/92 backdrop-blur-md lg:block">
+    <header className="sticky top-0 z-30 hidden border-b border-primary/10 bg-white lg:block">
       <div className="mx-auto flex h-18 max-w-6xl items-center gap-8 px-8">
         <Link to="/" className="flex items-center gap-2.5" aria-label="Donéo — accueil">
           <Marque className="size-9" />

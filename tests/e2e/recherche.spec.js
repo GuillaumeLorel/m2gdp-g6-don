@@ -72,7 +72,7 @@ test('Annonces affichées selon leur statut', async ({ page }) => {
     await page.waitForTimeout(400);
   }
   expect([...statuts].sort()).toEqual(['disponible', 'reserve']);
-  await expect(page.getByText('Liste d’attente ouverte').first()).toBeVisible();
+  await expect(page.getByText('Liste d’attente', { exact: true }).first()).toBeVisible();
 });
 
 test('Recherche sans rechargement de page', async ({ page }) => {

@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils.js";
  *    le ton « action » (« À payer ») est violet foncé, texte blanc gras.
  * Tous les textes ont un contraste d'au moins 4,5:1.
  */
-const BASE = "inline-flex shrink-0 items-center gap-1 text-[0.6875rem] leading-4 px-2 py-0.5";
+// max-w-full : un badge ne deborde jamais de sa carte, meme sur un ecran de 320 px.
+const BASE = "inline-flex max-w-full shrink-0 items-center gap-1 text-[0.6875rem] leading-4 px-2 py-0.5";
 
 const FAMILLES = {
   etat: "rounded-[0.375rem] border border-ardoise/30 bg-white font-semibold text-ardoise",

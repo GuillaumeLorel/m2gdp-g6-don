@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { CalendarDays, CircleCheck, ChevronLeft, Gift, Heart, Loader2, Lock, MapPin, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import Badge from "@/components/Badge.jsx";
@@ -61,6 +61,24 @@ export default function FicheAnnonce({ profil }) {
   const [mot, setMot] = useState("");
   const [action, setAction] = useState(null);
   const [erreurAction, setErreurAction] = useState(null);
+  // Hauteur de la barre d'action fixe : la fiche garde cette marge en bas, meme
+  // quand le panneau de demande l'agrandit, pour que rien ne passe dessous.
+  const [hauteurBarre, setHauteurBarre] = useState(0);
+  // La photo fait 18 rem de haut sur mobile : au-dela, les boutons du haut ont un fond.
+  const [photoDepassee, setPhotoDepassee] = useState(false);
+  useEffect(() => {
+    const suivre = () => setPhotoDepassee(window.scrollY > 220);
+    suivre();
+    window.addEventListener("scroll", suivre, { passive: true });
+    return () => window.removeEventListener("scroll", suivre);
+  }, []);
+  const observateurBarre = useRef(null);
+  const mesurerBarre = useCallback((noeud) => {
+    observateurBarre.current?.disconnect();
+    if (!noeud) return;
+    observateurBarre.current = new ResizeObserver(() => setHauteurBarre(noeud.offsetHeight));
+    observateurBarre.current.observe(noeud);
+  }, []);
   const distance = useDistance(annonce);
 
   useEffect(() => {
@@ -156,14 +174,21 @@ export default function FicheAnnonce({ profil }) {
 
   return (
     // Grand ecran : visuel a gauche, qui reste a l'ecran, informations a droite.
-    <article className="pb-36 lg:grid lg:grid-cols-[1.1fr_1fr] lg:items-start lg:gap-12 lg:pb-0">
+    <article
+      className="pb-[calc(var(--barre-fiche,7.5rem)+1.5rem)] lg:grid lg:grid-cols-[1.1fr_1fr] lg:items-start lg:gap-12 lg:pb-0"
+      style={hauteurBarre ? { "--barre-fiche": `${hauteurBarre}px` } : undefined}>
       <div className="relative lg:sticky lg:top-[calc(var(--hauteur-entete)+2rem)]">
         <ImageAnnonce
           annonce={annonce}
           className="h-72 w-full md:aspect-4/3 md:h-auto lg:rounded-[2rem] lg:shadow-[0_24px_60px_-36px_rgb(155_77_219/45%)]"
         />
         {/* Fixe : le retour reste a portee quand on lit le bas de la fiche. */}
-        <div className="pointer-events-none fixed inset-x-0 top-0 z-20 mx-auto flex max-w-md justify-between p-4 md:max-w-3xl lg:absolute lg:max-w-none">
+        {/* Une fois la photo depassee, un fond apparait derriere les boutons : le
+            texte passe sous une barre, et non sous des boutons flottants. */}
+        <div
+          className={`pointer-events-none fixed inset-x-0 top-0 z-20 mx-auto flex max-w-md justify-between p-4 transition-colors md:max-w-3xl lg:absolute lg:max-w-none lg:bg-transparent lg:shadow-none lg:backdrop-blur-none ${
+            photoDepassee ? "bg-background shadow-[0_8px_24px_-16px_rgb(155_77_219/40%)]" : ""
+          }`}>
           <span className="pointer-events-auto">
             <BoutonSurPhoto onClick={revenir} aria-label="Retour">
               <ChevronLeft className="size-5" aria-hidden="true" />
@@ -233,7 +258,7 @@ export default function FicheAnnonce({ profil }) {
 
           {/* Barre d'action : fixe en bas sur mobile, a la place du menu ; sur grand
               ecran, carte juste sous la participation, la ou le regard se pose. */}
-        <div className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md rounded-t-[1.75rem] border-t md:max-w-3xl border-primary/10 bg-white px-5 pt-3.5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_-14px_rgb(155_77_219/30%)] lg:static lg:mt-5 lg:max-w-none lg:rounded-3xl lg:border lg:p-5 lg:shadow-[0_16px_40px_-28px_rgb(155_77_219/45%)]">
+        <div ref={mesurerBarre} className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md rounded-t-[1.75rem] border-t md:max-w-3xl border-primary/10 bg-white px-5 pt-3.5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_-14px_rgb(155_77_219/30%)] lg:static lg:mt-5 lg:max-w-none lg:rounded-3xl lg:border lg:p-5 lg:shadow-[0_16px_40px_-28px_rgb(155_77_219/45%)]">
           {estLaMienne ? (
             /* US-11 : modifier ou retirer son annonce. */
             panneau === "retrait" ? (
