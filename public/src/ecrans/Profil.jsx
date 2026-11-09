@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { ChevronRight, CircleCheck, Heart, Pencil, Users } from "lucide-react";
 import Badge from "@/components/Badge.jsx";
 import Avatar from "@/components/Avatar.jsx";
@@ -41,6 +41,13 @@ function Ligne({ vers, annonce, detail, pastille }) {
  */
 export default function Profil({ profil }) {
   const etat = useLocation().state;
+  const naviguer = useNavigate();
+  // Retour a l'accueil AVANT de fermer la session : a la reconnexion, avec ce
+  // compte ou un autre, on arrive sur l'accueil et non sur ce profil.
+  const deconnecter = () => {
+    naviguer("/", { replace: true });
+    seDeconnecter();
+  };
   const [resume, setResume] = useState(null);
   const [reservations, setReservations] = useState(null);
   const [erreur, setErreur] = useState(null);
@@ -170,7 +177,7 @@ export default function Profil({ profil }) {
               mais elle doit se distinguer des autres entrees. */}
           <button
             type="button"
-            onClick={seDeconnecter}
+            onClick={deconnecter}
             className="flex w-full items-center gap-3 px-4 py-4 text-left font-medium text-rose">
             <span className="flex-1">Se déconnecter</span>
             <ChevronRight className="size-4" aria-hidden="true" />
