@@ -333,7 +333,7 @@ export default function Conversation({ profil }) {
 
   return (
     <section className="mx-auto flex min-h-dvh max-w-2xl flex-col lg:min-h-[calc(100dvh-var(--hauteur-entete)-6rem)]">
-      <header className="sticky top-0 z-10 flex items-center gap-3 bg-background/95 px-4 py-3 backdrop-blur lg:top-(--hauteur-entete)">
+      <header className="sticky top-0 z-10 flex items-center gap-3 bg-background px-4 py-3 lg:top-(--hauteur-entete)">
         <button
           type="button"
           onClick={revenir}

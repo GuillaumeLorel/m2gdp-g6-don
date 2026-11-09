@@ -89,7 +89,7 @@ export default function CarteAnnonce({ annonce, variante = "accueil", grille = f
           )}
           {reservee && (
             <Badge famille="annonce" ton="reserve">
-              Liste d’attente ouverte
+              Liste d’attente
             </Badge>
           )}
         </p>
