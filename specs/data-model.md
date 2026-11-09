@@ -58,7 +58,7 @@ et se valide avec le PO. Elle sert ici à situer chaque entité.
 | **Socle Pré-J3** | Profil, publication, recherche simple, contact, réservation payée en mode test      | `Utilisateur`, `Annonce`, `Reservation`, `Message`   |
 | **MUST**         | Géolocalisation et proximité, favoris, recherche et tri avancés, statut des annonces, stockage des documents | coordonnées de l'`Annonce`, `Favori`, `Media` |
 | **SHOULD**       | Préférences de recherche, options et statut de réservation                          | `RechercheSauvegardee`, liste d'attente              |
-| **COULD**        | Messagerie actionnable, commentaires et avis, capture média, création IA, notation  | messages système, `Commentaire`, `Avis`, route IA    |
+| **COULD**        | Messagerie actionnable, commentaires et avis, capture média, création IA, recherche par image, notation  | messages système, `Commentaire`, `Avis`, route IA, route de recherche par image    |
 | **COULD FAKE**   | Paiement, vérification d'identité                                                   | paiement réel en mode test, lien magique             |
 | **WON'T**        | Notifications non lues, multilingue, forum, SSO, fidélité                           | _volontairement absents du modèle_                   |
 
@@ -599,33 +599,78 @@ jamais les champs à cacher — sinon tout champ ajouté plus tard fuite par dé
 
 ## Création d'annonce assistée par IA
 
-L'IA **rédige un brouillon, elle ne publie jamais**. L'offrant tape une phrase
-— ou dicte, ou photographie l'objet — et reçoit un formulaire prérempli qu'il
-corrige avant de publier par la route ordinaire.
+L'IA **rédige un brouillon, elle ne publie jamais**. L'offrant tape une phrase,
+ajoute des photos de l'objet, ou les deux, et reçoit un formulaire prérempli
+qu'il corrige avant de publier par la route ordinaire. Il faut au moins l'un des
+deux : le texte est facultatif s'il y a une photo (3 photos lues au plus).
 
 - **Passerelle** : le front appelle le Worker, qui garde la clé du service IA
-  (OpenRouter) et applique un **quota par utilisateur dans D1** — 20 brouillons
-  par jour, à valider. Le front ne voit jamais la clé.
+  (Google Gemini Flash-Lite, `GEMINI_API_KEY`) et applique un **quota par
+  utilisateur dans D1** (table `usagesIA`) — 20 brouillons par jour, à valider.
+  Le front ne voit jamais la clé. Un brouillon que le service tiers n'a pas pu
+  rédiger ne consomme pas de quota.
+- **Interrupteur** : la variable `IA_ACTIVEE` du Worker (avec la clé) active la
+  fonction. Coupée, `POST /api/ia/brouillon-annonce` répond 503 « désactivée »
+  sans appeler Google, et `GET /api/ia/statut` le dit au front, qui cache le
+  bouton « Remplir avec l'IA ».
 - **Sortie contrainte** : le modèle doit renvoyer un JSON conforme, avec des
   identifiants pris dans **notre** liste de catégories. Le Worker valide cette
   sortie comme n'importe quelle saisie : tout champ invalide est écarté et
   signalé dans `champsIncertains`, que l'interface met en évidence.
 - **La participation est une suggestion**, présentée comme telle. Elle doit
-  rester modeste ; l'offrant décide.
+  rester modeste (1 à 5 € demandés au modèle) ; l'offrant décide.
+- **Créneau de retrait** : le jour est l'essentiel. Si l'heure manque, le
+  créneau est complété par une valeur par défaut — fin = début + 2 h, ou 18 h-20 h
+  quand seul le jour est donné, comme le formulaire — et signalé à vérifier.
+  Sans jour, ou avec une date passée, rien n'est rempli. L'IA ne doit pas
+  inventer l'heure de fin.
 - **Aucune adresse dans la description.** Le texte libre peut contenir la rue du
   offrant, et une description est publique. Le prompt l'interdit, et le Worker
   vérifie que ni `numeroRue` ni `rue` du profil n'apparaissent dans le texte
   généré.
-- **Consentement** : le texte et les photos partent chez un tiers. L'interface
-  le dit avant l'envoi.
+- **Consentement** : le texte et les photos partent chez un tiers (Google
+  Gemini, qui peut traiter les données hors de l'Union européenne). L'interface
+  le demande **une seule fois**, puis le retient dans le navigateur, avec un
+  lien « Retirer mon accord ».
 - **En cas d'échec** du service tiers, le formulaire manuel reste disponible :
-  l'IA accélère la saisie, elle ne la conditionne pas.
+  l'IA accélère la saisie, elle ne la conditionne pas. Une réponse du modèle
+  coupée en route est récupérée champ par champ plutôt que refusée.
+
+## Recherche par image
+
+Priorité **COULD** (ticket [#143](https://github.com/GuillaumeLorel/m2gdp-g6-don/issues/143)).
+Le demandeur envoie une photo — ou une **partie de photo**, qu'il entoure dans
+une fenêtre de recadrage — au lieu de taper des mots, et reçoit les annonces
+qui correspondent à l'objet.
+
+- **Principe** : la photo est décrite par l'IA (un mot, au singulier, et une
+  sous-catégorie de notre liste). **Le mot seul** alimente la recherche simple
+  existante (`q`) : la sous-catégorie devinée n'est pas posée en filtre, car
+  elle ne correspond pas toujours au rangement choisi par l'offrant, et un
+  filtre de trop viderait la liste. Pas de nouvelle entité ni de nouvelle
+  colonne. Variante plus lourde, écartée : comparer des _embeddings_ d'images.
+- **Recadrage** : fait **côté front**, avant l'envoi. Seule la zone choisie est
+  envoyée (réduite à 1600 px au plus, en JPEG) ; « Toute la photo » reste
+  possible. Le service tiers ne reçoit jamais le reste de l'image.
+- **Passerelle** : comme pour le brouillon, le front appelle le Worker
+  (`POST /api/annonces/recherche-par-image`, connecté), qui garde la clé du
+  service IA et applique un **quota par utilisateur dans D1** — 20 par jour,
+  compté à part des brouillons. Même interrupteur `IA_ACTIVEE`.
+- **Sortie contrainte** : l'IA ne peut renvoyer qu'un identifiant de **notre**
+  liste de sous-catégories, et le Worker valide cette sortie comme une saisie.
+- **Rien n'est enregistré** : la photo de recherche n'est ni stockée ni jointe
+  à un compte ; elle sert uniquement à la requête.
+- **Consentement** : la photo part chez un tiers (Google Gemini, hors UE
+  possible). L'interface le demande **une seule fois**, puis le retient, avec
+  un lien « Retirer mon accord ».
+- **En cas d'échec** du service tiers, ou si l'image n'est pas reconnue, la
+  recherche par mots reste disponible, avec un message clair.
 
 ## Données et services externes
 
 | Besoin                          | Service                                   | Usage                                              |
 | ------------------------------- | ----------------------------------------- | -------------------------------------------------- |
-| Brouillon d'annonce             | OpenRouter (modèle gratuit)               | Création assistée, reconnaissance d'objet en photo |
+| Brouillon d'annonce             | Google Gemini Flash-Lite (API Google AI)  | Création assistée, reconnaissance d'objet en photo, recherche par image |
 | Géocodage                       | API Adresse (Base Adresse Nationale)      | Coordonnées exactes, privées                       |
 | Quartiers                       | Contours IRIS — Métropole de Lyon         | Position approchée, libellé de quartier            |
 | Points d'intérêt                | Points d'intérêt — Métropole de Lyon      | Repères autour du lieu de retrait                  |
