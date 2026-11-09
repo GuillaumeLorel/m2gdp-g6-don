@@ -20,7 +20,7 @@ SUPABASE_URL = "https://ocapkeuidpuhcsnerkse.supabase.co"
 # Interrupteur des fonctions IA (brouillon d'annonce) : "false" = la route
 # repond « desactive » sans appeler Google, le front cache le bouton. Pour
 # l'activer en ligne : passer a "true" et definir le secret GEMINI_API_KEY.
-IA_ACTIVEE = "false"
+IA_ACTIVEE = "true"
 # Interrupteur des e-mails de reservation (#61) : "false" = rien ne part.
 # Meme a "true", rien ne part tant que les secrets SMTP_UTILISATEUR et
 # SMTP_MOT_DE_PASSE ne sont pas definis (voir workers/src/email.js).
