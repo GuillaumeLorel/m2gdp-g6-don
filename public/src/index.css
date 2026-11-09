@@ -120,6 +120,22 @@
     border-color: var(--border);
   }
 
+  /* Safari iOS : les champs date et heure gardent une largeur minimale native
+     et debordent de leur colonne (le jour sortait de l'ecran, « De » et « À »
+     se recouvraient). On les ramene a la largeur du champ, valeur a gauche. */
+  input[type="date"],
+  input[type="time"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+  }
+  input[type="date"]::-webkit-date-and-time-value,
+  input[type="time"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
+
   body {
     min-width: 320px;
     background: var(--lilas);
