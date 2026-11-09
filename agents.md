@@ -13,14 +13,18 @@ acteurs :
 - **Demandeur** : un **étudiant ou une personne dans le besoin**. Il verse la
   participation et repart avec **l'objet à petit prix** ; il vient le récupérer
   sur place.
-- **Association** : reçoit **l'argent** versé par le demandeur.
+- **Association** : reçoit **l'argent** versé par le demandeur, moins la
+  commission de Donéo (5 %).
 
 Les rôles `offrant` et `demandeur` sont **cumulables** sur un même compte.
 
 Spécificités métier :
 
-- La **participation est fixée par l'offrant** (obligatoire) et **versée
-  intégralement à l'association** choisie. Pas d'enchère, pas d'offre montante :
+- La **participation est fixée par l'offrant** (obligatoire) et **reversée à
+  l'association** choisie, **moins une commission de 5 %** qui finance le
+  fonctionnement de Donéo (décision de l'équipe du 09/11/2026). La commission
+  est prélevée sur la participation : le demandeur paie le montant affiché.
+  Elle est montrée avant tout paiement. Pas d'enchère, pas d'offre montante :
   un montant fixe, et modeste — ce n'est pas le prix de l'objet mais une
   contribution à une cause. Aucun plafond n'est imposé techniquement.
 - L'offrant définit un **créneau ponctuel** (tranche horaire de disponibilité
