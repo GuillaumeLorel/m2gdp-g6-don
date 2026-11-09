@@ -32,11 +32,13 @@ node donnees/charger-categories.mjs
 | --- | --- |
 | `generer-donnees-demo.mjs` | Produit `specs/donnees/demo/utilisateurs.json` (110 profils) et `annonces.json` (149 annonces, une par objet de `catalogue-objets.mjs`). Déterministe : graine fixe. Chaque adresse est validée par le géocodage de la Géoplateforme |
 | `generer-echanges-demo.mjs` | Produit `specs/donnees/demo/echanges.json` : 68 conversations, 50 réservations dans tous les états, 298 messages (#75), cohérents avec le statut des annonces. Dates relatives. Déterministe |
-| `charger-donnees-demo.mjs` | Charge les associations (`specs/donnees/associations.json`), les profils, les annonces, leurs photos et les échanges. Met à jour sur place : les favoris, conversations et demandes de **vrais** membres sur les annonces de démo sont conservés. `--supprimer` retire uniquement la démo |
+| `generer-commentaires-demo.mjs` | Produit `specs/donnees/demo/commentaires.json` : 54 questions publiques sur 44 annonces, 40 avec la réponse de l'offrant (EPIC 9). Questions adaptées à la catégorie de l'objet. Dates relatives. Déterministe |
+| `charger-donnees-demo.mjs` | Charge les associations (`specs/donnees/associations.json`), les profils, les annonces, leurs photos, les échanges et les questions publiques. Met à jour sur place : les favoris, conversations, demandes et questions de **vrais** membres sur les annonces de démo sont conservés. `--supprimer` retire uniquement la démo |
 
 ```bash
 node donnees/generer-donnees-demo.mjs        # seulement pour regenerer les JSON
 node donnees/generer-echanges-demo.mjs       # idem pour les echanges
+node donnees/generer-commentaires-demo.mjs   # idem pour les questions publiques
 node donnees/charger-donnees-demo.mjs --simulation
 node donnees/charger-donnees-demo.mjs
 node donnees/charger-donnees-demo.mjs --supprimer
@@ -46,10 +48,10 @@ Avant une démo, relancer le chargement : les créneaux des annonces en ligne
 avancent de semaines entières jusqu’à être à venir (même jour, même heure),
 et les échanges sont datés par rapport à l’instant du chargement.
 
-Les profils et annonces de démo portent `fictif: true`. 44 annonces ont une
-photo (`specs/donnees/demo/photos.json`, crédits dans `CREDITS-PHOTOS.md`),
-envoyée dans Supabase Storage ; les autres gardent l’illustration de leur
-catégorie. Les annonces ont un
+Les profils et annonces de démo portent `fictif: true`. 122 annonces sur 149
+ont une vraie photo, sous licence libre (`specs/donnees/demo/photos.json`,
+crédits dans `CREDITS-PHOTOS.md`), envoyée dans Supabase Storage ; les autres
+gardent l’illustration de leur catégorie. Les annonces ont un
 identifiant en `demo-` ; les profils, un UUID tiré de leur identifiant lisible
 (`identifiants.mjs`), comme les comptes Supabase. Les e-mails sont en
 `@example.org`, un domaine réservé qui ne reçoit jamais de message : personne

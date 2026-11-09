@@ -162,9 +162,26 @@ const messages = echanges.messages.map((m) => {
   };
 });
 
+/* --- Questions publiques (EPIC 9), produites par generer-commentaires-demo.mjs - */
+
+const commentaires = lire('specs/donnees/demo/commentaires.json').map((q) => ({
+  id: q.id,
+  annonceId: q.annonceId,
+  auteurId: idUtilisateurDemo(q.auteurId),
+  contenu: q.contenu,
+  reponse: q.reponse
+    ? { contenu: q.reponse, creeLe: ilYa(q.reponseIlYaMinutes), misAJourLe: ilYa(q.reponseIlYaMinutes) }
+    : null,
+  statut: 'visible',
+  fictif: true,
+  creeLe: ilYa(q.ilYaMinutes),
+  misAJourLe: ilYa(q.reponse ? q.reponseIlYaMinutes : q.ilYaMinutes),
+}));
+
 console.log(
   `${associations.length} associations, ${utilisateurs.length} profils, ${annonces.length} annonces, ${medias.length} photos, ` +
-    `${conversations.length} conversations, ${reservations.length} reservations, ${messages.length} messages`,
+    `${conversations.length} conversations, ${reservations.length} reservations, ${messages.length} messages, ` +
+    `${commentaires.length} questions publiques`,
 );
 
 if (simulation) {
@@ -215,6 +232,9 @@ if (simulation) {
   await ecrireLot('conversations', conversationsLibres);
   await ecrireLot('reservations', reservations.filter(libres));
   await ecrireLot('messages', messages.filter((m) => gardees.has(m.conversationId)));
+  // Les questions de demo sont remplacees ; celles des vrais membres restent.
+  await requete('commentaires?fictif=is.true', { method: 'DELETE' });
+  await ecrireLot('commentaires', commentaires);
 
   // Ce qui n'est plus dans les JSON disparait (annonces, puis profils).
   const liste = (ids) => encodeURIComponent(ids.map((id) => `"${id}"`).join(','));
