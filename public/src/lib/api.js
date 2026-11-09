@@ -247,5 +247,18 @@ export async function modifierAnnonce(id, champs) {
 export const retirerAnnonce = (id) =>
   appelConnecte(`/api/annonces/${encodeURIComponent(id)}`, { method: 'DELETE' }, 'Retrait impossible.');
 
+/** Questions publiques d'une annonce (EPIC 9). */
+export const chargerQuestions = (annonceId) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/commentaires?parPage=50`, {}, 'Chargement des questions impossible.')
+    .then((d) => d.commentaires);
+export const poserQuestion = (annonceId, contenu) =>
+  appelConnecte(`/api/annonces/${encodeURIComponent(annonceId)}/commentaires`, { method: 'POST', body: { contenu } }, 'Publication impossible.');
+export const repondreQuestion = (id, contenu) =>
+  appelConnecte(`/api/commentaires/${encodeURIComponent(id)}/reponse`, { method: 'PUT', body: { contenu } }, 'Réponse impossible.');
+export const masquerQuestion = (id, masque) =>
+  appelConnecte(`/api/commentaires/${encodeURIComponent(id)}/masquage`, { method: 'POST', body: { masque } });
+export const supprimerQuestion = (id) =>
+  appelConnecte(`/api/commentaires/${encodeURIComponent(id)}`, { method: 'DELETE' }, 'Suppression impossible.');
+
 /** Profil : statistiques et toutes mes annonces. */
 export const chargerResumeProfil = () => appelConnecte('/api/profil/resume', {}, 'Chargement du profil impossible.');

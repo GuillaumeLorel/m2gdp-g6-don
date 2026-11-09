@@ -5,6 +5,7 @@ import Badge from "@/components/Badge.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import ImageAnnonce from "@/components/ImageAnnonce.jsx";
 import MeteoCreneau from "@/components/MeteoCreneau.jsx";
+import QuestionsPubliques from "@/components/QuestionsPubliques.jsx";
 import { useDistance } from "@/lib/distance.js";
 import { EtatVide, ErreurChargement } from "@/components/Etats.jsx";
 import { chargerAnnonce, chargerMesReservations, contacterOffrant, demanderObjet, retirerAnnonce } from "@/lib/api.js";
@@ -392,6 +393,8 @@ export default function FicheAnnonce({ profil }) {
           <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
           L’adresse exacte vous est communiquée une fois votre participation validée.
         </p>
+
+        <QuestionsPubliques annonce={annonce} profil={profil} estLaMienne={estLaMienne} />
       </div>
 
     </article>
