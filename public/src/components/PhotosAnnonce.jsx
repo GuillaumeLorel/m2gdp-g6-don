@@ -95,7 +95,7 @@ export default function PhotosAnnonce({ photos, surChangement, publiees = [] }) 
               type="button"
               onClick={() => retirer(photo)}
               aria-label={`Retirer la photo ${i + 1}`}
-              className="absolute -top-2 -right-2 grid size-8 place-items-center rounded-full bg-ardoise text-white shadow-md">
+              className="absolute top-1.5 right-1.5 grid size-7 place-items-center rounded-full bg-ardoise/90 text-white shadow-md">
               <X className="size-4" aria-hidden="true" />
             </button>
           </li>

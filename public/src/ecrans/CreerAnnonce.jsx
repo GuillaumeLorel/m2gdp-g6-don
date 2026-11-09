@@ -434,7 +434,7 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               ))}
             </div>
             {touches.participation && !participationValide && (
-              <ErreurChamp>Indiquez une participation supérieure à 0 €, par exemple 2.</ErreurChamp>
+              <ErreurChamp>Indiquez une participation supérieure à 0{" "}€, par exemple 2.</ErreurChamp>
             )}
           </fieldset>
 
@@ -682,12 +682,13 @@ function AssistantIA({ photos, surBrouillon, fait }) {
           {erreur}
         </p>
       )}
-      <div className="flex gap-2">
-        <Button type="button" variant="doneo" size="pilule" className="flex-1" disabled={!pret} onClick={generer}>
+      {/* Sur un petit ecran, « Annuler » passe sous le bouton principal plutot que de deborder. */}
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="doneo" size="pilule" className="min-w-48 flex-1" disabled={!pret} onClick={generer}>
           {envoi ? <Loader2 className="size-5 animate-spin" aria-hidden="true" /> : <Sparkles className="size-5" aria-hidden="true" />}
           {envoi ? "Rédaction…" : "Générer un brouillon"}
         </Button>
-        <Button type="button" variant="doneoSecondaire" size="pilule" disabled={envoi} onClick={() => setOuvert(false)}>
+        <Button type="button" variant="doneoSecondaire" size="pilule" className="flex-1" disabled={envoi} onClick={() => setOuvert(false)}>
           Annuler
         </Button>
       </div>
