@@ -34,6 +34,13 @@
 import { ecrireLigne, lireLigne, listerTable, profilExistePourEmail, utilisateurDuJeton } from './base.js';
 import { validerAdresse } from './adresse.js';
 import { chargerAnnonce, rechercherAnnonces } from './annonces.js';
+import {
+  listerCommentaires,
+  masquer,
+  poserQuestion,
+  repondre as repondreQuestion,
+  supprimerCommentaire,
+} from './commentaires.js';
 import { contacter, envoyerMessage, lireConversation, listerConversations } from './conversations.js';
 import { lireEdition, modifierAnnonce, retirerAnnonce } from './edition.js';
 import { brouillonAnnonce, iaActivee, rechercheParImage } from './ia.js';
@@ -168,6 +175,10 @@ async function routerEchanges(request, env, pathname, cors) {
     [/^\/api\/reservations$/, ['GET']],
     [/^\/api\/reservations\/([\w-]{1,64})(?:\/(validation|declin|renonciation|remise|desistement|sans-reponse|paiement|paiement\/confirmation))?$/, ['GET', 'POST']],
     [/^\/api\/profil\/resume$/, ['GET']],
+    [/^\/api\/annonces\/([\w-]{1,64})\/commentaires$/, ['POST']],
+    [/^\/api\/commentaires\/([\w-]{1,64})$/, ['DELETE']],
+    [/^\/api\/commentaires\/([\w-]{1,64})\/reponse$/, ['PUT']],
+    [/^\/api\/commentaires\/([\w-]{1,64})\/masquage$/, ['POST']],
   ];
   if (!routes.some(([motif, methodes]) => motif.test(pathname) && methodes.includes(methode))) return null;
 
@@ -222,6 +233,10 @@ async function routerEchanges(request, env, pathname, cors) {
     return repondre(await payer(env, uid, id, origine));
   }
   if (pathname === '/api/profil/resume') return json(await resumeProfil(env, uid), 200, cors);
+  if ((r = m(/^\/api\/annonces\/([\w-]{1,64})\/commentaires$/))) return repondre(await poserQuestion(env, uid, r[1], corps.contenu));
+  if ((r = m(/^\/api\/commentaires\/([\w-]{1,64})$/))) return repondre(await supprimerCommentaire(env, uid, r[1]));
+  if ((r = m(/^\/api\/commentaires\/([\w-]{1,64})\/reponse$/))) return repondre(await repondreQuestion(env, uid, r[1], corps.contenu));
+  if ((r = m(/^\/api\/commentaires\/([\w-]{1,64})\/masquage$/))) return repondre(await masquer(env, uid, r[1], corps.masque));
   return null;
 }
 
@@ -381,6 +396,19 @@ export default {
         return annonce
           ? json(annonce, 200, cors)
           : json({ erreur: 'Cette annonce n’existe pas ou a été retirée.' }, 404, cors);
+      }
+
+      /* --- Questions publiques : lisibles sans etre connecte ------------- */
+      const routeCommentaires = /^\/api\/annonces\/([\w-]{1,64})\/commentaires$/.exec(pathname);
+      if (routeCommentaires && request.method === 'GET') {
+        const lecteur = await utilisateurConnecte(request, env);
+        const parametres = new URL(request.url).searchParams;
+        const borne = (nom, defaut, max) => Math.min(max, Math.max(1, Number.parseInt(parametres.get(nom), 10) || defaut));
+        const { statut, corps } = await listerCommentaires(env, lecteur?.id ?? null, routeCommentaires[1], {
+          page: borne('page', 1, 1000),
+          parPage: borne('parPage', 20, 50),
+        });
+        return json(corps, statut, cors);
       }
 
       /* --- Echanges entre membres (J4) : tout exige d'etre connecte ------ */
