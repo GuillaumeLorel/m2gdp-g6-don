@@ -21,6 +21,7 @@ import Profil from "@/ecrans/Profil.jsx";
 import Recherche from "@/ecrans/Recherche.jsx";
 import { chargerProfil } from "@/lib/api.js";
 import { oublierFavoris } from "@/lib/favoris.js";
+import { oublierNonLus } from "@/lib/nonLus.js";
 import {
   estRetourDeLien,
   finaliserConnexion,
@@ -116,6 +117,7 @@ export default function App() {
     if (utilisateur === null) {
       setProfil(undefined);
       oublierFavoris();
+      oublierNonLus();
       return;
     }
     chargerProfil()

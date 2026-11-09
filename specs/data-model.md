@@ -58,13 +58,17 @@ et se valide avec le PO. Elle sert ici à situer chaque entité.
 | **Socle Pré-J3** | Profil, publication, recherche simple, contact, réservation payée en mode test      | `Utilisateur`, `Annonce`, `Reservation`, `Message`   |
 | **MUST**         | Géolocalisation et proximité, favoris, recherche et tri avancés, statut des annonces, stockage des documents | coordonnées de l'`Annonce`, `Favori`, `Media` |
 | **SHOULD**       | Préférences de recherche, options et statut de réservation                          | `RechercheSauvegardee`, liste d'attente              |
-| **COULD**        | Messagerie actionnable, commentaires et avis, capture média, création IA, recherche par image, notation  | messages système, `Commentaire`, `Avis`, route IA, route de recherche par image    |
+| **COULD**        | Messagerie actionnable, commentaires et avis, capture média, création IA, recherche par image, notation, compteur de messages non lus  | messages système, `Commentaire`, `Avis`, route IA, route de recherche par image, lecture des `Conversation`    |
 | **COULD FAKE**   | Paiement, vérification d'identité                                                   | paiement réel en mode test, lien magique             |
-| **WON'T**        | Notifications non lues, multilingue, forum, SSO, fidélité                           | _volontairement absents du modèle_                   |
+| **WON'T**        | Notifications push et alertes mobiles, multilingue, forum, SSO, fidélité            | _volontairement absents du modèle_                   |
 
-Les **WON'T** ne sont pas des oublis. Il n'y a pas de champ `lu` sur les
-messages, et les commentaires n'ont qu'un niveau de réponse : c'est ce qui les
-empêche de glisser vers un forum.
+Les **WON'T** ne sont pas des oublis. Les commentaires n'ont qu'un niveau de
+réponse : c'est ce qui les empêche de glisser vers un forum.
+
+Le compteur de messages non lus, d'abord classé WON'T, a été ajouté le
+09/11/2026 à la demande de l'équipe. Il reste minimal : pas de champ `lu` par
+message, seulement le moment où chacun a lu la conversation pour la dernière
+fois (`luParOffrantLe`, `luParDemandeurLe`), et aucune notification push.
 
 ## Diagrammes de classes
 
@@ -223,6 +227,8 @@ classDiagram
         +string annonceId
         +string offrantId
         +string demandeurId
+        +date luParOffrantLe
+        +date luParDemandeurLe
         +date creeLe
         +date misAJourLe
     }
@@ -458,11 +464,12 @@ Les valeurs chiffrées sont des **propositions à valider** avec le PO.
 - **La remise clôt la file** : toutes les réservations encore en attente passent
   à `annulee` (`attribuee_a_autrui`), avec un message système.
 
-### Comment on prévient, sans notifications
+### Comment on prévient, sans notifications push
 
-« Notifications non lues / alertes mobiles » est classé **WON'T**. On n'ajoute
-donc ni badge, ni push, ni champ `lu`. Mais une personne promue depuis la file
-n'a aucune raison d'ouvrir l'application d'elle-même :
+Les notifications push et les alertes mobiles sont classées **WON'T**. Un
+compteur de messages non lus s'affiche sur l'onglet Messages, mais il faut
+ouvrir l'application pour le voir. Or une personne promue depuis la file n'a
+aucune raison de l'ouvrir d'elle-même :
 
 1. **Toujours** : un message système `objet_propose` dans sa conversation. C'est
    la « messagerie actionnable » des maquettes clients : le message porte les
