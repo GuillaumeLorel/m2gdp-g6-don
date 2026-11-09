@@ -21,10 +21,10 @@ SUPABASE_URL = "https://ocapkeuidpuhcsnerkse.supabase.co"
 # repond « desactive » sans appeler Google, le front cache le bouton. Pour
 # l'activer en ligne : passer a "true" et definir le secret GEMINI_API_KEY.
 IA_ACTIVEE = "false"
-# Interrupteur de l'e-mail « objet propose » (#61) : "false" = rien ne part.
-# Pour l'activer : passer a "true" et definir les secrets SMTP_UTILISATEUR et
-# SMTP_MOT_DE_PASSE.
-EMAILS_ACTIFS = "false"
+# Interrupteur des e-mails de reservation (#61) : "false" = rien ne part.
+# Meme a "true", rien ne part tant que les secrets SMTP_UTILISATEUR et
+# SMTP_MOT_DE_PASSE ne sont pas definis (voir workers/src/email.js).
+EMAILS_ACTIFS = "true"
 
 # Base D1 (sessions, SQL) — creee le 16/09/2026, region WEUR.
 # Le binding reste DB_SESSIONS : c'est le nom lu par le code, il ne suit pas

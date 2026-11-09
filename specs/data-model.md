@@ -467,9 +467,11 @@ n'a aucune raison d'ouvrir l'application d'elle-même :
 1. **Toujours** : un message système `objet_propose` dans sa conversation. C'est
    la « messagerie actionnable » des maquettes clients : le message porte les
    boutons _Payer pour confirmer_ et _Refuser_.
-2. **En plus** : un **e-mail** pour ce seul évènement (#61). Sans lui, la file
-   devient injuste : l'offrant risque de passer au suivant avant que la
-   personne sache qu'elle a été choisie. Il part par le **SMTP de Gmail**
+2. **En plus** : un **e-mail** (#61). Sans lui, la file devient injuste :
+   l'offrant risque de passer au suivant avant que la personne sache qu'elle
+   a été choisie. Le même mécanisme prévient aussi l'offrant d'une nouvelle
+   demande, d'une participation versée et d'un désistement, et le demandeur
+   d'un déclin (`workers/src/email.js`). Il part par le **SMTP de Gmail**
    (Lyon 2 refuse Brevo sans nom de domaine), **sans aucun lien** (le filtre
    de Lyon 2 rejette les e-mails qui en contiennent), jamais vers un profil
    de démonstration, et derrière l'interrupteur `EMAILS_ACTIFS`.

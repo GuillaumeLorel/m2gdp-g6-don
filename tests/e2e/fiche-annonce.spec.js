@@ -27,13 +27,17 @@ test('Consulter une annonce (cas nominal)', async ({ page }) => {
 });
 
 test('L’adresse exacte n’apparaît jamais avant la participation', async ({ page }) => {
-  const reponses = [];
-  page.on('response', async (r) => {
-    if (r.url().includes(`/api/annonces/${disponible.id}`)) reponses.push(await r.text());
+  // La fiche et ses questions publiques : on attend toutes les lectures, sans
+  // quoi une reponse arrivee tard serait lue apres la fin du test.
+  const lectures = [];
+  page.on('response', (r) => {
+    if (r.url().includes(`/api/annonces/${disponible.id}`)) lectures.push(r.text().catch(() => ''));
   });
   await ouvrirConnecte(page, PROFILS.demandeurSeul, `/annonces/${disponible.id}`);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.getByText('L’adresse exacte vous est communiquée une fois votre participation validée.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Questions publiques/ })).toBeVisible();
+  const reponses = await Promise.all(lectures);
 
   const texte = await page.locator('body').innerText();
   expect(texte).not.toContain(disponible.rue);

@@ -19,7 +19,7 @@
 import { chercherLignes, insererLigne, lireLigne, lireLignes, mettreAJour } from './base.js';
 import { versAnnoncesPubliques } from './annonces.js';
 import { ajouterMessage, conversationPour, erreurContenu } from './conversations.js';
-import { prevenirObjetPropose } from './email.js';
+import { prevenir } from './email.js';
 import { associations } from './referentiels.js';
 import { creerSessionPaiement, lireSessionPaiement, paiementDisponible } from './stripe.js';
 
@@ -111,7 +111,7 @@ async function proposerAuSuivant(env, annonceId) {
     if (!proposee) continue; // elle vient de se desister : on passe a la suivante
     await messageSysteme(env, proposee, 'objet_propose',
       `L’objet est libre et vous est proposé : versez ${euros(annonce.participation)} à l’association pour le réserver, ou refusez.`);
-    prevenirObjetPropose(env, proposee, annonce);
+    prevenir(env, 'objet_propose', proposee, annonce);
     return proposee;
   }
   await mettreAJour(env, 'annonces', { id: annonceId, statut: 'reserve' }, { statut: 'disponible', misAJourLe: maintenant() });
@@ -166,6 +166,7 @@ export async function demander(env, utilisateurId, annonceId, message) {
     await messageSysteme(env, reservation, 'demande_en_file', `${profil.prenom} s’est inscrit·e en liste d’attente.`);
   } else {
     await messageSysteme(env, reservation, 'demande_recue', `${profil.prenom} souhaite récupérer cet objet.`);
+    prevenir(env, 'demande_recue', reservation, annonce);
   }
   if (message) await ajouterMessage(env, conversation.id, { auteurId: utilisateurId, contenu: message.trim() });
   return { statut: 201, corps: versReservation(reservation, utilisateurId, null, await rangFile(env, reservation)) };
@@ -207,7 +208,7 @@ export async function valider(env, utilisateurId, id) {
   }
   await messageSysteme(env, proposee, 'objet_propose',
     `Demande acceptée : l’objet vous est réservé. Versez la participation de ${euros(annonce.participation)} pour confirmer et recevoir l’adresse exacte.`);
-  prevenirObjetPropose(env, proposee, annonce);
+  prevenir(env, 'objet_propose', proposee, annonce);
   return { statut: 200, corps: versReservation(proposee, utilisateurId) };
 }
 
@@ -220,6 +221,7 @@ export async function decliner(env, utilisateurId, id) {
   });
   if (!declinee) return refus(409, r.statut === 'annulee' ? 'Cette demande est déjà close.' : 'Cette demande a déjà reçu une réponse.');
   await messageSysteme(env, declinee, 'demande_declinee', 'L’offrant a décliné cette demande.');
+  prevenir(env, 'demande_declinee', declinee);
   return { statut: 200, corps: versReservation(declinee, utilisateurId) };
 }
 
@@ -312,6 +314,7 @@ export async function confirmerPaiement(env, utilisateurId, id) {
   }
   await messageSysteme(env, confirmee, 'paiement_valide',
     `Participation de ${euros(confirmee.participationDemandee)} validée (paiement de test : rien n’a été débité). La réservation est confirmée et l’adresse exacte a été communiquée au demandeur.`);
+  prevenir(env, 'paiement_valide', confirmee, annonce);
   // L'objet est attribue : les demandes que l'offrant n'avait pas tranchees sont
   // closes. La liste d'attente, elle, reste : si le detenteur se desiste, le
   // premier de la file reprend l'objet. Seule la remise la clot.
@@ -348,6 +351,7 @@ export async function seDesister(env, utilisateurId, id) {
   const apres = tenait ? ` : ${suivant ? 'l’objet est proposé au suivant.' : 'l’objet est de nouveau disponible.'}` : '.';
   await messageSysteme(env, close, 'desistement',
     `Le demandeur s’est désisté${payee ? ' (participation remboursée, paiement de test)' : ''}${apres}`);
+  if (tenait) prevenir(env, 'desistement', close);
   return { statut: 200, corps: versReservation(close, utilisateurId) };
 }
 
