@@ -20,7 +20,7 @@ test('Consulter une annonce (cas nominal)', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: disponible.titre })).toBeVisible();
   await expect(page.getByText(disponible.description)).toBeVisible();
   await expect(page.getByText('— participation')).toBeVisible();
-  await expect(page.getByText(/^Reversée à /)).toBeVisible();
+  await expect(page.getByText(/ reversés à /)).toBeVisible();
   await expect(page.getByText('Créneau de retrait')).toBeVisible();
   await expect(page.getByText(disponible.codePostal, { exact: false })).toBeVisible();
   await expect(page.getByRole('button', { name: /Réserver pour/ })).toBeVisible();

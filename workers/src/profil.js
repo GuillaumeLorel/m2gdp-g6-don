@@ -5,6 +5,7 @@
  */
 import { chercherLignes } from './base.js';
 import { versAnnoncesPubliques } from './annonces.js';
+import { repartition } from './commission.js';
 
 // Payees : la participation est versee, meme si l'objet n'est pas encore remis.
 const VERSEES = ['confirmee', 'remise'];
@@ -20,10 +21,12 @@ export async function resumeProfil(env, utilisateurId) {
   // Ce qui part aux associations grace au membre : les participations de ses
   // dons (remis, ou reserves et payes) et celles qu'il a lui-meme versees.
   const dejaComptees = new Set(commeOffrant.map((r) => r.annonceId));
+  // Seule la part de l'association compte : la commission de Doneo est deduite (#54).
+  const part = (participation) => repartition(participation || 0).partAssociation;
   const montant =
-    commeOffrant.reduce((t, r) => t + Number(r.participationDemandee || 0), 0) +
-    remises.filter((a) => !dejaComptees.has(a.id)).reduce((t, a) => t + Number(a.participation), 0) +
-    commeDemandeur.reduce((t, r) => t + Number(r.participationDemandee || 0), 0);
+    commeOffrant.reduce((t, r) => t + part(r.participationDemandee), 0) +
+    remises.filter((a) => !dejaComptees.has(a.id)).reduce((t, a) => t + part(a.participation), 0) +
+    commeDemandeur.reduce((t, r) => t + part(r.participationDemandee), 0);
   return {
     // Un objet ne compte comme donne ou recu qu'une fois remis.
     statistiques: {

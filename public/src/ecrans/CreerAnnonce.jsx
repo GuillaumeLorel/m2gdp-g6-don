@@ -19,6 +19,7 @@ import {
 } from "@/lib/api.js";
 import { FONCTIONS_IA, consentementDonne, donnerConsentement, retirerConsentement } from "@/lib/consentementIA.js";
 import { LIBELLES_ETAT, formaterCreneau, formaterParticipation } from "@/lib/format.js";
+import { libelleTaux, repartition } from "@/lib/commission.js";
 import { cn } from "@/lib/utils.js";
 
 /** Champ du brouillon IA ou du formulaire -> zone mise en evidence quand elle est a verifier. */
@@ -412,7 +413,11 @@ export default function CreerAnnonce({ profil, surProfil, edition = null }) {
               onBlur={toucher("participation")}
               aria-invalid={touches.participation && !participationValide ? "true" : undefined}
               className={incertains.has("participation") ? CLASSES_INCERTAIN : undefined}
-              aide="Montant modeste, versé en entier à l’association : vous ne touchez rien."
+              aide={
+                participationValide
+                  ? `L’association recevra ${formaterParticipation(repartition(participation).partAssociation)} (Donéo garde ${libelleTaux}). Vous ne touchez rien.`
+                  : `Montant modeste, reversé à l’association moins ${libelleTaux} de commission Donéo. Vous ne touchez rien.`
+              }
             />
             <div className="flex gap-2" role="group" aria-label="Montants suggérés">
               {MONTANTS_SUGGERES.map((m) => (
@@ -723,7 +728,11 @@ function Apercu({ annonce, etape }) {
               <span className="text-sm font-medium text-violet-fonce">— participation</span>
             </p>
             <p className="mt-0.5 text-xs text-ardoise">
-              {annonce.association ? `Reversée à ${annonce.association.nom}` : "Association à choisir à l’étape 2"}
+              {annonce.association
+                ? annonce.participation
+                  ? `${formaterParticipation(repartition(annonce.participation).partAssociation)} reversés à ${annonce.association.nom}`
+                  : `Reversée à ${annonce.association.nom}`
+                : "Association à choisir à l’étape 2"}
             </p>
           </div>
           {annonce.creneauRetrait && (

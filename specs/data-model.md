@@ -3,7 +3,9 @@
 Don caritatif via la vente d'objets : l'**offrant** cède un objet et fixe une
 **participation solidaire** — un montant modeste — puis choisit une
 **association**. Le **demandeur** verse cette participation et repart avec
-l'objet ; **l'argent, lui, va intégralement à l'association**.
+l'objet ; **l'argent, lui, va à l'association**, moins une commission de 5 %
+prélevée par Donéo pour son fonctionnement (#54, décision du 09/11/2026 ;
+`workers/src/commission.js`).
 
 Trois acteurs, et il faut bien séparer qui reçoit quoi :
 

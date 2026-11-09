@@ -7,7 +7,8 @@ info:
     L'offrant cède un objet, fixe une participation solidaire — un montant
     modeste — et choisit une association. Le demandeur, étudiant ou personne
     dans le besoin, verse cette participation et repart avec l'objet à petit
-    prix, tandis que l'argent va intégralement à l'association.
+    prix, tandis que l'argent va à l'association, moins une commission de 5 %
+    pour Donéo.
 
 
     **Version 0.3** — intègre les retours clients du 17/09/2026 : médias,
@@ -1678,7 +1679,8 @@ components:
           minimum: 0.01
           description: >
             Participation solidaire en euros 💶, fixée par l'offrant.
-            Obligatoire et versée intégralement à l'association. Elle se veut
+            Obligatoire et reversée à l'association, moins une commission de
+            5 % prélevée par Donéo (#54). Elle se veut
             **modeste** — c'est une contribution à une cause, pas le prix de
             l'objet — mais aucun plafond n'est imposé techniquement.
         associationId:
