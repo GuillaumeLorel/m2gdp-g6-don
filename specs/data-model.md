@@ -467,10 +467,12 @@ n'a aucune raison d'ouvrir l'application d'elle-même :
 1. **Toujours** : un message système `objet_propose` dans sa conversation. C'est
    la « messagerie actionnable » des maquettes clients : le message porte les
    boutons _Payer pour confirmer_ et _Refuser_.
-2. **Recommandé** : un **e-mail transactionnel** pour ce seul évènement, par le
-   SMTP Brevo déjà ouvert. Sans lui, la file devient injuste : l'offrant
-   risque de passer au suivant avant que la personne sache qu'elle a été
-   choisie. **À trancher avec le PO.**
+2. **En plus** : un **e-mail** pour ce seul évènement (#61). Sans lui, la file
+   devient injuste : l'offrant risque de passer au suivant avant que la
+   personne sache qu'elle a été choisie. Il part par le **SMTP de Gmail**
+   (Lyon 2 refuse Brevo sans nom de domaine), **sans aucun lien** (le filtre
+   de Lyon 2 rejette les e-mails qui en contiennent), jamais vers un profil
+   de démonstration, et derrière l'interrupteur `EMAILS_ACTIFS`.
 
 `evenement` des messages système : `demande_recue`, `demande_en_file`,
 `demande_declinee`, `demande_annulee`, `objet_propose`, `paiement_valide`,
@@ -729,8 +731,8 @@ la fait passer à `confirmee`.
 
 ## Questions ouvertes pour le PO
 
-1. **E-mail de proposition** : faut-il l'envoyer quand une place se libère ?
-   Recommandé, sinon la personne ne sait pas qu'on attend sa réponse.
+1. **E-mail de proposition** : tranché le 09/11/2026, il est envoyé à chaque
+   objet proposé (voir plus haut et #61).
 2. **Plafonds** de la liste d'attente : 5 personnes, 3 réservations en cours
    par demandeur — à confirmer. Un délai de réponse automatique a été écarté
    pour garder le développement simple.

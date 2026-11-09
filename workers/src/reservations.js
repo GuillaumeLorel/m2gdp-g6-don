@@ -19,6 +19,7 @@
 import { chercherLignes, insererLigne, lireLigne, lireLignes, mettreAJour } from './base.js';
 import { versAnnoncesPubliques } from './annonces.js';
 import { ajouterMessage, conversationPour, erreurContenu } from './conversations.js';
+import { prevenirObjetPropose } from './email.js';
 import { associations } from './referentiels.js';
 import { creerSessionPaiement, lireSessionPaiement, paiementDisponible } from './stripe.js';
 
@@ -110,6 +111,7 @@ async function proposerAuSuivant(env, annonceId) {
     if (!proposee) continue; // elle vient de se desister : on passe a la suivante
     await messageSysteme(env, proposee, 'objet_propose',
       `L’objet est libre et vous est proposé : versez ${euros(annonce.participation)} à l’association pour le réserver, ou refusez.`);
+    prevenirObjetPropose(env, proposee, annonce);
     return proposee;
   }
   await mettreAJour(env, 'annonces', { id: annonceId, statut: 'reserve' }, { statut: 'disponible', misAJourLe: maintenant() });
@@ -205,6 +207,7 @@ export async function valider(env, utilisateurId, id) {
   }
   await messageSysteme(env, proposee, 'objet_propose',
     `Demande acceptée : l’objet vous est réservé. Versez la participation de ${euros(annonce.participation)} pour confirmer et recevoir l’adresse exacte.`);
+  prevenirObjetPropose(env, proposee, annonce);
   return { statut: 200, corps: versReservation(proposee, utilisateurId) };
 }
 
